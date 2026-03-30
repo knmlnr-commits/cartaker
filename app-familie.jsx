@@ -6,10 +6,11 @@ var C_F = window.COLORS;
 // ══════════════════════════════════════════
 // OVERZICHT — hoe gaat het met papa/mij?
 // ══════════════════════════════════════════
-window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast }) {
+window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang }) {
   const { useState } = React;
   const [toonDetails, setToonDetails] = useState(null);
   const [openConsult, setOpenConsult] = useState(null);
+  var t = toegang || window.familieToegang.lijn1;
 
   if (openConsult) {
     return React.createElement(ConsultDetail, { consult: openConsult, onTerug: function() { setOpenConsult(null); }, addToast: addToast, readOnly: true });
@@ -31,8 +32,7 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast }) {
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
 
-    // Stemming widget
-    React.createElement(SectionTitle, null, isPatient ? 'Hoe gaat het met mij?' : 'Hoe gaat het met ' + p.roepnaam + '?'),
+    // Stemming (compact, geen dubbele titel)
     React.createElement(StemmingWidget, {
       bewonerId: 'jansen',
       gebruikerNaam: lid.roepnaam + (lid.isPatient ? '' : ' (' + lid.relatie.toLowerCase() + ')'),
@@ -81,8 +81,9 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast }) {
       }, 'Ik kom vandaag')
     ),
 
-    // Rapportages
-    React.createElement(SectionTitle, null, isPatient ? 'Wat zeggen ze over mij?' : 'Hoe was het?'),
+    // Rapportages (alleen lijn1 + patient)
+    t.rapportages && React.createElement(SectionTitle, null, isPatient ? 'Wat zeggen ze over mij?' : 'Hoe was het?'),
+    t.rapportages &&
     window.dagrapportages.slice(0, 3).map(function(r, i) {
       return React.createElement(Card, { key: i, style: { padding: 12, borderLeft: '3px solid ' + (r.isFamilie ? C_F.groen : C_F.oranje) } },
         React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 4 } },
@@ -93,8 +94,8 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast }) {
       );
     }),
 
-    // Re-ablement (niet voor patiënt)
-    !isPatient && React.createElement('div', null,
+    // Re-ablement
+    t.reablement && !isPatient && React.createElement('div', null,
       React.createElement(SectionTitle, null, 'Re-ablement traject'),
       React.createElement(Card, null,
         React.createElement('div', { style: { fontSize: 15, fontWeight: 600, color: C_F.tekstPrimair, marginBottom: 4 } }, p.reablement.fase),
@@ -110,7 +111,7 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast }) {
     ),
 
     // Behandelplan
-    !isPatient && React.createElement('div', null,
+    t.behandelplan && !isPatient && React.createElement('div', null,
       React.createElement(SectionTitle, null, 'Behandelplan'),
       React.createElement('div', { style: { fontSize: 12, color: C_F.tekstMuted, marginBottom: 8 } }, 'Tik voor toelichting'),
       p.behandelplan.map(function(item, i) {
@@ -134,7 +135,7 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast }) {
     ),
 
     // Open consult
-    p.openConsulten.length > 0 && React.createElement('div', null,
+    t.consulten && p.openConsulten.length > 0 && React.createElement('div', null,
       React.createElement(SectionTitle, null, isPatient ? 'Lopende melding' : 'Lopende meldingen'),
       p.openConsulten.map(function(c) {
         var isU2 = c.urgentie.includes('U2');

@@ -102,7 +102,8 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner 
 // ══════════════════════════════════════════
 // BEWONER DETAIL — taken + vitalen + notities + dossier
 // ══════════════════════════════════════════
-window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verzorgendeNaam, initialTab }) {
+window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verzorgendeNaam, initialTab, toegang }) {
+  var tg = toegang || window.zorgToegang.verzorgende;
   const { useState } = React;
   var b = bewoner;
   var [taken, setTaken] = useState(b.taken);
@@ -152,11 +153,11 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
   };
 
   var detailTabs = [
-    { id: 'taken', label: 'Taken (' + gedaan + '/' + taken.length + ')' },
-    { id: 'vitalen', label: 'Vitalen' },
-    { id: 'notities', label: 'Notities' },
-    { id: 'dossier', label: 'Dossier' },
-  ];
+    { id: 'taken', label: 'Taken (' + gedaan + '/' + taken.length + ')', show: true },
+    { id: 'vitalen', label: 'Vitalen', show: tg.iot },
+    { id: 'notities', label: 'Notities', show: true },
+    { id: 'dossier', label: 'Dossier', show: tg.dossier },
+  ].filter(function(dt) { return dt.show; });
 
   return React.createElement('div', { style: { animation: 'slideInRight 0.3s ease' } },
     // Terug + header
@@ -181,8 +182,8 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
       onUpdate: function() { addToast('Stemming bijgewerkt', 'success'); }
     }),
 
-    // Alert
-    b.openConsulten.length > 0 && React.createElement(Card, { style: { background: C_V.roodLicht, border: '1px solid ' + C_V.rood, padding: 10, cursor: 'pointer' }, onClick: function() { setOpenConsult(b.openConsulten[0]); } },
+    // Alert (alleen bij consulten-toegang)
+    tg.consulten && b.openConsulten.length > 0 && React.createElement(Card, { style: { background: C_V.roodLicht, border: '1px solid ' + C_V.rood, padding: 10, cursor: 'pointer' }, onClick: function() { setOpenConsult(b.openConsulten[0]); } },
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
         React.createElement('span', { style: { fontSize: 16 } }, '\u26A0\uFE0F'),
         React.createElement('div', { style: { flex: 1 } },

@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v3.9.0';
+var APP_VERSION = 'v4.0.0';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -33,11 +33,20 @@ function parseHash() {
   if (!h) return { scherm: 'rolkeuze' };
   var parts = h.split('/');
 
-  if (parts[0] === 'verzorgende') {
-    if (parts[1] === 'bewoner' && parts[2]) {
-      return { scherm: 'verzorgende', tab: 'taken', bewonerId: parts[2], bewonerTab: parts[3] || 'taken' };
+  if (parts[0] === 'zorg') {
+    if (!parts[1]) return { scherm: 'zorg_keuze' };
+    var profiel = window.zorgprofielen.find(function(p) { return p.id === parts[1]; });
+    if (profiel) {
+      if (parts[2] === 'bewoner' && parts[3]) {
+        return { scherm: 'verzorgende', profielId: profiel.id, tab: 'taken', bewonerId: parts[3], bewonerTab: parts[4] || 'taken' };
+      }
+      return { scherm: 'verzorgende', profielId: profiel.id, tab: parts[2] || 'taken' };
     }
-    return { scherm: 'verzorgende', tab: parts[1] || 'taken' };
+    return { scherm: 'zorg_keuze' };
+  }
+  // Backward compat
+  if (parts[0] === 'verzorgende') {
+    return { scherm: 'verzorgende', profielId: 'sandra', tab: parts[1] || 'taken' };
   }
   if (parts[0] === 'familie') {
     if (!parts[1]) return { scherm: 'familie_keuze' };
@@ -118,15 +127,15 @@ function RolKeuze() {
           Samen zorgen voor <strong style={{ color: C.tekstPrimair }}>{window.patient.naam}</strong>
         </div>
 
-        <div onClick={function() { setHash('verzorgende'); }} style={{
+        <div onClick={function() { setHash('zorg'); }} style={{
           background: C.kaartWit, border: '2px solid ' + C.border, borderRadius: 16, padding: 20, marginBottom: 12,
           cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
         }} onMouseOver={function(e) { e.currentTarget.style.borderColor = C.oranje; }} onMouseOut={function(e) { e.currentTarget.style.borderColor = C.border; }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ width: 48, height: 48, borderRadius: 12, background: C.oranjeLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>&#x1F469;&#x200D;&#x2695;&#xFE0F;</div>
             <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: C.tekstPrimair }}>Ik ben verzorgende</div>
-              <div style={{ fontSize: 13, color: C.tekstSecundair }}>Taken, rapportage &amp; meldingen</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: C.tekstPrimair }}>Ik werk in de zorg</div>
+              <div style={{ fontSize: 13, color: C.tekstSecundair }}>Helpende, verzorgende of verpleegkundige</div>
             </div>
           </div>
         </div>
@@ -185,7 +194,50 @@ function FamilieKeuze() {
                 <div style={{ fontSize: 16, fontWeight: 600, color: C.tekstPrimair }}>{lid.roepnaam}</div>
                 <div style={{ fontSize: 13, color: C.tekstSecundair }}>{lid.relatie}{lid.isPatient ? '' : ' van ' + window.patient.roepnaam}{lid.isHoofdcontact ? ' \u00B7 1e contactpersoon' : ''}</div>
               </div>
-              {lid.isPatient && <span style={{ fontSize: 11, background: C.oranjeLicht, color: C.oranje, padding: '2px 8px', borderRadius: 4, fontWeight: 600 }}>Pati&euml;nt</span>}
+              {React.createElement('span', { style: { fontSize: 10, background: C.achtergrond, color: C.tekstMuted, padding: '2px 8px', borderRadius: 4, fontWeight: 500, textTransform: 'uppercase' } },
+                lid.isPatient ? 'Pati\u00EBnt' : lid.lijn === 'lijn1' ? 'Gezin' : 'Ondersteuner'
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════
+// STAP 2b: WIE BEN JE? (zorg selectie)
+// ══════════════════════════════════════════
+function ZorgKeuze() {
+  var profielen = window.zorgprofielen;
+  var niveauLabel = { helpende: 'Helpende', verzorgende: 'Verzorgende IG', verpleegkundige: 'Verpleegkundige' };
+  var niveauSub = { helpende: 'Taken en rapportage', verzorgende: 'Taken, vitalen en meldingen', verpleegkundige: 'Volledig dossier en beheer' };
+  return (
+    <div style={{ minHeight: '100vh', background: C.achtergrond, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ maxWidth: 420, width: '100%', padding: '32px 24px' }}>
+        <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 14, color: C.tekstMuted, cursor: 'pointer', marginBottom: 16 }}>&larr; Terug</button>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div style={{ display: 'inline-block', marginBottom: 8 }}><GeriCallLogoImg size={40} /></div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: C.tekstPrimair }}>Inloggen als zorgmedewerker</div>
+        </div>
+
+        {profielen.map(function(p) {
+          return (
+            <div key={p.id} onClick={function() { setHash('zorg/' + p.id); }} style={{
+              background: C.kaartWit, border: '2px solid ' + C.border, borderRadius: 14, padding: 16, marginBottom: 10,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14, transition: 'all 0.2s',
+            }} onMouseOver={function(e) { e.currentTarget.style.borderColor = C.oranje; }} onMouseOut={function(e) { e.currentTarget.style.borderColor = C.border; }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 22, background: C.achtergrond,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 16, fontWeight: 700, color: C.tekstSecundair, flexShrink: 0,
+              }}>{p.initialen}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 16, fontWeight: 600, color: C.tekstPrimair }}>{p.naam}</div>
+                <div style={{ fontSize: 13, color: C.tekstSecundair }}>{niveauLabel[p.niveau] || p.niveau}</div>
+                <div style={{ fontSize: 11, color: C.tekstMuted }}>{niveauSub[p.niveau] || ''}</div>
+              </div>
+              <span style={{ fontSize: 10, background: C.achtergrond, color: C.tekstMuted, padding: '2px 8px', borderRadius: 4, fontWeight: 500, textTransform: 'uppercase' }}>{p.niveau}</span>
             </div>
           );
         })}
@@ -197,7 +249,10 @@ function FamilieKeuze() {
 // ══════════════════════════════════════════
 // APP VERZORGENDE
 // ══════════════════════════════════════════
-function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab }) {
+function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgProfiel }) {
+  var profiel = zorgProfiel || window.zorgprofielen[0];
+  var niveau = profiel.niveau;
+  var toegang = window.zorgToegang[niveau] || window.zorgToegang.verzorgende;
   var [tab, setTab] = useState(initialTab || 'taken');
   var [toasts, addToast] = useToasts();
   var [selectedBewoner, setSelectedBewoner] = useState(function() {
@@ -205,33 +260,35 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab }) {
     return null;
   });
   var [bewonerTab, setBewonerTab] = useState(initialBewonerTab || 'taken');
-  var verzorgendeNaam = 'Sandra B.';
+  var verzorgendeNaam = profiel.naam;
 
   var handleTab = function(t) {
     setTab(t);
     setSelectedBewoner(null);
-    setHash('verzorgende/' + t);
+    setHash('zorg/' + profiel.id + '/' + t);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   var handleSelectBewoner = function(b, subTab) {
     setSelectedBewoner(b);
     setBewonerTab(subTab || 'taken');
-    setHash('verzorgende/bewoner/' + b.id + (subTab && subTab !== 'taken' ? '/' + subTab : ''));
+    setHash('zorg/' + profiel.id + '/bewoner/' + b.id + (subTab && subTab !== 'taken' ? '/' + subTab : ''));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   var handleBewonerTerug = function() {
     setSelectedBewoner(null);
-    setHash('verzorgende/taken');
+    setHash('zorg/' + profiel.id + '/taken');
   };
 
-  var tabs = [
-    { id: 'taken', icon: '\u2705', label: 'Wijk' },
-    { id: 'rapportage', icon: '\u270D\uFE0F', label: 'Rapportage' },
-    { id: 'melding', icon: '\uD83D\uDD14', label: 'Melding' },
-    { id: 'leren', icon: '\uD83D\uDCDA', label: 'Leren' },
+  var alleTabs = [
+    { id: 'taken', icon: '\u2705', label: 'Wijk', show: true },
+    { id: 'rapportage', icon: '\u270D\uFE0F', label: 'Rapportage', show: true },
+    { id: 'melding', icon: '\uD83D\uDD14', label: 'Melding', show: toegang.melding },
+    { id: 'leren', icon: '\uD83D\uDCDA', label: 'Leren', show: toegang.leren },
   ];
+  var tabs = alleTabs.filter(function(t) { return t.show; });
+  var niveauLabel = { helpende: 'Helpende', verzorgende: 'Verzorgende', verpleegkundige: 'Verpleegkundige' };
 
   return (
     <div style={{ minHeight: '100vh', background: C.achtergrond }}>
@@ -239,7 +296,7 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab }) {
         <div style={{ padding: '12px 0 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div onClick={function() { handleTab('taken'); }} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
             <GeriCallLogo />
-            <span style={{ fontSize: 11, fontWeight: 600, color: C.oranje, background: C.oranjeLicht, padding: '2px 8px', borderRadius: 4 }}>ZORG</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: C.oranje, background: C.oranjeLicht, padding: '2px 8px', borderRadius: 4 }}>{(niveauLabel[niveau] || 'ZORG').toUpperCase()}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ fontSize: 12, color: C.tekstSecundair }}>{verzorgendeNaam}</span>
@@ -256,11 +313,11 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab }) {
           </Card>
         )}
 
-        {tab === 'taken' && !selectedBewoner && <VerzorgendeTaken addToast={addToast} onSelectBewoner={handleSelectBewoner} />}
-        {tab === 'taken' && selectedBewoner && <BewonerDetail bewoner={selectedBewoner} addToast={addToast} onTerug={handleBewonerTerug} verzorgendeNaam={verzorgendeNaam} initialTab={bewonerTab} />}
-        {tab === 'rapportage' && <VerzorgendeRapportage addToast={addToast} />}
-        {tab === 'melding' && <SectionMelding addToast={addToast} />}
-        {tab === 'leren' && <VerzorgendeLeren addToast={addToast} />}
+        {tab === 'taken' && !selectedBewoner && <VerzorgendeTaken addToast={addToast} onSelectBewoner={handleSelectBewoner} toegang={toegang} />}
+        {tab === 'taken' && selectedBewoner && <BewonerDetail bewoner={selectedBewoner} addToast={addToast} onTerug={handleBewonerTerug} verzorgendeNaam={verzorgendeNaam} initialTab={bewonerTab} toegang={toegang} />}
+        {tab === 'rapportage' && <VerzorgendeRapportage addToast={addToast} toegang={toegang} />}
+        {tab === 'melding' && toegang.melding && <SectionMelding addToast={addToast} />}
+        {tab === 'leren' && toegang.leren && <VerzorgendeLeren addToast={addToast} />}
         <div style={{ fontSize: 10, color: C.tekstMuted, textAlign: 'center', padding: '16px 0 4px', opacity: 0.6 }}>{APP_VERSION}</div>
       </div>
       <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: C.kaartWit, borderTop: '1px solid ' + C.border, display: 'flex', zIndex: 800, paddingBottom: 'env(safe-area-inset-bottom, 12px)' }}>
@@ -284,6 +341,9 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab }) {
 function AppFamilie({ lid, initialTab }) {
   var [tab, setTab] = useState(initialTab || 'overzicht');
   var [toasts, addToast] = useToasts();
+  var isPatient = lid.isPatient;
+  var lijn = lid.lijn || (isPatient ? 'patient' : 'lijn1');
+  var toegang = window.familieToegang[lijn] || window.familieToegang.lijn2;
 
   var handleTab = function(t) {
     setTab(t);
@@ -291,18 +351,15 @@ function AppFamilie({ lid, initialTab }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  var isPatient = lid.isPatient;
+  var lijnLabel = { patient: 'Pati\u00EBnt', lijn1: 'Gezin', lijn2: 'Ondersteuner' };
 
-  var tabs = isPatient ? [
-    { id: 'overzicht', icon: '\u2764\uFE0F', label: 'Mijn dag' },
-    { id: 'week', icon: '\uD83D\uDCC5', label: 'Wie komt?' },
-    { id: 'berichten', icon: '\uD83D\uDCAC', label: 'Familie' },
-  ] : [
-    { id: 'overzicht', icon: '\u2764\uFE0F', label: window.patient.roepnaam },
-    { id: 'week', icon: '\uD83D\uDCC5', label: 'Planning' },
-    { id: 'berichten', icon: '\uD83D\uDCAC', label: 'Familie chat' },
-    { id: 'leren', icon: '\uD83D\uDCDA', label: 'Leren' },
+  var alleTabs = [
+    { id: 'overzicht', icon: '\u2764\uFE0F', label: isPatient ? 'Mijn dag' : window.patient.roepnaam, show: true },
+    { id: 'week', icon: '\uD83D\uDCC5', label: isPatient ? 'Wie komt?' : 'Planning', show: toegang.planning },
+    { id: 'berichten', icon: '\uD83D\uDCAC', label: isPatient ? 'Familie' : 'Familie chat', show: toegang.chat },
+    { id: 'leren', icon: '\uD83D\uDCDA', label: 'Leren', show: toegang.leren },
   ];
+  var tabs = alleTabs.filter(function(t) { return t.show; });
 
   return (
     <div style={{ minHeight: '100vh', background: C.achtergrond }}>
@@ -310,7 +367,7 @@ function AppFamilie({ lid, initialTab }) {
         <div style={{ padding: '12px 0 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div onClick={function() { handleTab('overzicht'); }} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
             <GeriCallLogo />
-            <span style={{ fontSize: 11, fontWeight: 600, color: C.groen, background: C.groenLicht, padding: '2px 8px', borderRadius: 4 }}>{isPatient ? 'MIJN PORTAL' : 'FAMILIE'}</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: C.groen, background: C.groenLicht, padding: '2px 8px', borderRadius: 4 }}>{isPatient ? 'MIJN PORTAL' : (lijnLabel[lijn] || 'FAMILIE').toUpperCase()}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{ width: 28, height: 28, borderRadius: 14, background: lid.kleur + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: lid.kleur }}>{lid.initialen}</div>
@@ -327,10 +384,10 @@ function AppFamilie({ lid, initialTab }) {
           <div style={{ fontSize: 13, color: C.tekstSecundair, marginTop: 4 }}>{formatDatum()}</div>
         </Card>
 
-        {tab === 'overzicht' && <FamilieOverzicht lid={lid} addToast={addToast} />}
-        {tab === 'week' && <FamilieWeekplan lid={lid} addToast={addToast} />}
-        {tab === 'berichten' && <FamilieBerichten lid={lid} addToast={addToast} />}
-        {tab === 'leren' && !isPatient && <FamilieLeren addToast={addToast} />}
+        {tab === 'overzicht' && <FamilieOverzicht lid={lid} addToast={addToast} toegang={toegang} />}
+        {tab === 'week' && toegang.planning && <FamilieWeekplan lid={lid} addToast={addToast} />}
+        {tab === 'berichten' && toegang.chat && <FamilieBerichten lid={lid} addToast={addToast} />}
+        {tab === 'leren' && toegang.leren && <FamilieLeren addToast={addToast} />}
         <div style={{ fontSize: 10, color: C.tekstMuted, textAlign: 'center', padding: '16px 0 4px', opacity: 0.6 }}>{APP_VERSION}</div>
       </div>
 
@@ -358,15 +415,20 @@ function App() {
   if (route.scherm === 'rolkeuze') {
     return React.createElement(RolKeuze);
   }
+  if (route.scherm === 'zorg_keuze') {
+    return React.createElement(ZorgKeuze);
+  }
   if (route.scherm === 'familie_keuze') {
     return React.createElement(FamilieKeuze);
   }
   if (route.scherm === 'verzorgende') {
+    var zorgProfiel = window.zorgprofielen.find(function(p) { return p.id === route.profielId; }) || window.zorgprofielen[0];
     return React.createElement(AppVerzorgende, {
       initialTab: route.tab,
       initialBewonerId: route.bewonerId,
       initialBewonerTab: route.bewonerTab,
-      key: 'verzorgende'
+      zorgProfiel: zorgProfiel,
+      key: 'zorg-' + zorgProfiel.id
     });
   }
   if (route.scherm === 'familie') {

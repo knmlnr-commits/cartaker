@@ -354,11 +354,40 @@ window.berichten = [
 ];
 
 // ── Familie leden (inlogbare profielen) ──
+// ── Zorgmedewerker profielen ──
+window.zorgprofielen = [
+  { id: 'sandra', naam: 'Sandra B.', niveau: 'verzorgende', initialen: 'SB', label: 'Verzorgende IG' },
+  { id: 'kevin', naam: 'Kevin R.', niveau: 'helpende', initialen: 'KR', label: 'Helpende' },
+  { id: 'priya', naam: 'Priya K.', niveau: 'verzorgende', initialen: 'PK', label: 'Verzorgende IG' },
+  { id: 'annemiek', naam: 'Annemiek de Vries', niveau: 'verpleegkundige', initialen: 'AV', label: 'Verpleegkundige' },
+];
+
+// Toegangsniveaus zorg
+// helpende: taken, rapportage lezen, stemming
+// verzorgende: + IoT, consulten, NTS melding, behandelplan
+// verpleegkundige: + dossier, lab-aanvragen, volledige consult-beheer
+window.zorgToegang = {
+  helpende:        { taken: true, rapportageLezen: true, rapportageSchrijven: true, stemming: true, iot: false, consulten: false, melding: false, behandelplan: false, dossier: false, leren: true },
+  verzorgende:     { taken: true, rapportageLezen: true, rapportageSchrijven: true, stemming: true, iot: true,  consulten: true,  melding: true,  behandelplan: true,  dossier: false, leren: true },
+  verpleegkundige: { taken: true, rapportageLezen: true, rapportageSchrijven: true, stemming: true, iot: true,  consulten: true,  melding: true,  behandelplan: true,  dossier: true,  leren: true },
+};
+
+// Toegangsniveaus familie
+// patient: stemming, wie-komt, chat
+// lijn1 (gezin): alles
+// lijn2 (overig): stemming, planning, chat (geen medisch)
+window.familieToegang = {
+  patient: { stemming: true, planning: true, chat: true, rapportages: false, behandelplan: false, consulten: false, reablement: false, leren: false },
+  lijn1:   { stemming: true, planning: true, chat: true, rapportages: true,  behandelplan: true,  consulten: true,  reablement: true,  leren: true },
+  lijn2:   { stemming: true, planning: true, chat: true, rapportages: false, behandelplan: false, consulten: false, reablement: false, leren: false },
+};
+
 window.familieleden = [
-  { id: 'martha', naam: 'Martha Jansen', roepnaam: 'Martha', relatie: 'Dochter', telefoon: '06-1234****', bezoekfrequentie: '3x per week', laatsteBezoek: 'Gisteren', isHoofdcontact: true, initialen: 'MJ', kleur: '#2D9D78' },
-  { id: 'peter', naam: 'Peter Jansen', roepnaam: 'Peter', relatie: 'Zoon', telefoon: '06-5678****', bezoekfrequentie: '1x per week', laatsteBezoek: '4 dagen geleden', isHoofdcontact: false, initialen: 'PJ', kleur: '#4A7FB5' },
-  { id: 'lisa', naam: 'Lisa van Dijk-Jansen', roepnaam: 'Lisa', relatie: 'Schoondochter', telefoon: '06-9012****', bezoekfrequentie: '1x per 2 weken', laatsteBezoek: 'Vorige week zondag', isHoofdcontact: false, initialen: 'LJ', kleur: '#E8732A' },
-  { id: 'adriaan', naam: 'Adriaan Jansen', roepnaam: 'Adriaan', relatie: 'Pati\u00EBnt', telefoon: null, bezoekfrequentie: null, laatsteBezoek: null, isHoofdcontact: false, initialen: 'AJ', kleur: '#E8732A', isPatient: true },
+  { id: 'martha', naam: 'Martha Jansen', roepnaam: 'Martha', relatie: 'Dochter', telefoon: '06-1234****', bezoekfrequentie: '3x per week', laatsteBezoek: 'Gisteren', isHoofdcontact: true, initialen: 'MJ', kleur: '#2D9D78', lijn: 'lijn1' },
+  { id: 'peter', naam: 'Peter Jansen', roepnaam: 'Peter', relatie: 'Zoon', telefoon: '06-5678****', bezoekfrequentie: '1x per week', laatsteBezoek: '4 dagen geleden', isHoofdcontact: false, initialen: 'PJ', kleur: '#4A7FB5', lijn: 'lijn1' },
+  { id: 'lisa', naam: 'Lisa van Dijk-Jansen', roepnaam: 'Lisa', relatie: 'Schoondochter', telefoon: '06-9012****', bezoekfrequentie: '1x per 2 weken', laatsteBezoek: 'Vorige week zondag', isHoofdcontact: false, initialen: 'LJ', kleur: '#E8732A', lijn: 'lijn2' },
+  { id: 'henk', naam: 'Henk Willems', roepnaam: 'Henk', relatie: 'Vriend', telefoon: '06-3456****', bezoekfrequentie: '1x per maand', laatsteBezoek: '2 weken geleden', isHoofdcontact: false, initialen: 'HW', kleur: '#666666', lijn: 'lijn2' },
+  { id: 'adriaan', naam: 'Adriaan Jansen', roepnaam: 'Adriaan', relatie: 'Pati\u00EBnt', telefoon: null, bezoekfrequentie: null, laatsteBezoek: null, isHoofdcontact: false, initialen: 'AJ', kleur: '#E8732A', isPatient: true, lijn: 'patient' },
 ];
 
 // ── Familiechat (contextgebonden aan planning + zorg) ──
