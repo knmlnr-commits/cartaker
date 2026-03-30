@@ -65,7 +65,10 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner 
           } }, b.initialen),
           React.createElement('div', { style: { flex: 1 } },
             React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
-              React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, b.roepnaam),
+              React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
+                React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, b.roepnaam),
+                React.createElement(StemmingWidget, { bewonerId: b.id, compact: true, gebruikerNaam: 'Sandra B.', gebruikerRol: 'verzorgende' })
+              ),
               React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, 'Kamer ' + b.kamer)
             ),
             React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, marginBottom: 4 } }, b.diagnose.substring(0, 40) + (b.diagnose.length > 40 ? '...' : '')),
@@ -156,6 +159,14 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
         )
       )
     ),
+
+    // Stemming
+    React.createElement(StemmingWidget, {
+      bewonerId: b.id,
+      gebruikerNaam: verzorgendeNaam,
+      gebruikerRol: 'verzorgende',
+      onUpdate: function() { addToast('Stemming bijgewerkt', 'success'); }
+    }),
 
     // Alert
     b.openConsulten.length > 0 && React.createElement(Card, { style: { background: C_V.roodLicht, border: '1px solid ' + C_V.rood, padding: 10 } },

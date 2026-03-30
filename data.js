@@ -21,6 +21,28 @@ window.COLORS = {
 // ══════════════════════════════════════════
 // WIJK — meerdere bewoners per verzorgende
 // ══════════════════════════════════════════
+// ── Stemming/mood per bewoner (gedeeld tussen alle gebruikers) ──
+window.stemmingen = {
+  jansen: { score: 3, label: 'Gaat redelijk', door: 'Sandra B.', rol: 'verzorgende', tijd: 'Vandaag 08:10', history: [
+    { score: 3, door: 'Sandra B.', rol: 'verzorgende', tijd: 'Vandaag 08:10' },
+    { score: 2, door: 'Kevin R.', rol: 'verzorgende', tijd: 'Gisteren 20:30' },
+    { score: 4, door: 'Dochter M. Jansen', rol: 'familie', tijd: 'Gisteren 14:00' },
+    { score: 3, door: 'Sandra B.', rol: 'verzorgende', tijd: 'Eergisteren 08:15' },
+  ]},
+  de_groot: { score: 4, label: 'Gaat goed', door: 'Sandra B.', rol: 'verzorgende', tijd: 'Vandaag 07:30', history: [] },
+  van_dam: { score: 4, label: 'Gaat goed', door: 'L. Bakker (logo)', rol: 'verzorgende', tijd: 'Vandaag 10:45', history: [] },
+  visser: { score: 2, label: 'Niet zo goed', door: 'Sandra B.', rol: 'verzorgende', tijd: 'Vandaag 07:55', history: [] },
+};
+
+// Stemming opties (1-5)
+window.stemmingOpties = [
+  { score: 1, emoji: '\uD83D\uDE1E', label: 'Slecht', kleur: '#D94F4F' },
+  { score: 2, emoji: '\uD83D\uDE1F', label: 'Niet zo goed', kleur: '#E8732A' },
+  { score: 3, emoji: '\uD83D\uDE10', label: 'Gaat redelijk', kleur: '#E8732A' },
+  { score: 4, emoji: '\uD83D\uDE42', label: 'Gaat goed', kleur: '#2D9D78' },
+  { score: 5, emoji: '\uD83D\uDE04', label: 'Gaat prima!', kleur: '#2D9D78' },
+];
+
 window.bewoners = [
   {
     id: 'jansen',

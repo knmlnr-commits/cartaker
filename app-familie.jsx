@@ -22,7 +22,18 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast }) {
   // Ongelezen berichten
   var aantalBerichten = window.familiechat.length;
 
+  var [, forceUpdate] = useState(0);
+
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
+
+    // Stemming widget
+    React.createElement(SectionTitle, null, isPatient ? 'Hoe gaat het met mij?' : 'Hoe gaat het met ' + p.roepnaam + '?'),
+    React.createElement(StemmingWidget, {
+      bewonerId: 'jansen',
+      gebruikerNaam: lid.roepnaam + (lid.isPatient ? '' : ' (' + lid.relatie.toLowerCase() + ')'),
+      gebruikerRol: lid.isPatient ? 'patient' : 'familie',
+      onUpdate: function() { forceUpdate(function(n) { return n + 1; }); addToast('Stemming bijgewerkt', 'success'); }
+    }),
 
     // Quick stats voor familie
     !isPatient && React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 } },
