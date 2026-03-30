@@ -3,38 +3,21 @@
 const { useState, useEffect } = React;
 const C = window.COLORS;
 
-// ── Logo SVG (GeriCall care-ampersand met hartje) ──
-window.GeriCallLogoSVG = function GeriCallLogoSVG({ size }) {
+// ── Logo (echte GeriCall afbeelding als base64) ──
+window.GeriCallLogoImg = function GeriCallLogoImg({ size }) {
   var s = size || 32;
-  return React.createElement('svg', { width: s, height: s, viewBox: '0 0 100 100', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' },
-    // Ampersand/care curve - bovenste lus
-    React.createElement('path', {
-      d: 'M55 15 C40 15, 25 25, 25 40 C25 50, 32 56, 40 56 C48 56, 52 52, 55 48',
-      stroke: '#E8732A', strokeWidth: 10, strokeLinecap: 'round', fill: 'none'
-    }),
-    // Verbindende curve naar beneden
-    React.createElement('path', {
-      d: 'M55 48 C60 40, 75 30, 80 42 C85 54, 70 60, 55 70',
-      stroke: '#E8732A', strokeWidth: 10, strokeLinecap: 'round', fill: 'none'
-    }),
-    // Onderste lus
-    React.createElement('path', {
-      d: 'M55 70 C40 80, 20 75, 20 62',
-      stroke: '#E8732A', strokeWidth: 10, strokeLinecap: 'round', fill: 'none'
-    }),
-    // Hartje rechtsonder
-    React.createElement('path', {
-      d: 'M72 72 C72 68, 76 66, 78 68 C80 66, 84 68, 84 72 C84 76, 78 82, 78 82 C78 82, 72 76, 72 72Z',
-      fill: '#E8732A'
-    })
-  );
+  return React.createElement('img', {
+    src: 'Logo GC.jfif',
+    alt: 'GeriCall',
+    style: { width: s, height: s, objectFit: 'contain' }
+  });
 };
 
 // ── Logo component met tekst ──
 window.GeriCallLogo = function GeriCallLogo({ compact }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: compact ? 6 : 8 }}>
-      <GeriCallLogoSVG size={compact ? 28 : 32} />
+      <GeriCallLogoImg size={compact ? 28 : 32} />
       {!compact && <span style={{ fontWeight: 700, fontSize: 18, color: C.tekstPrimair }}>GeriCall</span>}
     </div>
   );
@@ -45,7 +28,7 @@ window.GeriCallLogoBig = function GeriCallLogoBig() {
   return (
     <div style={{ textAlign: 'center', marginBottom: 24 }}>
       <div style={{ display: 'inline-block', marginBottom: 8 }}>
-        <GeriCallLogoSVG size={64} />
+        <GeriCallLogoImg size={72} />
       </div>
       <div style={{ fontSize: 28, fontWeight: 700, color: C.tekstPrimair }}>GeriCall</div>
       <div style={{ fontSize: 14, color: C.oranje, fontWeight: 600 }}>CareTaker Portal</div>

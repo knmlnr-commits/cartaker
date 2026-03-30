@@ -71,7 +71,7 @@ function RolKeuze({ onKies }) {
         </div>
 
         <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-          <GeriCallLogoSVG size={14} />
+          <GeriCallLogoImg size={14} />
           <span>GeriCall CareTaker Portal v3 &middot; Prototype</span>
         </div>
       </div>
@@ -89,7 +89,7 @@ function FamilieKeuze({ onKies, onTerug }) {
       <div style={{ maxWidth: 420, width: '100%', padding: '32px 24px' }}>
         <button onClick={onTerug} style={{ background: 'none', border: 'none', fontSize: 14, color: C.tekstMuted, cursor: 'pointer', marginBottom: 16 }}>&larr; Terug</button>
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div style={{ display: 'inline-block', marginBottom: 8 }}><GeriCallLogoSVG size={40} /></div>
+          <div style={{ display: 'inline-block', marginBottom: 8 }}><GeriCallLogoImg size={40} /></div>
           <div style={{ fontSize: 20, fontWeight: 700, color: C.tekstPrimair }}>Wie ben je?</div>
           <div style={{ fontSize: 14, color: C.tekstSecundair, marginTop: 4 }}>
             Selecteer je naam om in te loggen
