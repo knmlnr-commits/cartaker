@@ -257,3 +257,151 @@ window.StemmingWidget = function StemmingWidget({ bewonerId, gebruikerNaam, gebr
     )
   );
 };
+
+// ── Consult Detail View ──
+window.ConsultDetail = function ConsultDetail({ consult, onTerug, addToast, readOnly }) {
+  var { useState } = React;
+  var [nieuwBericht, setNieuwBericht] = useState('');
+  var c = consult;
+  if (!c) return null;
+
+  var isU1 = c.urgentie.indexOf('U1') !== -1;
+  var isU2 = c.urgentie.indexOf('U2') !== -1;
+  var urgKleur = isU1 ? C.rood : isU2 ? C.oranje : C.blauw;
+
+  var tijdlijnIcon = function(type) {
+    if (type === 'melding') return { bg: C.oranjeLicht, kleur: C.oranje, letter: 'M' };
+    if (type === 'triage') return { bg: C.blauwLicht, kleur: C.blauw, letter: 'T' };
+    if (type === 'toewijzing') return { bg: C.groenLicht, kleur: C.groen, letter: 'A' };
+    if (type === 'bericht') return { bg: C.achtergrond, kleur: C.tekstSecundair, letter: 'B' };
+    if (type === 'verzoek') return { bg: C.oranjeLicht, kleur: C.oranje, letter: 'V' };
+    return { bg: C.achtergrond, kleur: C.tekstMuted, letter: '?' };
+  };
+
+  var infoStatus = function(s) {
+    if (s === 'aangeleverd') return { label: 'Aangeleverd', kleur: C.groen, bg: C.groenLicht };
+    if (s === 'aangevraagd') return { label: 'Aangevraagd', kleur: C.blauw, bg: C.blauwLicht };
+    return { label: 'In afwachting', kleur: C.oranje, bg: C.oranjeLicht };
+  };
+
+  return React.createElement('div', { style: { animation: 'slideInRight 0.3s ease' } },
+    React.createElement('button', { onClick: onTerug, style: { background: 'none', border: 'none', fontSize: 14, color: C.tekstSecundair, cursor: 'pointer', marginBottom: 8, fontWeight: 500 } }, '\u2190 Terug'),
+
+    // Header
+    React.createElement('div', { style: { background: C.kaartWit, borderRadius: 12, padding: 16, marginBottom: 12, border: '1px solid ' + C.border } },
+      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 } },
+        React.createElement('span', { style: { fontSize: 18, fontWeight: 700, color: C.tekstPrimair } }, '#' + c.id),
+        React.createElement(Badge, { label: c.urgentie, color: urgKleur, bgColor: urgKleur + '18' })
+      ),
+      React.createElement('div', { style: { fontSize: 14, color: C.tekstPrimair, marginBottom: 8 } }, c.beschrijving),
+      React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted } }, 'Ingediend: ' + c.ingediend + (c.ingediendDoor ? ' door ' + c.ingediendDoor : '')),
+      React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted } }, 'Status: ' + c.status + ' \u00B7 ' + (c.arts || c.toewijzing)),
+      c.klacht && React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted, marginTop: 4 } }, 'Klacht: ' + c.klacht)
+    ),
+
+    // Vitalen snapshot
+    c.vitalen && React.createElement('div', { style: { background: C.kaartWit, borderRadius: 12, padding: 14, marginBottom: 12, border: '1px solid ' + C.border } },
+      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C.tekstSecundair, marginBottom: 8 } }, 'Vitalen bij melding'),
+      React.createElement('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 8 } },
+        c.vitalen.hartslag && React.createElement('span', { style: { fontSize: 12, color: C.tekstSecundair, background: C.achtergrond, padding: '3px 8px', borderRadius: 6 } }, 'Pols ' + c.vitalen.hartslag),
+        c.vitalen.saturatie && React.createElement('span', { style: { fontSize: 12, color: c.vitalen.saturatie < 94 ? C.oranje : C.tekstSecundair, background: C.achtergrond, padding: '3px 8px', borderRadius: 6 } }, 'SpO2 ' + c.vitalen.saturatie + '%'),
+        c.vitalen.temperatuur && React.createElement('span', { style: { fontSize: 12, color: C.tekstSecundair, background: C.achtergrond, padding: '3px 8px', borderRadius: 6 } }, c.vitalen.temperatuur + '\u00B0C'),
+        c.vitalen.bloeddruk && React.createElement('span', { style: { fontSize: 12, color: C.tekstSecundair, background: C.achtergrond, padding: '3px 8px', borderRadius: 6 } }, 'RR ' + c.vitalen.bloeddruk),
+        c.vitalen.bewustzijn && React.createElement('span', { style: { fontSize: 12, color: c.vitalen.bewustzijn !== 'Alert' ? C.oranje : C.tekstSecundair, background: C.achtergrond, padding: '3px 8px', borderRadius: 6 } }, 'AVPU: ' + c.vitalen.bewustzijn)
+      )
+    ),
+
+    // Video call
+    c.videoCall && React.createElement('div', { style: { background: C.kaartWit, borderRadius: 12, padding: 14, marginBottom: 12, border: '1px solid ' + C.blauw } },
+      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+        React.createElement('div', null,
+          React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C.blauw } }, 'Videoconsult'),
+          React.createElement('div', { style: { fontSize: 12, color: C.tekstSecundair } }, c.videoCall.gepland + ' \u00B7 ' + (c.arts || c.toewijzing)),
+          React.createElement('div', { style: { fontSize: 11, color: C.tekstMuted } }, 'Status: ' + c.videoCall.status)
+        ),
+        React.createElement('button', { onClick: function() { addToast('Videoconsult wordt gestart...', 'success'); }, style: {
+          background: C.blauw, color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '10px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+        } }, '\uD83D\uDCF9 Deelnemen')
+      )
+    ),
+
+    // Informatie verzoeken
+    c.informatieVerzoeken && c.informatieVerzoeken.length > 0 && React.createElement('div', { style: { background: C.kaartWit, borderRadius: 12, padding: 14, marginBottom: 12, border: '1px solid ' + C.border } },
+      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C.tekstSecundair, marginBottom: 8 } }, 'Aanvullende informatie'),
+      c.informatieVerzoeken.map(function(iv) {
+        var st = infoStatus(iv.status);
+        return React.createElement('div', { key: iv.id, style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid ' + C.border } },
+          React.createElement('div', { style: { flex: 1 } },
+            React.createElement('div', { style: { fontSize: 13, color: C.tekstPrimair } }, iv.item),
+            iv.aangeleverdDoor && React.createElement('div', { style: { fontSize: 11, color: C.tekstMuted } }, 'Door ' + iv.aangeleverdDoor + ', ' + iv.aangeleverdOm),
+            iv.aangevraagdBij && iv.status !== 'aangeleverd' && React.createElement('div', { style: { fontSize: 11, color: C.tekstMuted } }, 'Bij: ' + iv.aangevraagdBij)
+          ),
+          React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
+            React.createElement(Badge, { label: st.label, color: st.kleur, bgColor: st.bg }),
+            !readOnly && iv.status !== 'aangeleverd' && React.createElement('button', {
+              onClick: function() { addToast('Upload functie wordt geopend...'); },
+              style: { background: 'none', border: '1px solid ' + C.border, borderRadius: 6, padding: '3px 8px', fontSize: 11, color: C.tekstSecundair, cursor: 'pointer' }
+            }, 'Upload')
+          )
+        );
+      })
+    ),
+
+    // Tijdlijn
+    React.createElement('div', { style: { background: C.kaartWit, borderRadius: 12, padding: 14, marginBottom: 12, border: '1px solid ' + C.border } },
+      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C.tekstSecundair, marginBottom: 10 } }, 'Verloop'),
+      c.tijdlijn && c.tijdlijn.map(function(t, i) {
+        var ic = tijdlijnIcon(t.type);
+        return React.createElement('div', { key: i, style: { display: 'flex', gap: 10, marginBottom: i < c.tijdlijn.length - 1 ? 0 : 0 } },
+          // Lijn + bolletje
+          React.createElement('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 24 } },
+            React.createElement('div', { style: { width: 24, height: 24, borderRadius: 12, background: ic.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: ic.kleur, flexShrink: 0 } }, ic.letter),
+            i < c.tijdlijn.length - 1 && React.createElement('div', { style: { width: 1, flex: 1, background: C.border, minHeight: 16 } })
+          ),
+          // Content
+          React.createElement('div', { style: { flex: 1, paddingBottom: 12 } },
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+              React.createElement('span', { style: { fontSize: 12, fontWeight: 500, color: C.tekstPrimair } }, t.door),
+              React.createElement('span', { style: { fontSize: 11, color: C.tekstMuted } }, t.tijd)
+            ),
+            React.createElement('div', { style: { fontSize: 13, color: C.tekstSecundair, lineHeight: 1.5, marginTop: 2 } }, t.tekst),
+            t.verzoekType === 'video_call' && React.createElement('div', { style: { fontSize: 11, color: C.blauw, marginTop: 4, fontWeight: 500 } }, '\uD83D\uDCF9 Gepland: ' + t.verzoekTijd),
+            t.verzoekItems && React.createElement('div', { style: { marginTop: 4 } },
+              t.verzoekItems.map(function(item, j) {
+                return React.createElement('div', { key: j, style: { fontSize: 11, color: C.tekstMuted, paddingLeft: 8, borderLeft: '2px solid ' + C.border, marginTop: 2 } }, item);
+              })
+            )
+          )
+        );
+      }),
+
+      // Bericht sturen (alleen verzorgende)
+      !readOnly && React.createElement('div', { style: { marginTop: 8, paddingTop: 10, borderTop: '1px solid ' + C.border } },
+        React.createElement('div', { style: { display: 'flex', gap: 8 } },
+          React.createElement('input', {
+            value: nieuwBericht,
+            onChange: function(e) { setNieuwBericht(e.target.value); },
+            placeholder: 'Bericht aan behandelaar...',
+            onKeyDown: function(e) { if (e.key === 'Enter' && nieuwBericht.trim()) { addToast('Bericht verzonden', 'success'); setNieuwBericht(''); } },
+            style: { flex: 1, padding: '10px 12px', borderRadius: 8, border: '1px solid ' + C.border, fontSize: 13, fontFamily: "'DM Sans', sans-serif", outline: 'none', color: C.tekstPrimair }
+          }),
+          React.createElement('button', {
+            onClick: function() { if (nieuwBericht.trim()) { addToast('Bericht verzonden', 'success'); setNieuwBericht(''); } },
+            style: { background: C.oranje, color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '10px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }
+          }, 'Stuur')
+        )
+      )
+    ),
+
+    // Discriminatoren
+    c.discriminatoren && c.discriminatoren.length > 0 && React.createElement('div', { style: { background: C.kaartWit, borderRadius: 12, padding: 14, marginBottom: 12, border: '1px solid ' + C.border } },
+      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C.tekstSecundair, marginBottom: 8 } }, 'Triage-antwoorden'),
+      c.discriminatoren.map(function(d, i) {
+        return React.createElement('div', { key: i, style: { padding: '4px 0' } },
+          React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted } }, d.vraag),
+          React.createElement('div', { style: { fontSize: 13, color: C.tekstPrimair } }, d.antwoord)
+        );
+      })
+    )
+  );
+};

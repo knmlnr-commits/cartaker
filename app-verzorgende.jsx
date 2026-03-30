@@ -103,6 +103,12 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
   var [notities, setNotities] = useState(b.notities);
   var [nieuweNotitie, setNieuweNotitie] = useState('');
   var [tabDetail, setTabDetail] = useState(initialTab || 'taken');
+  var [openConsult, setOpenConsult] = useState(null);
+
+  // Consult detail view
+  if (openConsult) {
+    return React.createElement(ConsultDetail, { consult: openConsult, onTerug: function() { setOpenConsult(null); }, addToast: addToast, readOnly: false });
+  }
 
   var toggle = function(id) {
     var nu = new Date();
@@ -170,13 +176,14 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
     }),
 
     // Alert
-    b.openConsulten.length > 0 && React.createElement(Card, { style: { background: C_V.roodLicht, border: '1px solid ' + C_V.rood, padding: 10 } },
+    b.openConsulten.length > 0 && React.createElement(Card, { style: { background: C_V.roodLicht, border: '1px solid ' + C_V.rood, padding: 10, cursor: 'pointer' }, onClick: function() { setOpenConsult(b.openConsulten[0]); } },
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
         React.createElement('span', { style: { fontSize: 16 } }, '\u26A0\uFE0F'),
         React.createElement('div', { style: { flex: 1 } },
           React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_V.rood } }, 'Consult #' + b.openConsulten[0].id + ' \u2014 ' + b.openConsulten[0].urgentie),
           React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, b.openConsulten[0].beschrijving)
-        )
+        ),
+        React.createElement('span', { style: { fontSize: 12, color: C_V.tekstMuted } }, '\u25B6')
       )
     ),
 

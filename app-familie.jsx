@@ -9,6 +9,11 @@ var C_F = window.COLORS;
 window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast }) {
   const { useState } = React;
   const [toonDetails, setToonDetails] = useState(null);
+  const [openConsult, setOpenConsult] = useState(null);
+
+  if (openConsult) {
+    return React.createElement(ConsultDetail, { consult: openConsult, onTerug: function() { setOpenConsult(null); }, addToast: addToast, readOnly: true });
+  }
   const p = window.patient;
   const isPatient = lid.isPatient;
 
@@ -133,13 +138,17 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast }) {
       React.createElement(SectionTitle, null, isPatient ? 'Lopende melding' : 'Lopende meldingen'),
       p.openConsulten.map(function(c) {
         var isU2 = c.urgentie.includes('U2');
-        return React.createElement(Card, { key: c.id, style: { borderLeft: '3px solid ' + (isU2 ? C_F.oranje : C_F.blauw) } },
+        return React.createElement(Card, { key: c.id, style: { borderLeft: '3px solid ' + (isU2 ? C_F.oranje : C_F.blauw), cursor: 'pointer' }, onClick: function() { setOpenConsult(c); } },
           React.createElement('div', { style: { fontSize: 13, color: C_F.tekstSecundair, marginBottom: 4 } },
             isPatient ? 'Er is een melding gedaan' : 'Er is een medische melding gedaan voor ' + p.roepnaam),
           React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
             React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_F.tekstPrimair } }, 'Status: ' + c.status),
-            React.createElement(Badge, { label: c.urgentie, color: isU2 ? C_F.oranje : C_F.blauw, bgColor: isU2 ? C_F.oranjeLicht : C_F.blauwLicht })
-          )
+            React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
+              React.createElement(Badge, { label: c.urgentie, color: isU2 ? C_F.oranje : C_F.blauw, bgColor: isU2 ? C_F.oranjeLicht : C_F.blauwLicht }),
+              React.createElement('span', { style: { fontSize: 12, color: C_F.tekstMuted } }, '\u25B6')
+            )
+          ),
+          React.createElement('div', { style: { fontSize: 11, color: C_F.tekstMuted, marginTop: 4 } }, c.ingediend + ' \u00B7 ' + (c.arts || c.toewijzing))
         );
       })
     )
