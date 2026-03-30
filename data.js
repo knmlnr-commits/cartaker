@@ -20,9 +20,11 @@ window.COLORS = {
 
 window.patient = {
   naam: "Dhr. A. Jansen",
+  roepnaam: "Adriaan",
   geboortedatum: "14 maart 1941",
   leeftijd: 84,
   kamer: "Zonnehof \u00B7 Kamer 14B",
+  foto: null,
   diagnose: "Dementie (fase 2), hartfalen (NYHA II)",
   reablement: {
     startdatum: "2 januari 2026",
@@ -32,21 +34,83 @@ window.patient = {
     coordinatorNaam: "Annemiek de Vries (SO Eigen)",
   },
   behandelplan: [
-    { onderdeel: "Medicatie", status: "Actueel", bijgewerkt: "gisteren" },
-    { onderdeel: "Voedingsplan", status: "Actueel", bijgewerkt: "3 dagen geleden" },
-    { onderdeel: "Beweging", status: "Aandacht gevraagd", bijgewerkt: "1 week geleden" },
-    { onderdeel: "Pijn & comfort", status: "Actueel", bijgewerkt: "vandaag" },
-  ],
-  bezoeken: [
-    { datum: "Vandaag 14:00", type: "Familiebezoek", persoon: "Dochter M. Jansen", duur: "1 uur" },
-    { datum: "Morgen 10:00", type: "SO Eigen", persoon: "Dr. A. de Vries", duur: "30 min" },
-    { datum: "Overmorgen 09:00", type: "Fysiotherapie", persoon: "L. Bakker", duur: "45 min" },
-    { datum: "Vrijdag 15:00", type: "Familiebezoek", persoon: "Zoon P. Jansen", duur: "2 uur" },
+    { onderdeel: "Medicatie", status: "Actueel", bijgewerkt: "gisteren", toelichting: "Metoprolol 50mg 2x daags, Furosemide 40mg 1x, Rivastigmine pleister 9.5mg/24u. Geen wijzigingen." },
+    { onderdeel: "Voedingsplan", status: "Actueel", bijgewerkt: "3 dagen geleden", toelichting: "Natriumbeperkt dieet, 1.5L vochtbeperking. Eiwitverrijkt. Bijvoeding bij lunch." },
+    { onderdeel: "Beweging", status: "Aandacht gevraagd", bijgewerkt: "1 week geleden", toelichting: "Looptraining 2x daags 10 min. Valt achteruit sinds vorige week \u2014 fysiotherapie ge\u00EFntensiveerd." },
+    { onderdeel: "Pijn & comfort", status: "Actueel", bijgewerkt: "vandaag", toelichting: "NRS stabiel 2-3. Paracetamol 3x 1000mg zo nodig. Nachtrust verbeterd." },
   ],
   openConsulten: [
-    { id: "C-2041", ingediend: "Vandaag 08:32", status: "In behandeling", urgentie: "U2 \u2014 Dringend", toewijzing: "CT-arts GeriCall" },
+    { id: "C-2041", ingediend: "Vandaag 08:32", status: "In behandeling", urgentie: "U2 \u2014 Dringend", toewijzing: "CT-arts GeriCall", beschrijving: "Toenemende verwardheid sinds gisteravond" },
   ],
 };
+
+// ── Weekplanning: wie zorgt wanneer ──
+window.weekplanning = [
+  { dag: 'Maandag', datum: '31 mrt', shifts: [
+    { periode: 'Ochtend', wie: 'Sandra B. (verzorgende)', taak: 'ADL, medicatie, ontbijt', status: 'bevestigd' },
+    { periode: 'Middag', wie: 'Dochter M. Jansen', taak: 'Bezoek, wandeling, lunch', status: 'bevestigd', isFamilie: true },
+    { periode: 'Avond', wie: 'Kevin R. (verzorgende)', taak: 'Avondverzorging, medicatie', status: 'bevestigd' },
+    { periode: 'Nacht', wie: 'Nachtdienst afdeling', taak: 'Controle rondes', status: 'bevestigd' },
+  ]},
+  { dag: 'Dinsdag', datum: '1 apr', shifts: [
+    { periode: 'Ochtend', wie: 'Sandra B. (verzorgende)', taak: 'ADL, medicatie', status: 'bevestigd' },
+    { periode: 'Middag', wie: '\u2014', taak: 'Geen bezoek gepland', status: 'open', isFamilie: true },
+    { periode: 'Avond', wie: 'Priya K. (verzorgende)', taak: 'Avondverzorging', status: 'bevestigd' },
+    { periode: 'Nacht', wie: 'Nachtdienst afdeling', taak: 'Controle rondes', status: 'bevestigd' },
+  ]},
+  { dag: 'Woensdag', datum: '2 apr', shifts: [
+    { periode: 'Ochtend', wie: 'Fysiotherapie L. Bakker', taak: 'Looptraining + ADL', status: 'bevestigd' },
+    { periode: 'Middag', wie: 'Zoon P. Jansen', taak: 'Bezoek', status: 'onder voorbehoud', isFamilie: true },
+    { periode: 'Avond', wie: 'Kevin R. (verzorgende)', taak: 'Avondverzorging', status: 'bevestigd' },
+    { periode: 'Nacht', wie: 'Nachtdienst afdeling', taak: 'Controle rondes', status: 'bevestigd' },
+  ]},
+  { dag: 'Donderdag', datum: '3 apr', shifts: [
+    { periode: 'Ochtend', wie: 'Sandra B. (verzorgende)', taak: 'ADL, medicatie', status: 'bevestigd' },
+    { periode: 'Middag', wie: 'Dr. A. de Vries (SO)', taak: 'Visite + evaluatie behandelplan', status: 'bevestigd' },
+    { periode: 'Avond', wie: '\u2014', taak: 'Verzorgende nog niet ingepland', status: 'open' },
+    { periode: 'Nacht', wie: 'Nachtdienst afdeling', taak: 'Controle rondes', status: 'bevestigd' },
+  ]},
+  { dag: 'Vrijdag', datum: '4 apr', shifts: [
+    { periode: 'Ochtend', wie: 'Priya K. (verzorgende)', taak: 'ADL, medicatie', status: 'bevestigd' },
+    { periode: 'Middag', wie: 'Dochter M. Jansen', taak: 'Bezoek, samen eten', status: 'bevestigd', isFamilie: true },
+    { periode: 'Avond', wie: 'Kevin R. (verzorgende)', taak: 'Avondverzorging, medicatie', status: 'bevestigd' },
+    { periode: 'Nacht', wie: 'Nachtdienst afdeling', taak: 'Controle rondes', status: 'bevestigd' },
+  ]},
+  { dag: 'Zaterdag', datum: '5 apr', shifts: [
+    { periode: 'Ochtend', wie: 'Weekenddienst', taak: 'ADL, medicatie', status: 'bevestigd' },
+    { periode: 'Middag', wie: '\u2014', taak: 'Geen bezoek gepland', status: 'open', isFamilie: true },
+    { periode: 'Avond', wie: 'Weekenddienst', taak: 'Avondverzorging', status: 'bevestigd' },
+    { periode: 'Nacht', wie: 'Nachtdienst afdeling', taak: 'Controle rondes', status: 'bevestigd' },
+  ]},
+  { dag: 'Zondag', datum: '6 apr', shifts: [
+    { periode: 'Ochtend', wie: 'Weekenddienst', taak: 'ADL, medicatie', status: 'bevestigd' },
+    { periode: 'Middag', wie: 'Zoon P. Jansen + schoondochter', taak: 'Familiebezoek', status: 'bevestigd', isFamilie: true },
+    { periode: 'Avond', wie: 'Weekenddienst', taak: 'Avondverzorging', status: 'bevestigd' },
+    { periode: 'Nacht', wie: 'Nachtdienst afdeling', taak: 'Controle rondes', status: 'bevestigd' },
+  ]},
+];
+
+// ── Dagrapportages (verzorgende vult in, familie kan lezen) ──
+window.dagrapportages = [
+  { datum: 'Vandaag 07:45', auteur: 'Sandra B.', tekst: 'Meneer was onrustig vannacht (2x gebeld). Ochtend ADL ging moeizaam, wilde niet uit bed. Na ontbijt rustiger. Medicatie ingenomen.', type: 'ochtend' },
+  { datum: 'Gisteren 20:15', auteur: 'Kevin R.', tekst: 'Avondeten goed gegaan, 3/4 opgegeten. Was in de war over waar hij was. Naar bed om 20:00, rustig ingeslapen.', type: 'avond' },
+  { datum: 'Gisteren 12:30', auteur: 'Dochter M. Jansen', tekst: 'Papa herkende me vandaag goed. Samen gewandeld in de gang, 10 minuten. Hij genoot ervan. Vroeg naar mama.', type: 'bezoek', isFamilie: true },
+  { datum: 'Eergisteren 08:00', auteur: 'Priya K.', tekst: 'Goede ochtend. ADL zelfstandig met standby hulp. Goed ontbeten. Bloeddruk 135/82, pols 76.', type: 'ochtend' },
+];
+
+// ── Berichten tussen familie en verzorging ──
+window.berichten = [
+  { id: 1, van: 'Dochter M. Jansen', datum: 'Vandaag 09:14', tekst: 'Goedemorgen, ik las dat papa onrustig was vannacht. Heeft hij genoeg gedronken? Ik kom vanmiddag langs.', isFamilie: true },
+  { id: 2, van: 'Sandra B. (verzorgende)', datum: 'Vandaag 09:28', tekst: 'Goedemorgen! Hij heeft vanochtend goed gedronken, 2 glazen water en thee. Nu zit hij rustig in de huiskamer. Tot vanmiddag!', isFamilie: false },
+  { id: 3, van: 'Dochter M. Jansen', datum: 'Gisteren 16:30', tekst: 'Kunnen jullie ervoor zorgen dat papa zijn blauwe trui aan heeft morgen? Hij voelt zich daar fijn in.', isFamilie: true },
+  { id: 4, van: 'Kevin R. (verzorgende)', datum: 'Gisteren 17:45', tekst: 'Zeker! Ik leg hem klaar. Fijne avond.', isFamilie: false },
+];
+
+// ── Familie leden ──
+window.familieleden = [
+  { naam: 'Martha Jansen', relatie: 'Dochter', telefoon: '06-1234****', bezoekfrequentie: '3x per week', laatsteBezoek: 'Gisteren', isHoofdcontact: true },
+  { naam: 'Peter Jansen', relatie: 'Zoon', telefoon: '06-5678****', bezoekfrequentie: '1x per week', laatsteBezoek: '4 dagen geleden', isHoofdcontact: false },
+];
 
 window.verzorgendeModules = [
   { naam: "Fundament Spoedzorg 1 \u2014 Kwetsbare ouderen", status: "certificaat", voortgang: 100, beschrijving: "Leer de basisprincipes van spoedzorg bij kwetsbare ouderen, inclusief herkenning van acute situaties en eerste handelingen." },

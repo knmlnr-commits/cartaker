@@ -30,10 +30,12 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Load order matters: data → components → sections → app -->
   <script type="text/babel" data-type="module" src="data.js"></script>
   <script type="text/babel" data-type="module" src="components.jsx"></script>
-  <script type="text/babel" data-type="module" src="sections.jsx"></script>
   <script type="text/babel" data-type="module" src="melding.jsx"></script>
+  <script type="text/babel" data-type="module" src="app-verzorgende.jsx"></script>
+  <script type="text/babel" data-type="module" src="app-familie.jsx"></script>
   <script type="text/babel" data-type="module" src="caretaker-portal.jsx"></script>
 </body>
 </html>
