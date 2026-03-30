@@ -92,13 +92,13 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner 
 // ══════════════════════════════════════════
 // BEWONER DETAIL — taken + vitalen + notities + dossier
 // ══════════════════════════════════════════
-window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verzorgendeNaam }) {
+window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verzorgendeNaam, initialTab }) {
   const { useState } = React;
   var b = bewoner;
   var [taken, setTaken] = useState(b.taken);
   var [notities, setNotities] = useState(b.notities);
   var [nieuweNotitie, setNieuweNotitie] = useState('');
-  var [tabDetail, setTabDetail] = useState('taken');
+  var [tabDetail, setTabDetail] = useState(initialTab || 'taken');
 
   var toggle = function(id) {
     var nu = new Date();
