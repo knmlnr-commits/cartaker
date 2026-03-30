@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v4.2.1';
+var APP_VERSION = 'v4.2.2';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -123,7 +123,7 @@ function RolKeuze() {
     <div style={{ minHeight: '100vh', background: C.achtergrond, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ maxWidth: 420, width: '100%', padding: '32px 24px', textAlign: 'center' }}>
         <GeriCallLogoBig />
-        <div style={{ fontSize: 15, color: C.tekstSecundair, marginBottom: 32, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 15, color: C.tekstSecundair, marginBottom: 24, lineHeight: 1.5 }}>
           Samen zorgen voor <strong style={{ color: C.tekstPrimair }}>{window.patient.naam}</strong>
         </div>
 
@@ -135,7 +135,8 @@ function RolKeuze() {
             <div style={{ width: 48, height: 48, borderRadius: 12, background: C.oranjeLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>&#x1F469;&#x200D;&#x2695;&#xFE0F;</div>
             <div>
               <div style={{ fontSize: 16, fontWeight: 700, color: C.tekstPrimair }}>Ik werk in de zorg</div>
-              <div style={{ fontSize: 13, color: C.tekstSecundair }}>Helpende, verzorgende of verpleegkundige</div>
+              <div style={{ fontSize: 13, color: C.tekstSecundair }}>Doel: dagelijkse zorg uitvoeren en rapporteren</div>
+              <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 2 }}>Helpende \u00B7 Verzorgende \u00B7 Verpleegkundige</div>
             </div>
           </div>
         </div>
@@ -148,7 +149,8 @@ function RolKeuze() {
             <div style={{ width: 48, height: 48, borderRadius: 12, background: C.groenLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>&#x1F468;&#x200D;&#x1F467;</div>
             <div>
               <div style={{ fontSize: 16, fontWeight: 700, color: C.tekstPrimair }}>Ik ben familie / pati&euml;nt</div>
-              <div style={{ fontSize: 13, color: C.tekstSecundair }}>Meekijken, plannen &amp; samenwerken</div>
+              <div style={{ fontSize: 13, color: C.tekstSecundair }}>Doel: betrokken blijven en samenwerken</div>
+              <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 2 }}>Gezin \u00B7 Ondersteuner \u00B7 Pati\u00EBnt</div>
             </div>
           </div>
         </div>
@@ -156,6 +158,9 @@ function RolKeuze() {
         <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
           <GeriCallLogoImg size={14} />
           <span>GeriCall CareTaker Portal {APP_VERSION}</span>
+        </div>
+        <div style={{ fontSize: 10, color: C.tekstMuted, marginTop: 6, fontStyle: 'italic' }}>
+          Prototype \u2014 authenticatie via DigiD/UZI-pas wordt bij implementatie toegevoegd
         </div>
       </div>
     </div>
@@ -167,39 +172,52 @@ function RolKeuze() {
 // ══════════════════════════════════════════
 function FamilieKeuze() {
   var leden = window.familieleden;
+  var lijnInfo = {
+    lijn1: { label: 'Gezin', doel: 'Actief meezorgen en beslissingen nemen', rechten: ['Rapportages en behandelplan', 'Weekplanning en bezoeken', 'Consulten volgen', 'Familie chat en e-learning'], kleur: C.groen },
+    lijn2: { label: 'Ondersteuner', doel: 'Betrokken blijven en praktisch helpen', rechten: ['Stemming en planning', 'Familie chat', 'Bezoeken inplannen'], kleur: C.blauw },
+    patient: { label: 'Pati\u00EBnt', doel: 'Inzicht in eigen dag en contact met familie', rechten: ['Dagoverzicht en stemming', 'Wie komt er vandaag', 'Chat met familie'], kleur: C.oranje },
+  };
   return (
     <div style={{ minHeight: '100vh', background: C.achtergrond, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ maxWidth: 420, width: '100%', padding: '32px 24px' }}>
         <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 14, color: C.tekstMuted, cursor: 'pointer', marginBottom: 16 }}>&larr; Terug</button>
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div style={{ display: 'inline-block', marginBottom: 8 }}><GeriCallLogoImg size={40} /></div>
           <div style={{ fontSize: 20, fontWeight: 700, color: C.tekstPrimair }}>Wie ben je?</div>
-          <div style={{ fontSize: 14, color: C.tekstSecundair, marginTop: 4 }}>
-            Selecteer je naam om in te loggen
-          </div>
+          <div style={{ fontSize: 12, color: C.tekstMuted, marginTop: 4 }}>Selecteer je naam \u2014 wat je ziet is afgestemd op je rol</div>
         </div>
 
         {leden.map(function(lid) {
+          var li = lijnInfo[lid.lijn || 'lijn2'] || lijnInfo.lijn2;
           return (
             <div key={lid.id} onClick={function() { setHash('familie/' + lid.id); }} style={{
               background: C.kaartWit, border: '2px solid ' + C.border, borderRadius: 14, padding: 16, marginBottom: 10,
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14, transition: 'all 0.2s',
-            }} onMouseOver={function(e) { e.currentTarget.style.borderColor = lid.kleur; }} onMouseOut={function(e) { e.currentTarget.style.borderColor = C.border; }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 22, background: lid.kleur + '18',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 16, fontWeight: 700, color: lid.kleur, flexShrink: 0,
-              }}>{lid.initialen}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 16, fontWeight: 600, color: C.tekstPrimair }}>{lid.roepnaam}</div>
-                <div style={{ fontSize: 13, color: C.tekstSecundair }}>{lid.relatie}{lid.isPatient ? '' : ' van ' + window.patient.roepnaam}{lid.isHoofdcontact ? ' \u00B7 1e contactpersoon' : ''}</div>
+              cursor: 'pointer', transition: 'all 0.2s',
+            }} onMouseOver={function(e) { e.currentTarget.style.borderColor = li.kleur; }} onMouseOut={function(e) { e.currentTarget.style.borderColor = C.border; }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: 22, background: li.kleur + '18',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 16, fontWeight: 700, color: li.kleur, flexShrink: 0,
+                }}>{lid.initialen}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: C.tekstPrimair }}>{lid.roepnaam}</div>
+                  <div style={{ fontSize: 13, color: li.kleur, fontWeight: 500 }}>{lid.relatie}{lid.isHoofdcontact ? ' \u00B7 1e contactpersoon' : ''}</div>
+                  <div style={{ fontSize: 11, color: C.tekstMuted }}>{li.doel}</div>
+                </div>
               </div>
-              {React.createElement('span', { style: { fontSize: 10, background: C.achtergrond, color: C.tekstMuted, padding: '2px 8px', borderRadius: 4, fontWeight: 500, textTransform: 'uppercase' } },
-                lid.isPatient ? 'Pati\u00EBnt' : lid.lijn === 'lijn1' ? 'Gezin' : 'Ondersteuner'
-              )}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
+                {li.rechten.map(function(r, i) {
+                  return React.createElement('span', { key: i, style: { fontSize: 10, color: C.tekstSecundair, background: C.achtergrond, padding: '2px 6px', borderRadius: 4 } }, r);
+                })}
+              </div>
             </div>
           );
         })}
+
+        <div style={{ fontSize: 10, color: C.tekstMuted, marginTop: 16, fontStyle: 'italic', textAlign: 'center' }}>
+          Prototype \u2014 authenticatie via DigiD wordt bij implementatie toegevoegd
+        </div>
       </div>
     </div>
   );
@@ -210,37 +228,64 @@ function FamilieKeuze() {
 // ══════════════════════════════════════════
 function ZorgKeuze() {
   var profielen = window.zorgprofielen;
-  var niveauLabel = { helpende: 'Helpende', verzorgende: 'Verzorgende IG', verpleegkundige: 'Verpleegkundige' };
-  var niveauSub = { helpende: 'Taken en rapportage', verzorgende: 'Taken, vitalen en meldingen', verpleegkundige: 'Volledig dossier en beheer' };
+  var rolInfo = {
+    verpleegkundige: {
+      label: 'Verpleegkundige', doel: 'Regie over zorgproces en klinische besluitvorming',
+      rechten: ['Volledig dossier en EPD', 'Consulten beheren en escaleren', 'NTS-triage en meldingen', 'IoT vitalen en lab-aanvragen', 'Taken, rapportage en e-learning'],
+      kleur: C.groen
+    },
+    verzorgende: {
+      label: 'Verzorgende IG', doel: 'Dagelijkse zorg uitvoeren en signaleren',
+      rechten: ['Taken afvinken en rapporteren', 'IoT vitalen monitoren', 'NTS-triage en meldingen', 'Behandelplan raadplegen', 'E-learning en certificaten'],
+      kleur: C.oranje
+    },
+    helpende: {
+      label: 'Helpende', doel: 'Basiszorg en ondersteuning bieden',
+      rechten: ['Taken afvinken', 'Rapportage schrijven en lezen', 'Stemming bijwerken', 'E-learning volgen'],
+      kleur: C.tekstMuted
+    },
+  };
   return (
     <div style={{ minHeight: '100vh', background: C.achtergrond, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ maxWidth: 420, width: '100%', padding: '32px 24px' }}>
         <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 14, color: C.tekstMuted, cursor: 'pointer', marginBottom: 16 }}>&larr; Terug</button>
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div style={{ display: 'inline-block', marginBottom: 8 }}><GeriCallLogoImg size={40} /></div>
           <div style={{ fontSize: 20, fontWeight: 700, color: C.tekstPrimair }}>Inloggen als zorgmedewerker</div>
+          <div style={{ fontSize: 12, color: C.tekstMuted, marginTop: 4 }}>Selecteer uw profiel \u2014 rechten zijn gekoppeld aan uw rol</div>
         </div>
 
         {profielen.map(function(p) {
+          var ri = rolInfo[p.niveau] || rolInfo.helpende;
           return (
             <div key={p.id} onClick={function() { setHash('zorg/' + p.id); }} style={{
               background: C.kaartWit, border: '2px solid ' + C.border, borderRadius: 14, padding: 16, marginBottom: 10,
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14, transition: 'all 0.2s',
-            }} onMouseOver={function(e) { e.currentTarget.style.borderColor = C.oranje; }} onMouseOut={function(e) { e.currentTarget.style.borderColor = C.border; }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 22, background: C.achtergrond,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 16, fontWeight: 700, color: C.tekstSecundair, flexShrink: 0,
-              }}>{p.initialen}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 16, fontWeight: 600, color: C.tekstPrimair }}>{p.naam}</div>
-                <div style={{ fontSize: 13, color: C.tekstSecundair }}>{niveauLabel[p.niveau] || p.niveau}</div>
-                <div style={{ fontSize: 11, color: C.tekstMuted }}>{niveauSub[p.niveau] || ''}</div>
+              cursor: 'pointer', transition: 'all 0.2s',
+            }} onMouseOver={function(e) { e.currentTarget.style.borderColor = ri.kleur; }} onMouseOut={function(e) { e.currentTarget.style.borderColor = C.border; }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: 22, background: C.achtergrond,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 16, fontWeight: 700, color: C.tekstSecundair, flexShrink: 0,
+                }}>{p.initialen}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: C.tekstPrimair }}>{p.naam}</div>
+                  <div style={{ fontSize: 13, color: ri.kleur, fontWeight: 500 }}>{ri.label}</div>
+                  <div style={{ fontSize: 11, color: C.tekstMuted }}>{ri.doel}</div>
+                </div>
               </div>
-              <span style={{ fontSize: 10, background: C.achtergrond, color: C.tekstMuted, padding: '2px 8px', borderRadius: 4, fontWeight: 500, textTransform: 'uppercase' }}>{p.niveau}</span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
+                {ri.rechten.map(function(r, i) {
+                  return React.createElement('span', { key: i, style: { fontSize: 10, color: C.tekstSecundair, background: C.achtergrond, padding: '2px 6px', borderRadius: 4 } }, r);
+                })}
+              </div>
             </div>
           );
         })}
+
+        <div style={{ fontSize: 10, color: C.tekstMuted, marginTop: 16, fontStyle: 'italic', textAlign: 'center' }}>
+          Prototype \u2014 authenticatie via UZI-pas wordt bij implementatie toegevoegd
+        </div>
       </div>
     </div>
   );
