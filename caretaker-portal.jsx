@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v4.0.1';
+var APP_VERSION = 'v4.0.2';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -377,14 +377,22 @@ function AppFamilie({ lid, initialTab }) {
         </div>
 
         <Card style={{ background: isPatient ? C.oranjeLicht : C.groenLicht, border: 'none', padding: 16 }}>
-          <div style={{ fontSize: 13, color: isPatient ? C.oranje : C.groen, fontWeight: 500 }}>{begroeting()} {lid.roepnaam}</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: C.tekstPrimair, marginTop: 2 }}>
-            {isPatient ? 'Hoe gaat het vandaag?' : 'Hoe gaat het met ' + window.patient.roepnaam + '?'}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontSize: 13, color: isPatient ? C.oranje : C.groen, fontWeight: 500 }}>{begroeting()} {lid.roepnaam}</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: C.tekstPrimair, marginTop: 2 }}>
+                {isPatient ? 'Hoe gaat het vandaag?' : 'Hoe gaat het met ' + window.patient.roepnaam + '?'}
+              </div>
+              <div style={{ fontSize: 12, color: C.tekstSecundair, marginTop: 4 }}>{formatDatum()}</div>
+            </div>
+            {!isPatient && <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <div style={{ fontSize: 12, color: C.tekstSecundair }}>Kamer {window.patient.kamer ? window.patient.kamer.split('Kamer ')[1] || window.patient.kamer : ''}</div>
+              <div style={{ fontSize: 11, color: C.tekstMuted }}>{window.patient.leeftijd} jaar</div>
+            </div>}
           </div>
-          <div style={{ fontSize: 13, color: C.tekstSecundair, marginTop: 4 }}>{formatDatum()}</div>
         </Card>
 
-        {tab === 'overzicht' && <FamilieOverzicht lid={lid} addToast={addToast} toegang={toegang} />}
+        {tab === 'overzicht' && <FamilieOverzicht lid={lid} addToast={addToast} toegang={toegang} onNavigeer={handleTab} />}
         {tab === 'week' && toegang.planning && <FamilieWeekplan lid={lid} addToast={addToast} />}
         {tab === 'berichten' && toegang.chat && <FamilieBerichten lid={lid} addToast={addToast} />}
         {tab === 'leren' && toegang.leren && <FamilieLeren addToast={addToast} />}

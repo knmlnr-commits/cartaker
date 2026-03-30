@@ -6,7 +6,7 @@ var C_F = window.COLORS;
 // ══════════════════════════════════════════
 // OVERZICHT — hoe gaat het met papa/mij?
 // ══════════════════════════════════════════
-window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang }) {
+window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, onNavigeer }) {
   const { useState } = React;
   const [toonDetails, setToonDetails] = useState(null);
   const [openConsult, setOpenConsult] = useState(null);
@@ -42,27 +42,15 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang }) 
 
     // Quick stats voor familie
     !isPatient && React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 } },
-      React.createElement(Card, { style: { padding: 12, textAlign: 'center' } },
+      React.createElement(Card, { style: { padding: 12, textAlign: 'center', cursor: 'pointer' }, onClick: function() { if (onNavigeer) onNavigeer('week'); } },
         React.createElement('div', { style: { fontSize: 22, fontWeight: 700, color: C_F.oranje } }, openSlots),
         React.createElement('div', { style: { fontSize: 11, color: C_F.tekstMuted } }, 'Open bezoekslots'),
         React.createElement('div', { style: { fontSize: 10, color: C_F.tekstSecundair } }, 'deze week')
       ),
-      React.createElement(Card, { style: { padding: 12, textAlign: 'center' } },
+      React.createElement(Card, { style: { padding: 12, textAlign: 'center', cursor: 'pointer' }, onClick: function() { if (onNavigeer) onNavigeer('berichten'); } },
         React.createElement('div', { style: { fontSize: 22, fontWeight: 700, color: C_F.groen } }, aantalBerichten),
         React.createElement('div', { style: { fontSize: 11, color: C_F.tekstMuted } }, 'Familieberichten'),
         React.createElement('div', { style: { fontSize: 10, color: C_F.tekstSecundair } }, 'vandaag')
-      )
-    ),
-
-    // Patiënt card
-    !isPatient && React.createElement(Card, null,
-      React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 14 } },
-        React.createElement('div', { style: { width: 56, height: 56, borderRadius: 28, background: C_F.oranjeLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: C_F.oranje, flexShrink: 0 } }, 'AJ'),
-        React.createElement('div', null,
-          React.createElement('div', { style: { fontSize: 18, fontWeight: 700, color: C_F.tekstPrimair } }, p.roepnaam),
-          React.createElement('div', { style: { fontSize: 13, color: C_F.tekstSecundair } }, p.kamer),
-          React.createElement('div', { style: { fontSize: 12, color: C_F.tekstMuted } }, p.leeftijd + ' jaar')
-        )
       )
     ),
 
