@@ -1,7 +1,6 @@
 // GeriCall CareTaker Portal — Page Sections
 
-const C = window.COLORS;
-const { useState } = React;
+var C = window.COLORS;
 
 // ══════════════════════════════════════════
 // SECTION 1 — Overzicht

@@ -1,7 +1,6 @@
 // GeriCall CareTaker Portal — Shared UI Components
 
-const { useState, useEffect } = React;
-const C = window.COLORS;
+var C = window.COLORS;
 
 // ── Logo (echte GeriCall afbeelding als base64) ──
 window.GeriCallLogoImg = function GeriCallLogoImg({ size }) {

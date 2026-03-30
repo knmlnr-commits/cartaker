@@ -1,7 +1,7 @@
 // GeriCall — Verzorgende secties v2
 // Wijkoverzicht → inzoomen op bewoner → taken/vitalen/notities
 
-const C_V = window.COLORS;
+var C_V = window.COLORS;
 
 // ══════════════════════════════════════════
 // WIJK OVERZICHT — alle bewoners in één oogopslag

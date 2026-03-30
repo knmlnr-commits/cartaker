@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — NTS Melding Sectie
 // Realistische triage op basis van Nederlandse Triage Standaard
 
-const C_M = window.COLORS;
+var C_M = window.COLORS;
 
 window.SectionMelding = function SectionMelding({ addToast }) {
   const { useState } = React;

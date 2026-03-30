@@ -1,8 +1,8 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 
-const { useState, useEffect, useCallback } = React;
-const C = window.COLORS;
+var { useState, useEffect, useCallback } = React;
+var C = window.COLORS;
 
 // ── Shared: Dutch date + greeting ──
 function formatDatum() {

@@ -1,7 +1,7 @@
 // GeriCall — Familie secties (multi-user)
 // Elk familielid logt apart in. Chat + planning = samenwerking.
 
-const C_F = window.COLORS;
+var C_F = window.COLORS;
 
 // ══════════════════════════════════════════
 // OVERZICHT — hoe gaat het met papa/mij?
