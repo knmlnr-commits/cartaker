@@ -1,5 +1,6 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
+var APP_VERSION = 'v3.4.0';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -72,7 +73,7 @@ function RolKeuze({ onKies }) {
 
         <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
           <GeriCallLogoImg size={14} />
-          <span>GeriCall CareTaker Portal v3 &middot; Prototype</span>
+          <span>GeriCall CareTaker Portal v3.4.0 &middot; Build 2026-03-30T{new Date().toISOString().slice(11,19)}</span>
         </div>
       </div>
     </div>
@@ -166,6 +167,7 @@ function AppVerzorgende({ onUitloggen }) {
         {tab === 'rapportage' && <VerzorgendeRapportage addToast={addToast} />}
         {tab === 'melding' && <SectionMelding addToast={addToast} />}
         {tab === 'leren' && <VerzorgendeLeren addToast={addToast} />}
+        <div style={{ fontSize: 10, color: C.tekstMuted, textAlign: 'center', padding: '16px 0 4px', opacity: 0.6 }}>{APP_VERSION}</div>
       </div>
       <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: C.kaartWit, borderTop: '1px solid ' + C.border, display: 'flex', zIndex: 800, paddingBottom: 'env(safe-area-inset-bottom, 12px)' }}>
         {tabs.map(t => (
@@ -231,6 +233,7 @@ function AppFamilie({ lid, onUitloggen }) {
         {tab === 'week' && <FamilieWeekplan lid={lid} addToast={addToast} />}
         {tab === 'berichten' && <FamilieBerichten lid={lid} addToast={addToast} />}
         {tab === 'leren' && !isPatient && <FamilieLeren addToast={addToast} />}
+        <div style={{ fontSize: 10, color: C.tekstMuted, textAlign: 'center', padding: '16px 0 4px', opacity: 0.6 }}>{APP_VERSION}</div>
       </div>
 
       <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: C.kaartWit, borderTop: '1px solid ' + C.border, display: 'flex', zIndex: 800, paddingBottom: 'env(safe-area-inset-bottom, 12px)' }}>
