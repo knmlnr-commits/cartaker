@@ -7,7 +7,7 @@ const C = window.COLORS;
 window.GeriCallLogoImg = function GeriCallLogoImg({ size }) {
   var s = size || 32;
   return React.createElement('img', {
-    src: 'Logo GC.jfif',
+    src: 'logo.png',
     alt: 'GeriCall',
     style: { width: s, height: s, objectFit: 'contain' }
   });
