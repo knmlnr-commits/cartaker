@@ -338,12 +338,34 @@ window.weekplanning = [
 ];
 
 // ── Dagrapportages (verzorgende vult in, familie kan lezen) ──
-window.dagrapportages = [
-  { datum: 'Vandaag 07:45', auteur: 'Sandra B.', tekst: 'Meneer was onrustig vannacht (2x gebeld). Ochtend ADL ging moeizaam, wilde niet uit bed. Na ontbijt rustiger. Medicatie ingenomen.', type: 'ochtend' },
-  { datum: 'Gisteren 20:15', auteur: 'Kevin R.', tekst: 'Avondeten goed gegaan, 3/4 opgegeten. Was in de war over waar hij was. Naar bed om 20:00, rustig ingeslapen.', type: 'avond' },
-  { datum: 'Gisteren 12:30', auteur: 'Dochter M. Jansen', tekst: 'Papa herkende me vandaag goed. Samen gewandeld in de gang, 10 minuten. Hij genoot ervan. Vroeg naar mama.', type: 'bezoek', isFamilie: true },
-  { datum: 'Eergisteren 08:00', auteur: 'Priya K.', tekst: 'Goede ochtend. ADL zelfstandig met standby hulp. Goed ontbeten. Bloeddruk 135/82, pols 76.', type: 'ochtend' },
-];
+window.dagrapportages = {
+  jansen: [
+    { datum: 'Vandaag 07:45', auteur: 'Sandra B.', tekst: 'Meneer was onrustig vannacht (2x gebeld). Ochtend ADL ging moeizaam, wilde niet uit bed. Na ontbijt rustiger. Medicatie ingenomen.', type: 'ochtend', zichtbaarFamilie: true },
+    { datum: 'Gisteren 20:15', auteur: 'Kevin R.', tekst: 'Avondeten goed gegaan, 3/4 opgegeten. Was in de war over waar hij was. Naar bed om 20:00, rustig ingeslapen.', type: 'avond', zichtbaarFamilie: true },
+    { datum: 'Gisteren 16:00', auteur: 'Sandra B.', tekst: 'Urineproductie licht verminderd. Vochtinname bijgehouden: 800ml tot 16:00. Extra aandacht nodig.', type: 'middag', zichtbaarFamilie: false },
+    { datum: 'Gisteren 12:30', auteur: 'Dochter M. Jansen', tekst: 'Papa herkende me vandaag goed. Samen gewandeld in de gang, 10 minuten. Hij genoot ervan. Vroeg naar mama.', type: 'bezoek', isFamilie: true, zichtbaarFamilie: true },
+    { datum: 'Eergisteren 20:00', auteur: 'Kevin R.', tekst: 'Rustige avond. Goed gegeten. Medicatie ingenomen. Om 19:30 naar bed, snel ingeslapen.', type: 'avond', zichtbaarFamilie: true },
+    { datum: 'Eergisteren 08:00', auteur: 'Priya K.', tekst: 'Goede ochtend. ADL zelfstandig met standby hulp. Goed ontbeten. Bloeddruk 135/82, pols 76.', type: 'ochtend', zichtbaarFamilie: true },
+    { datum: '27 mrt 20:30', auteur: 'Kevin R.', tekst: 'Onrustig na bezoek zoon. Wilde naar buiten. Afgeleid met fotoalbum, daarna rustiger.', type: 'avond', zichtbaarFamilie: true },
+    { datum: '27 mrt 14:00', auteur: 'Sandra B.', tekst: 'Looptraining 8 minuten (doel 10). Werd moe, gestopt. Saturatie na inspanning 91%, na rust 94%.', type: 'middag', zichtbaarFamilie: false },
+    { datum: '27 mrt 08:15', auteur: 'Sandra B.', tekst: 'ADL met hulp. Ontbijt 2/3 opgegeten. Medicatie ingenomen. Bloeddruk 140/86.', type: 'ochtend', zichtbaarFamilie: true },
+    { datum: '26 mrt 20:00', auteur: 'Priya K.', tekst: 'Kalme avond. Heeft TV gekeken. Medicatie ingenomen. Naar bed 19:45.', type: 'avond', zichtbaarFamilie: true },
+    { datum: '26 mrt 08:00', auteur: 'Sandra B.', tekst: 'Goede ochtend. Herkende personeel. ADL grotendeels zelfstandig. Goed ontbeten.', type: 'ochtend', zichtbaarFamilie: true },
+  ],
+  de_groot: [
+    { datum: 'Vandaag 07:20', auteur: 'Sandra B.', tekst: 'Bloedsuiker ochtend 7.2 mmol/L. Insuline toegediend. Inhalatie gedaan. Goed geslapen.', type: 'ochtend', zichtbaarFamilie: true },
+    { datum: 'Gisteren 18:30', auteur: 'Priya K.', tekst: 'Bloedsuiker voor avondeten 8.1. Insuline gegeven. Goed gegeten.', type: 'avond', zichtbaarFamilie: true },
+    { datum: 'Gisteren 08:00', auteur: 'Sandra B.', tekst: 'Saturatie 91% na ochtend ADL. Inhalatie extra toegediend. Na 30 min: 93%.', type: 'ochtend', zichtbaarFamilie: false },
+  ],
+  van_dam: [
+    { datum: 'Vandaag 10:30', auteur: 'L. Bakker (logo)', tekst: 'Logopedie: 3 woorden gesproken vandaag. "Ja", "water", "goed". Goede sessie, meneer was gemotiveerd.', type: 'middag', zichtbaarFamilie: true },
+    { datum: 'Gisteren 08:00', auteur: 'Sandra B.', tekst: 'ADL met hulp links. Transfer naar rolstoel gelukt. Stabiele ochtend.', type: 'ochtend', zichtbaarFamilie: true },
+  ],
+  visser: [
+    { datum: 'Vandaag 07:50', auteur: 'Sandra B.', tekst: 'Pijn bij transfers, NRS 6. Tramadol 50mg gegeven om 07:45. Na 30 min NRS 4. Bedverpleging.', type: 'ochtend', zichtbaarFamilie: false },
+    { datum: 'Gisteren 16:00', auteur: 'Sandra B.', tekst: 'Wond heup gecontroleerd: ziet er goed uit, geen roodheid of lekkage. Verband gewisseld.', type: 'middag', zichtbaarFamilie: true },
+  ],
+};
 
 // ── Berichten tussen familie en verzorging ──
 window.berichten = [

@@ -326,7 +326,16 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
   var [categorie, setCategorie] = useState('ochtend');
   var [bewoner, setBewoner] = useState(window.bewoners[0].id);
   var [zichtbaarFamilie, setZichtbaarFamilie] = useState(true);
+  var [zoekRapportage, setZoekRapportage] = useState('');
+  var [toonAlle, setToonAlle] = useState(false);
   var cats = [{ id: 'ochtend', label: 'Ochtend' },{ id: 'middag', label: 'Middag' },{ id: 'avond', label: 'Avond' },{ id: 'nacht', label: 'Nacht' }];
+
+  // Rapportages voor geselecteerde bewoner
+  var alleRapportages = (window.dagrapportages && window.dagrapportages[bewoner]) || [];
+  var gefilterd = zoekRapportage.trim()
+    ? alleRapportages.filter(function(r) { var q = zoekRapportage.toLowerCase(); return r.tekst.toLowerCase().indexOf(q) !== -1 || r.auteur.toLowerCase().indexOf(q) !== -1 || r.datum.toLowerCase().indexOf(q) !== -1; })
+    : alleRapportages;
+  var zichtbaar = toonAlle || zoekRapportage.trim() ? gefilterd : gefilterd.slice(0, 4);
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
     React.createElement(SectionTitle, null, 'Rapportage invullen'),
@@ -386,17 +395,48 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
         if (tekst.trim()) { addToast('Rapportage opgeslagen' + (zichtbaarFamilie ? '' : ' (alleen collega\u2019s)'), 'success'); setTekst(''); } else addToast('Schrijf eerst een rapportage');
       }, style: { background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 8 } }, 'Opslaan')
     ),
-    // Recente rapportages
-    React.createElement(SectionTitle, null, 'Recent'),
-    window.dagrapportages.map(function(r, i) {
+    // Rapportages voor deze bewoner
+    React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 } },
+      React.createElement(SectionTitle, null, 'Rapportages ' + window.bewoners.find(function(b) { return b.id === bewoner; }).roepnaam),
+      React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, alleRapportages.length + ' totaal')
+    ),
+
+    // Zoeken in rapportages
+    React.createElement('div', { style: { position: 'relative', marginBottom: 10 } },
+      React.createElement('input', {
+        value: zoekRapportage, onChange: function(e) { setZoekRapportage(e.target.value); },
+        placeholder: 'Zoek in rapportages...',
+        style: { width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid ' + C_V.border, fontSize: 13, fontFamily: "'DM Sans', sans-serif", outline: 'none', color: C_V.tekstPrimair, background: C_V.kaartWit }
+      }),
+      zoekRapportage && React.createElement('button', { onClick: function() { setZoekRapportage(''); }, style: { position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', fontSize: 14, color: C_V.tekstMuted, cursor: 'pointer' } }, '\u2715')
+    ),
+
+    // Lijst
+    zichtbaar.length === 0 && React.createElement('div', { style: { fontSize: 13, color: C_V.tekstMuted, textAlign: 'center', padding: '16px 0' } }, 'Geen rapportages gevonden'),
+    zichtbaar.map(function(r, i) {
       return React.createElement(Card, { key: i, style: { padding: 10 } },
-        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 2 } },
+        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 } },
           React.createElement('span', { style: { fontSize: 12, fontWeight: 600, color: r.isFamilie ? C_V.groen : C_V.oranje } }, r.auteur),
-          React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, r.datum)
+          React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
+            r.zichtbaarFamilie
+              ? React.createElement('span', { title: 'Zichtbaar voor familie', style: { fontSize: 10, color: C_V.groen, background: C_V.groenLicht, padding: '1px 5px', borderRadius: 4 } }, 'Familie')
+              : React.createElement('span', { title: 'Alleen collega\u2019s', style: { fontSize: 10, color: C_V.tekstMuted, background: C_V.achtergrond, padding: '1px 5px', borderRadius: 4 } }, 'Intern'),
+            React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, r.datum)
+          )
         ),
         React.createElement('div', { style: { fontSize: 13, color: C_V.tekstSecundair, lineHeight: 1.5 } }, r.tekst)
       );
-    })
+    }),
+
+    // Meer laden
+    !zoekRapportage.trim() && !toonAlle && gefilterd.length > 4 && React.createElement('button', {
+      onClick: function() { setToonAlle(true); },
+      style: { background: 'none', border: '1px solid ' + C_V.border, borderRadius: 8, padding: '10px', fontSize: 13, color: C_V.tekstSecundair, cursor: 'pointer', width: '100%', marginTop: 4 }
+    }, 'Toon alle ' + gefilterd.length + ' rapportages'),
+    toonAlle && !zoekRapportage.trim() && React.createElement('button', {
+      onClick: function() { setToonAlle(false); },
+      style: { background: 'none', border: 'none', fontSize: 12, color: C_V.tekstMuted, cursor: 'pointer', width: '100%', marginTop: 4, textAlign: 'center' }
+    }, 'Toon minder')
   );
 };
 
