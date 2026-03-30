@@ -489,8 +489,9 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
     return { kleur: C_V.blauw, bg: C_V.blauwLicht, label: 'Optioneel \u2014 verdieping', icon: '\uD83D\uDCD8' };
   };
 
-  // Toon suggesties uitklapbaar
+  // Toon suggesties uitklapbaar + filter
   var [suggestiesOpen, setSuggestiesOpen] = useState(false);
+  var [urgentieFilter, setUrgentieFilter] = useState(null); // null = alle, 'verplicht', 'aanbevolen', 'optioneel'
 
   // ── Modules lijst ──
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
@@ -553,49 +554,76 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
     ),
 
     // ── Suggesties — ONDER de lopende modules ──
-    (!zoekterm || gefilterdSuggesties.length > 0) && React.createElement('div', { style: { marginTop: 8 } },
-      // Header met uitklap
-      React.createElement('div', {
-        onClick: function() { setSuggestiesOpen(!suggestiesOpen); },
-        style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '8px 0' }
-      },
-        React.createElement(SectionTitle, null, 'Aanbevolen voor jou'),
-        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
-          React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted, background: C_V.achtergrond, padding: '2px 8px', borderRadius: 10, fontWeight: 600 } }, (zoekterm ? gefilterdSuggesties : suggesties).length),
-          React.createElement('span', { style: { fontSize: 14, color: C_V.tekstMuted, transition: 'transform 0.2s', transform: suggestiesOpen ? 'rotate(90deg)' : 'none' } }, '\u25B6')
-        )
-      ),
-      React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, marginBottom: 8 } },
-        rol === 'verzorgende' ? 'Op basis van de diagnoses van uw bewoners' : 'Speciaal voor de situatie van ' + window.patient.roepnaam
-      ),
+    (function() {
+      var alleSuggesties = zoekterm ? gefilterdSuggesties : suggesties;
+      if (alleSuggesties.length === 0) return null;
 
-      // Altijd: urgentie-samenvatting als compact strip
-      !suggestiesOpen && React.createElement('div', { style: { display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 } },
-        (function() {
-          var verplicht = (zoekterm ? gefilterdSuggesties : suggesties).filter(function(s) { return s.urgentie === 'verplicht'; }).length;
-          var aanbevolen = (zoekterm ? gefilterdSuggesties : suggesties).filter(function(s) { return s.urgentie === 'aanbevolen'; }).length;
-          var optioneel = (zoekterm ? gefilterdSuggesties : suggesties).filter(function(s) { return s.urgentie === 'optioneel'; }).length;
-          var items = [];
-          if (verplicht > 0) items.push(React.createElement('span', { key: 'v', style: { fontSize: 11, color: C_V.rood, background: C_V.roodLicht, padding: '3px 8px', borderRadius: 6, fontWeight: 600 } }, '\uD83D\uDED1 ' + verplicht + ' verplicht'));
-          if (aanbevolen > 0) items.push(React.createElement('span', { key: 'a', style: { fontSize: 11, color: C_V.oranje, background: C_V.oranjeLicht, padding: '3px 8px', borderRadius: 6, fontWeight: 600 } }, '\u2B50 ' + aanbevolen + ' aanbevolen'));
-          if (optioneel > 0) items.push(React.createElement('span', { key: 'o', style: { fontSize: 11, color: C_V.blauw, background: C_V.blauwLicht, padding: '3px 8px', borderRadius: 6, fontWeight: 600 } }, '\uD83D\uDCD8 ' + optioneel + ' optioneel'));
-          return items;
-        })()
-      ),
+      // Sorteer: verplicht → aanbevolen → optioneel
+      var urgentieVolgorde = { verplicht: 0, aanbevolen: 1, optioneel: 2 };
+      var gesorteerd = alleSuggesties.slice().sort(function(a, b) {
+        return (urgentieVolgorde[a.urgentie] || 2) - (urgentieVolgorde[b.urgentie] || 2);
+      });
 
-      // Uitgeklapt: volledige lijst
-      suggestiesOpen && (zoekterm ? gefilterdSuggesties : suggesties).map(function(s, i) {
-        var urg = urgentieKleur(s.urgentie);
-        return React.createElement(Card, { key: 'sug-' + i, style: { cursor: 'pointer', borderLeft: '3px solid ' + urg.kleur, padding: 12 }, onClick: function() { addToast('Module "' + s.naam + '" wordt geopend...'); } },
-          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 } },
-            React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair, flex: 1, marginRight: 8 } }, s.naam),
-            React.createElement('span', { style: { fontSize: 14 } }, urg.icon)
-          ),
-          React.createElement('div', { style: { fontSize: 11, color: urg.kleur, fontWeight: 600, marginBottom: 4 } }, urg.label),
-          React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, lineHeight: 1.5, marginBottom: 4 } }, s.reden),
-          React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, s.duur + ' \u00B7 ' + s.aanbieder)
-        );
-      })
-    )
+      // Tel per urgentie
+      var telVerplicht = gesorteerd.filter(function(s) { return s.urgentie === 'verplicht'; }).length;
+      var telAanbevolen = gesorteerd.filter(function(s) { return s.urgentie === 'aanbevolen'; }).length;
+      var telOptioneel = gesorteerd.filter(function(s) { return s.urgentie === 'optioneel'; }).length;
+
+      // Filter toepassen
+      var zichtbaar = urgentieFilter ? gesorteerd.filter(function(s) { return s.urgentie === urgentieFilter; }) : gesorteerd;
+
+      // Filter button helper
+      var filterBtn = function(type, tel, icon, filterKleur, filterBg) {
+        var actief = urgentieFilter === type;
+        return tel > 0 && React.createElement('button', {
+          key: type,
+          onClick: function(e) {
+            e.stopPropagation();
+            if (actief) { setUrgentieFilter(null); }
+            else { setUrgentieFilter(type); setSuggestiesOpen(true); }
+          },
+          style: {
+            fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 8, cursor: 'pointer', transition: 'all 0.2s',
+            background: actief ? filterKleur : filterBg, color: actief ? '#FFFFFF' : filterKleur,
+            border: '1.5px solid ' + filterKleur,
+          }
+        }, icon + ' ' + tel + ' ' + type);
+      };
+
+      return React.createElement('div', { style: { marginTop: 8 } },
+        // Header
+        React.createElement('div', {
+          onClick: function() { setSuggestiesOpen(!suggestiesOpen); if (suggestiesOpen) setUrgentieFilter(null); },
+          style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '8px 0' }
+        },
+          React.createElement(SectionTitle, null, 'Aanbevolen voor jou'),
+          React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
+            React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted, background: C_V.achtergrond, padding: '2px 8px', borderRadius: 10, fontWeight: 600 } }, gesorteerd.length),
+            React.createElement('span', { style: { fontSize: 14, color: C_V.tekstMuted, transition: 'transform 0.2s', transform: suggestiesOpen ? 'rotate(90deg)' : 'none' } }, '\u25B6')
+          )
+        ),
+
+        // Filter buttons (altijd zichtbaar)
+        React.createElement('div', { style: { display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 } },
+          filterBtn('verplicht', telVerplicht, '\uD83D\uDED1', C_V.rood, C_V.roodLicht),
+          filterBtn('aanbevolen', telAanbevolen, '\u2B50', C_V.oranje, C_V.oranjeLicht),
+          filterBtn('optioneel', telOptioneel, '\uD83D\uDCD8', C_V.blauw, C_V.blauwLicht)
+        ),
+
+        // Lijst (alleen als open)
+        suggestiesOpen && zichtbaar.map(function(s, i) {
+          var urg = urgentieKleur(s.urgentie);
+          return React.createElement(Card, { key: 'sug-' + i, style: { cursor: 'pointer', borderLeft: '3px solid ' + urg.kleur, padding: 12 }, onClick: function() { addToast('Module "' + s.naam + '" wordt geopend...'); } },
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 } },
+              React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair, flex: 1, marginRight: 8 } }, s.naam),
+              React.createElement('span', { style: { fontSize: 14 } }, urg.icon)
+            ),
+            React.createElement('div', { style: { fontSize: 11, color: urg.kleur, fontWeight: 600, marginBottom: 4 } }, urg.label),
+            React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, lineHeight: 1.5, marginBottom: 4 } }, s.reden),
+            React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, s.duur + ' \u00B7 ' + s.aanbieder)
+          );
+        })
+      );
+    })()
   );
 };
