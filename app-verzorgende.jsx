@@ -391,7 +391,10 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
             React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted } }, les.duur + ' \u00B7 ' + (les.type === 'video' ? 'Video' : les.type === 'interactief' ? 'Interactief' : les.type === 'toets' ? 'Toets' : 'Lesstof'))
           )
         ),
-        les.voltooid && React.createElement('div', { style: { padding: '6px 12px', background: C_V.groenLicht, borderRadius: 6, fontSize: 12, color: C_V.groen, fontWeight: 600, marginBottom: 12 } }, '\u2713 Deze les is voltooid'),
+        les.voltooid && React.createElement('div', { style: { padding: '8px 12px', background: C_V.groenLicht, borderRadius: 6, marginBottom: 12 } },
+          React.createElement('div', { style: { fontSize: 13, color: C_V.groen, fontWeight: 600 } }, '\u2713 Deze les is voltooid'),
+          les.voltooidOp && React.createElement('div', { style: { fontSize: 11, color: C_V.groen, opacity: 0.8 } }, 'Behaald op ' + les.voltooidOp)
+        ),
         React.createElement('div', { style: { fontSize: 14, color: C_V.tekstSecundair, lineHeight: 1.7, marginBottom: 16 } }, les.beschrijving)
       ),
 
@@ -455,7 +458,8 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
             React.createElement('div', { style: { fontSize: 14, fontWeight: 500, color: C_V.tekstPrimair } }, les.titel),
             React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted } },
               typeIcon(les.type) + ' ' + (les.type === 'video' ? 'Video' : les.type === 'interactief' ? 'Interactief' : les.type === 'toets' ? 'Toets' : 'Lesstof') + ' \u00B7 ' + les.duur
-            )
+            ),
+            les.voltooid && les.voltooidOp && React.createElement('div', { style: { fontSize: 11, color: C_V.groen, marginTop: 2 } }, '\u2713 Behaald op ' + les.voltooidOp)
           ),
           React.createElement('span', { style: { fontSize: 14, color: les.video ? kleur : C_V.tekstMuted } }, '\u25B6')
         );
