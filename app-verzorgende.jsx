@@ -349,22 +349,127 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
 };
 
 // ══════════════════════════════════════════
-// LEREN — verzorgende (ongewijzigd)
+// LEREN — verzorgende (volledig met lessen + video's)
 // ══════════════════════════════════════════
 window.VerzorgendeLeren = function VerzorgendeLeren({ addToast }) {
+  return React.createElement(ModuleOverzicht, { modules: window.verzorgendeModules, shared: window.gedeeldeModule, addToast: addToast, accentKleur: C_V.oranje, rol: 'verzorgende' });
+};
+
+// ══════════════════════════════════════════
+// GEDEELD: Module overzicht + les detail component
+// ══════════════════════════════════════════
+window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, accentKleur, rol }) {
   const { useState } = React;
-  var [modalModule, setModalModule] = useState(null);
-  var modules = window.verzorgendeModules;
-  var shared = window.gedeeldeModule;
+  var [openModule, setOpenModule] = useState(null);
+  var [openLes, setOpenLes] = useState(null);
+  var kleur = accentKleur || C_V.oranje;
+
   var statusLabel = function(s) {
     if (s === 'certificaat') return { label: 'Behaald \u2713', color: C_V.groen, bg: C_V.groenLicht };
     if (s === 'bezig') return { label: 'In uitvoering', color: C_V.oranje, bg: C_V.oranjeLicht };
     return { label: 'Nog te starten', color: C_V.tekstMuted, bg: C_V.achtergrond };
   };
 
+  var typeIcon = function(t) {
+    if (t === 'video') return '\uD83C\uDFA5';
+    if (t === 'interactief') return '\uD83C\uDFAE';
+    if (t === 'toets') return '\uD83D\uDCDD';
+    return '\uD83D\uDCD6';
+  };
+
+  // ── Les detail view ──
+  if (openLes) {
+    var les = openLes;
+    return React.createElement('div', { style: { animation: 'slideInRight 0.3s ease' } },
+      React.createElement('button', { onClick: function() { setOpenLes(null); }, style: { background: 'none', border: 'none', fontSize: 14, color: kleur, cursor: 'pointer', marginBottom: 12, fontWeight: 500 } }, '\u2190 Terug naar module'),
+
+      React.createElement(Card, null,
+        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 } },
+          React.createElement('span', { style: { fontSize: 24 } }, typeIcon(les.type)),
+          React.createElement('div', null,
+            React.createElement('div', { style: { fontSize: 16, fontWeight: 700, color: C_V.tekstPrimair } }, les.titel),
+            React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted } }, les.duur + ' \u00B7 ' + (les.type === 'video' ? 'Video' : les.type === 'interactief' ? 'Interactief' : les.type === 'toets' ? 'Toets' : 'Lesstof'))
+          )
+        ),
+        les.voltooid && React.createElement('div', { style: { padding: '6px 12px', background: C_V.groenLicht, borderRadius: 6, fontSize: 12, color: C_V.groen, fontWeight: 600, marginBottom: 12 } }, '\u2713 Deze les is voltooid'),
+        React.createElement('div', { style: { fontSize: 14, color: C_V.tekstSecundair, lineHeight: 1.7, marginBottom: 16 } }, les.beschrijving)
+      ),
+
+      // Video link
+      les.video && React.createElement(Card, { style: { border: '2px solid ' + kleur, cursor: 'pointer' }, onClick: function() { window.open(les.video, '_blank'); } },
+        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } },
+          React.createElement('div', { style: { width: 48, height: 48, borderRadius: 8, background: C_V.roodLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 } }, '\u25B6\uFE0F'),
+          React.createElement('div', { style: { flex: 1 } },
+            React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: kleur } }, 'Bekijk video'),
+            React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, wordBreak: 'break-all' } }, les.video.substring(0, 50) + '...')
+          )
+        )
+      ),
+
+      // Start/voltooi knop
+      React.createElement('button', { onClick: function() {
+        if (les.video) { window.open(les.video, '_blank'); } else { addToast(les.voltooid ? 'Les opnieuw geopend' : 'Les gestart!', 'success'); }
+      }, style: {
+        background: kleur, color: '#FFF', border: 'none', borderRadius: 8, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 12,
+      } }, les.voltooid ? 'Opnieuw bekijken' : les.video ? 'Bekijk video en voltooi' : 'Start les')
+    );
+  }
+
+  // ── Module detail view ──
+  if (openModule) {
+    var m = openModule;
+    var st = statusLabel(m.status);
+    var voltooid = m.lessen ? m.lessen.filter(function(l) { return l.voltooid; }).length : 0;
+    var totaal = m.lessen ? m.lessen.length : 0;
+
+    return React.createElement('div', { style: { animation: 'slideInRight 0.3s ease' } },
+      React.createElement('button', { onClick: function() { setOpenModule(null); }, style: { background: 'none', border: 'none', fontSize: 14, color: kleur, cursor: 'pointer', marginBottom: 12, fontWeight: 500 } }, '\u2190 Alle modules'),
+
+      React.createElement(Card, null,
+        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 } },
+          React.createElement('span', { style: { fontSize: 16, fontWeight: 700, color: C_V.tekstPrimair } }, m.naam),
+          React.createElement(Badge, { label: st.label, color: st.color, bgColor: st.bg })
+        ),
+        React.createElement('div', { style: { fontSize: 13, color: C_V.tekstSecundair, lineHeight: 1.6, marginBottom: 10 } }, m.beschrijving),
+        m.duur && React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginBottom: 4 } }, '\u23F1 ' + m.duur + (m.aanbieder ? ' \u00B7 ' + m.aanbieder : '')),
+        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 4, marginTop: 8 } },
+          React.createElement('span', { style: { fontSize: 12, color: C_V.tekstMuted } }, voltooid + ' van ' + totaal + ' lessen voltooid'),
+          React.createElement('span', { style: { fontSize: 12, fontWeight: 700, color: kleur } }, Math.round(voltooid / totaal * 100) + '%')
+        ),
+        React.createElement(ProgressBar, { percentage: voltooid / totaal * 100, color: kleur })
+      ),
+
+      React.createElement(SectionTitle, null, 'Lessen'),
+      m.lessen && m.lessen.map(function(les, i) {
+        return React.createElement('div', { key: i, onClick: function() { setOpenLes(les); }, style: {
+          display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px', marginBottom: 4,
+          background: C_V.kaartWit, borderRadius: 10, border: '1px solid ' + C_V.border, cursor: 'pointer',
+          opacity: les.voltooid ? 0.8 : 1,
+        } },
+          React.createElement('div', { style: {
+            width: 28, height: 28, borderRadius: 14, background: les.voltooid ? C_V.groen : C_V.border,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: les.voltooid ? '#FFF' : C_V.tekstMuted,
+            fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 2,
+          } }, les.voltooid ? '\u2713' : (i + 1)),
+          React.createElement('div', { style: { flex: 1 } },
+            React.createElement('div', { style: { fontSize: 14, fontWeight: 500, color: C_V.tekstPrimair } }, les.titel),
+            React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted } },
+              typeIcon(les.type) + ' ' + (les.type === 'video' ? 'Video' : les.type === 'interactief' ? 'Interactief' : les.type === 'toets' ? 'Toets' : 'Lesstof') + ' \u00B7 ' + les.duur
+            )
+          ),
+          les.video && React.createElement('span', { style: { fontSize: 12, color: kleur, fontWeight: 500 } }, '\u25B6'),
+          React.createElement('span', { style: { fontSize: 14, color: C_V.tekstMuted } }, '\u25B6')
+        );
+      })
+    );
+  }
+
+  // ── Modules lijst ──
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
-    React.createElement(SectionTitle, null, 'Verplichte modules'),
-    React.createElement(Card, { style: { background: C_V.groenLicht, border: '1px solid ' + C_V.groen, padding: 12 } },
+    React.createElement(SectionTitle, null, rol === 'verzorgende' ? 'Verplichte modules' : 'Modules voor familie'),
+
+    // Klantcertificaat (alleen verzorgende)
+    rol === 'verzorgende' && React.createElement(Card, { style: { background: C_V.groenLicht, border: '1px solid ' + C_V.groen, padding: 12 } },
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
         React.createElement('span', { style: { fontSize: 20 } }, '\u2705'),
         React.createElement('div', null,
@@ -373,34 +478,33 @@ window.VerzorgendeLeren = function VerzorgendeLeren({ addToast }) {
         )
       )
     ),
+
     modules.map(function(m, i) {
       var st = statusLabel(m.status);
-      return React.createElement(Card, { key: i, style: { cursor: 'pointer' }, onClick: function() { setModalModule(m); } },
-        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: m.status === 'bezig' ? 6 : 0 } },
+      var voltooid = m.lessen ? m.lessen.filter(function(l) { return l.voltooid; }).length : 0;
+      var totaal = m.lessen ? m.lessen.length : 0;
+      return React.createElement(Card, { key: i, style: { cursor: 'pointer' }, onClick: function() { setOpenModule(m); } },
+        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 } },
           React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair, flex: 1, marginRight: 8 } }, m.naam),
           React.createElement(Badge, { label: st.label, color: st.color, bgColor: st.bg })
         ),
-        m.status === 'bezig' && React.createElement(ProgressBar, { percentage: m.voortgang })
+        React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginBottom: 6 } },
+          totaal + ' lessen' + (m.duur ? ' \u00B7 ' + m.duur : '') + ' \u00B7 ' + voltooid + '/' + totaal + ' voltooid'),
+        React.createElement(ProgressBar, { percentage: m.voortgang, color: kleur })
       );
     }),
-    React.createElement(SectionTitle, null, 'Kennismodule bij pati\u00EBnt'),
-    React.createElement(Card, { style: { border: '2px solid ' + C_V.oranje } },
-      React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair, marginBottom: 4 } }, shared.naam),
-      React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, marginBottom: 8 } }, shared.voltooid + ' van ' + shared.totaal + ' onderdelen'),
-      React.createElement(ProgressBar, { percentage: shared.voltooid / shared.totaal * 100 }),
-      React.createElement('button', { onClick: function() { addToast('E-learning wordt geladen', 'success'); }, style: {
-        background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 10,
-      } }, 'Ga verder')
-    ),
-    modalModule && React.createElement(Modal, { title: modalModule.naam, onClose: function() { setModalModule(null); } },
-      React.createElement('p', { style: { fontSize: 14, color: C_V.tekstSecundair, lineHeight: 1.6, marginBottom: 12 } }, modalModule.beschrijving),
-      modalModule.status === 'bezig' && React.createElement('div', { style: { marginBottom: 12 } },
-        React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginBottom: 4 } }, 'Voortgang: ' + modalModule.voortgang + '%'),
-        React.createElement(ProgressBar, { percentage: modalModule.voortgang })
-      ),
-      React.createElement('button', { onClick: function() { addToast('E-learning wordt geladen', 'success'); setModalModule(null); }, style: {
-        background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%',
-      } }, modalModule.status === 'niet_gestart' ? 'Start module' : modalModule.status === 'bezig' ? 'Ga verder' : 'Opnieuw bekijken')
+
+    // Shared module
+    shared && React.createElement('div', null,
+      React.createElement(SectionTitle, null, 'Kennismodule bij pati\u00EBnt'),
+      React.createElement(Card, { style: { border: '2px solid ' + kleur, cursor: 'pointer' }, onClick: function() { setOpenModule(shared); } },
+        shared.aanbieder && React.createElement('div', { style: { fontSize: 11, fontWeight: 600, color: kleur, marginBottom: 4 } }, shared.aanbieder),
+        React.createElement('div', { style: { fontSize: 15, fontWeight: 600, color: C_V.tekstPrimair, marginBottom: 4 } }, shared.naam),
+        React.createElement('div', { style: { fontSize: 13, color: C_V.tekstSecundair, marginBottom: 8 } }, shared.beschrijving),
+        React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginBottom: 6 } }, shared.voltooid + ' van ' + shared.totaal + ' lessen voltooid'),
+        React.createElement(ProgressBar, { percentage: shared.voltooid / shared.totaal * 100, color: kleur }),
+        React.createElement('div', { style: { fontSize: 13, color: kleur, fontWeight: 600, marginTop: 8, textAlign: 'center' } }, 'Open module \u2192')
+      )
     )
   );
 };

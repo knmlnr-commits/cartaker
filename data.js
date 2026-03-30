@@ -293,23 +293,120 @@ window.familiechat = [
   { id: 8, van: 'martha', datum: 'Vandaag 11:03', tekst: 'Ja! Er is een module "Medicijnen begrijpen". En heeft iemand zaterdag middag trouwens? Dat staat ook nog open.', context: 'planning:zaterdag' },
 ];
 
+// ══════════════════════════════════════════
+// E-LEARNING MODULES — volledig uitgewerkt met lessen en video's
+// ══════════════════════════════════════════
+
 window.verzorgendeModules = [
-  { naam: "Fundament Spoedzorg 1 \u2014 Kwetsbare ouderen", status: "certificaat", voortgang: 100, beschrijving: "Leer de basisprincipes van spoedzorg bij kwetsbare ouderen, inclusief herkenning van acute situaties en eerste handelingen." },
-  { naam: "Hartfalen herkennen", status: "bezig", voortgang: 60, beschrijving: "Verdiep je kennis over de signalen en symptomen van hartfalen bij ouderen en leer hoe je adequaat kunt handelen." },
-  { naam: "ABCDE bij dementie", status: "niet_gestart", voortgang: 0, beschrijving: "Een systematische aanpak voor het beoordelen van acute situaties bij pati\u00EBnten met dementie." },
+  {
+    naam: "Fundament Spoedzorg 1 \u2014 Kwetsbare ouderen",
+    status: "certificaat",
+    voortgang: 100,
+    beschrijving: "Leer de basisprincipes van spoedzorg bij kwetsbare ouderen, inclusief herkenning van acute situaties en eerste handelingen.",
+    duur: "3 uur",
+    aanbieder: "GeriCall Academy",
+    lessen: [
+      { titel: "De kwetsbare oudere herkennen", beschrijving: "Wat maakt een oudere kwetsbaar? Frailty, multimorbiditeit en polyfarmacie. Leer de risicofactoren en hoe je ze snel herkent bij opname.", voltooid: true, duur: "20 min", type: "tekst" },
+      { titel: "ABCDE-systematiek bij ouderen", beschrijving: "De ABCDE-methode (Airway, Breathing, Circulation, Disability, Exposure) is de gouden standaard voor acute beoordeling. Bij ouderen wijken vitale parameters af van jongere pati\u00EBnten \u2014 leer de leeftijdsspecifieke normaalwaarden.", voltooid: true, duur: "25 min", type: "video", video: "https://www.youtube.com/results?search_query=ABCDE+methode+spoedzorg+ouderen" },
+      { titel: "Vroege waarschuwingssignalen (EWS)", beschrijving: "Early Warning Scores bij ouderen: hoe interpreteer je de Modified Early Warning Score (MEWS) en wanneer escaleer je? Oefenscenario\u2019s met veelvoorkomende casussen uit de VVT-sector.", voltooid: true, duur: "30 min", type: "interactief" },
+      { titel: "Communicatie in spoedsituaties", beschrijving: "SBAR-methode (Situation, Background, Assessment, Recommendation) voor overdracht aan arts of 112. Oefen met de SBAR-structuur zodat je in stresssituaties helder communiceert.", voltooid: true, duur: "15 min", type: "video", video: "https://www.youtube.com/results?search_query=SBAR+communicatie+verpleegkundige" },
+      { titel: "Casustoets en certificering", beschrijving: "Drie praktijkcasussen met multiple-choice vragen. Bij 80% of hoger scoort u het certificaat Fundament Spoedzorg 1.", voltooid: true, duur: "20 min", type: "toets" },
+    ],
+  },
+  {
+    naam: "Hartfalen herkennen",
+    status: "bezig",
+    voortgang: 60,
+    beschrijving: "Verdiep je kennis over de signalen en symptomen van hartfalen bij ouderen. Leer de NYHA-classificatie, dagelijkse monitoring en wanneer je moet escaleren.",
+    duur: "2.5 uur",
+    aanbieder: "Hartstichting / GeriCall Academy",
+    lessen: [
+      { titel: "Wat is hartfalen?", beschrijving: "Het hart pompt niet genoeg bloed rond. Maar wat betekent dat in de praktijk? Bekijk de animatie van de Hartstichting en leer het verschil tussen systolisch en diastolisch hartfalen. Bij dhr. Jansen is sprake van NYHA klasse II \u2014 klachten bij normale inspanning.", voltooid: true, duur: "15 min", type: "video", video: "https://www.hartstichting.nl/hart-en-vaatziekten/video/hartfalen" },
+      { titel: "Signalen herkennen in de dagelijkse zorg", beschrijving: "Kortademigheid bij inspanning, gezwollen enkels, gewichtstoename door vochtretentie, vermoeidheid, nachtelijke benauwdheid (orthopno\u00EB). Leer deze signalen herkennen tijdens ADL-momenten. Weeg de bewoner dagelijks \u2014 >2kg toename in 3 dagen = direct melden.", voltooid: true, duur: "20 min", type: "tekst" },
+      { titel: "NYHA-classificatie in de praktijk", beschrijving: "NYHA I: geen klachten. NYHA II (dhr. Jansen): klachten bij gewone inspanning. NYHA III: klachten bij lichte inspanning. NYHA IV: klachten in rust. Leer hoe je de klasse observeert en rapporteert \u2014 verslechtering van NYHA II naar III is een rode vlag.", voltooid: true, duur: "15 min", type: "interactief" },
+      { titel: "Medicatie bij hartfalen", beschrijving: "ACE-remmers, b\u00E8tablokkers (Metoprolol), diuretica (Furosemide), aldosteronantagonisten. Wat doet elk medicijn? Waar let je op bij toediening? Bijwerkingen die je als verzorgende kunt signaleren: duizeligheid (te lage bloeddruk), droge hoest (ACE-remmer), te veel plassen (diuretica).", voltooid: false, duur: "25 min", type: "tekst" },
+      { titel: "Wanneer escaleren? Beslisboom", beschrijving: "Praktische beslisboom: welke signalen meld je aan de verpleegkundige, welke direct aan de arts? Oefen met scenario\u2019s: \u201CDhr. Jansen is 3 kg aangekomen in 2 dagen en is benauwd bij het aankleden\u201D \u2014 wat doe je?", voltooid: false, duur: "20 min", type: "interactief" },
+    ],
+  },
+  {
+    naam: "ABCDE bij dementie",
+    status: "niet_gestart",
+    voortgang: 0,
+    beschrijving: "Acute beoordeling bij pati\u00EBnten met dementie is extra uitdagend: ze kunnen klachten niet goed uiten, vertonen atypische symptomen en reageren anders op pijn. Deze module leert je de ABCDE-systematiek toe te passen bij deze kwetsbare groep.",
+    duur: "2 uur",
+    aanbieder: "GeriCall Academy",
+    lessen: [
+      { titel: "Dementie en acute zorg: de uitdaging", beschrijving: "Pati\u00EBnten met dementie uiten pijn anders \u2014 onrust, roepen, weigeren van zorg kunnen tekenen zijn van een onderliggende acute aandoening. Leer de \u2018vertaling\u2019 van gedrag naar mogelijke somatische oorzaken.", voltooid: false, duur: "20 min", type: "video", video: "https://www.youtube.com/results?search_query=dementie+acute+zorg+herkennen" },
+      { titel: "Delier vs. dementie: het verschil herkennen", beschrijving: "Een delier komt veel voor bij ouderen met dementie maar wordt vaak gemist. Acuut begin, wisselend bewustzijn en onrust zijn rode vlaggen. De DOS-score (Delirium Observatie Screening) helpt je om een delier te herkennen \u2014 oefen met de screeningstool.", voltooid: false, duur: "25 min", type: "interactief" },
+      { titel: "ABCDE aangepast voor dementie", beschrijving: "Airway: kan de pati\u00EBnt slikken? Breathing: let op ademhalingspatroon, niet alleen frequentie. Circulation: koude handen en voeten als vroeg teken. Disability: gebruik AVPU in plaats van GCS. Exposure: inspecteer het hele lichaam \u2014 verwondingen worden vaak niet gemeld.", voltooid: false, duur: "20 min", type: "tekst" },
+      { titel: "Pijnherkenning zonder woorden", beschrijving: "De PAINAD-schaal (Pain Assessment in Advanced Dementia): observeer ademhaling, vocalisatie, gezichtsuitdrukking, lichaamstaal en troostbaarheid. Score 0-10. Oefen met videofragmenten.", voltooid: false, duur: "25 min", type: "video", video: "https://www.youtube.com/results?search_query=PAINAD+pijn+dementie+observatie" },
+      { titel: "Casustoets", beschrijving: "Twee casussen: een bewoner met dementie die plotseling onrustig is, en een bewoner die niet meer eet. Doorloop de ABCDE-systematiek en bepaal de juiste escalatie.", voltooid: false, duur: "15 min", type: "toets" },
+    ],
+  },
 ];
 
 window.familieModules = [
-  { naam: "Bewegen met je naaste", status: "bezig", voortgang: 40, beschrijving: "Praktische oefeningen en tips om samen met uw naaste in beweging te blijven, afgestemd op de mogelijkheden." },
-  { naam: "Medicijnen begrijpen", status: "niet_gestart", voortgang: 0, beschrijving: "Begrijp welke medicijnen uw naaste gebruikt, waarvoor ze dienen en waar u op moet letten." },
-  { naam: "Omgaan met dementie thuis", status: "niet_gestart", voortgang: 0, beschrijving: "Handvatten voor het dagelijks omgaan met dementie in de thuissituatie, met aandacht voor communicatie en veiligheid." },
+  {
+    naam: "Bewegen met je naaste",
+    status: "bezig",
+    voortgang: 40,
+    beschrijving: "Samen bewegen is een van de krachtigste manieren om bij te dragen aan het herstel van uw naaste. Deze module leert u veilige en leuke oefeningen die u samen kunt doen tijdens uw bezoek.",
+    duur: "1.5 uur",
+    aanbieder: "GeriCall i.s.m. Bewegen met Bart",
+    lessen: [
+      { titel: "Waarom bewegen zo belangrijk is", beschrijving: "Bij hartfalen en dementie lijkt rust logisch, maar het tegenovergestelde is waar: gecontroleerd bewegen verbetert de hartfunctie, vermindert angst en vertraagt cognitieve achteruitgang. Uw vader heeft looptraining 2x per dag \u2014 u kunt daar bij helpen!", voltooid: true, duur: "10 min", type: "tekst" },
+      { titel: "Zittende oefeningen voor samen", beschrijving: "Bekijk deze video van Bewegen met Bart: eenvoudige stoelgymnastiek die u samen met uw naaste kunt doen. Arm-, schouder- en beenoefeningen vanuit een stoel. Geen materiaal nodig, 10 minuten per sessie.", voltooid: true, duur: "12 min", type: "video", video: "https://www.youtube.com/@BewegenMetBart" },
+      { titel: "Wandelen op de afdeling", beschrijving: "Tips voor een veilige wandeling op de gang: loop naast uw naaste (niet erachter), bied uw arm aan maar trek niet, pauzeer als hij moe wordt, en maak er een gezellig moment van \u2014 vertel over thuis, de kleinkinderen, het weer. Doel: 10 minuten per bezoek.", voltooid: false, duur: "8 min", type: "tekst" },
+      { titel: "Signalen van overbelasting herkennen", beschrijving: "Wanneer moet u stoppen? Kortademigheid waarbij uw naaste niet meer kan praten, pijn op de borst, duizeligheid, of extreme vermoeidheid. Bij hartfalen (NYHA II) is lichte inspanning goed, maar luister naar het lichaam. Bij twijfel: meld het aan de verzorging.", voltooid: false, duur: "10 min", type: "tekst" },
+      { titel: "Weekschema: beweegmomenten plannen", beschrijving: "Maak samen met het zorgteam een realistisch weekschema. Doel: minimaal 2x per dag 10 minuten bewegen. Familie kan 1-2 van deze momenten invullen \u2014 plan het in het weekoverzicht van de CareTaker app.", voltooid: false, duur: "10 min", type: "interactief" },
+    ],
+  },
+  {
+    naam: "Medicijnen begrijpen",
+    status: "niet_gestart",
+    voortgang: 0,
+    beschrijving: "Uw vader gebruikt meerdere medicijnen. Het is belangrijk dat u begrijpt waarvoor ze dienen, zodat u kunt signaleren als er iets niet klopt. Deze module legt elk medicijn uit in begrijpelijke taal.",
+    duur: "1 uur",
+    aanbieder: "GeriCall Academy",
+    lessen: [
+      { titel: "Het medicijnoverzicht van uw vader", beschrijving: "Adriaan gebruikt drie medicijnen: Metoprolol (voor het hart \u2014 verlaagt hartslag en bloeddruk), Furosemide (plastablet \u2014 verwijdert overtollig vocht) en de Rivastigmine pleister (voor geheugen en concentratie bij dementie). Elk medicijn heeft een specifiek doel en tijdstip.", voltooid: false, duur: "15 min", type: "tekst" },
+      { titel: "Waar let u op als familie?", beschrijving: "U hoeft geen medicijnen toe te dienen, maar u kunt w\u00E9l signaleren: Is vader duizelig? (Metoprolol te sterk) Gaat hij vaker plassen dan normaal? (Furosemide) Heeft hij huidirritatie op zijn rug? (Rivastigmine pleister). Meld afwijkingen via de berichtenfunctie.", voltooid: false, duur: "12 min", type: "tekst" },
+      { titel: "Video: hoe werken medicijnen bij hartfalen?", beschrijving: "Bekijk de animatie van de Hartstichting over hoe medicijnen helpen bij hartfalen. Het hart is als een pomp die te zwak is geworden \u2014 medicijnen helpen het hart effici\u00EBnter te werken en voorkomen dat er vocht ophoopt.", voltooid: false, duur: "8 min", type: "video", video: "https://www.hartstichting.nl/hart-en-vaatziekten/video/hartfalen" },
+      { titel: "Veelgestelde vragen", beschrijving: "Mag vader koffie drinken? (Ja, maar max 3 kopjes) Mag hij zout eten? (Nee, natriumbeperkt dieet bij hartfalen) Hoeveel mag hij drinken? (Max 1.5 liter per dag) Wat als hij een medicijn vergeet? (Meld het aan de verzorging, geef het NIET zelf)", voltooid: false, duur: "10 min", type: "tekst" },
+    ],
+  },
+  {
+    naam: "Omgaan met dementie thuis",
+    status: "niet_gestart",
+    voortgang: 0,
+    beschrijving: "Uw vader heeft dementie fase 2. Dat betekent dat hij soms in de war is, mensen niet herkent of boos wordt. Deze module helpt u om deze momenten beter te begrijpen en er rustiger mee om te gaan.",
+    duur: "2 uur",
+    aanbieder: "GeriCall i.s.m. Alzheimer Nederland",
+    lessen: [
+      { titel: "Wat is dementie fase 2?", beschrijving: "In fase 2 (matige dementie) kan Adriaan bekende gezichten soms niet plaatsen, raakt hij de draad kwijt in gesprekken en kan hij angstig of geagiteerd worden. Dit is niet bewust \u2014 zijn hersenen verwerken informatie anders. Begrip hiervan helpt u om geduldig te blijven.", voltooid: false, duur: "15 min", type: "tekst" },
+      { titel: "Communicatietips", beschrijving: "Spreek rustig en in korte zinnen. Stel geen toetsvragen (\u201CWeet je nog wie ik ben?\u201D) maar zeg \u201CHoi papa, ik ben Martha, je dochter.\u201D Gebruik aanraking \u2014 een hand op de arm geeft veiligheid. Corrigeer niet, maar sluit aan bij zijn belevingswereld.", voltooid: false, duur: "12 min", type: "tekst" },
+      { titel: "Dilemmafilm: omgaan met een veranderende werkelijkheid", beschrijving: "In deze video van Alzheimer Nederland vertellen mantelzorgers hoe zij omgaan met situaties waarin hun naaste fantasie en werkelijkheid door elkaar haalt. Herkenbare dilemma\u2019s en praktische tips van ervaringsdeskundigen.", voltooid: false, duur: "15 min", type: "video", video: "https://www.zorgvoorbeter.nl/thema-s/dementie/scholing/videos" },
+      { titel: "Wat te doen bij onrust of boosheid?", beschrijving: "Als Adriaan onrustig of boos wordt: blijf kalm, verlaag uw stem, leid af met iets vertrouwds (muziek, een foto, een wandeling). Ga nooit in discussie. Als het escaleert: verlaat even de kamer en informeer de verzorging. Onrust kan ook een teken zijn van pijn of infectie.", voltooid: false, duur: "15 min", type: "tekst" },
+      { titel: "Dilemmafilm: \u201CMoeten we het rijbewijs afpakken?\u201D", beschrijving: "Een herkenbaar dilemma voor veel families. In deze video van Alzheimer Nederland delen families hun ervaringen met moeilijke beslissingen rondom autonomie en veiligheid.", voltooid: false, duur: "15 min", type: "video", video: "https://mantelzorgelijk.nl/videoreeks-alzheimer-nederland-tips-en-ervaringen-mantelzorgers/" },
+      { titel: "Uw eigen grenzen bewaken", beschrijving: "Mantelzorg voor iemand met dementie is zwaar. Het is normaal om verdriet, frustratie of schuldgevoel te voelen. Zorg ook voor uzelf: accepteer hulp, verdeel taken met Peter en Lisa, en neem pauzes. De DementieLijn (0800-5088) is 7 dagen per week bereikbaar.", voltooid: false, duur: "10 min", type: "tekst" },
+    ],
+  },
 ];
 
 window.gedeeldeModule = {
   naam: "Beweging bij hartfalen \u2014 voor mantelzorgers",
   voltooid: 2,
   totaal: 5,
-  beschrijving: "Deze module helpt mantelzorgers om veilig en effectief bewegingsoefeningen te begeleiden bij pati\u00EBnten met hartfalen.",
+  beschrijving: "Deze module helpt mantelzorgers om veilig en effectief bewegingsoefeningen te begeleiden bij pati\u00EBnten met hartfalen. Speciaal samengesteld voor de familie van Adriaan.",
+  duur: "1 uur",
+  aanbieder: "Hartstichting / GeriCall",
+  lessen: [
+    { titel: "Hartfalen en bewegen: de basis", beschrijving: "Waarom is bewegen belangrijk bij hartfalen? Het hart is een spier die getraind kan worden. Gecontroleerde beweging verbetert de pompfunctie, vermindert kortademigheid en verbetert de kwaliteit van leven. De Hartstichting adviseert dagelijks bewegen, aangepast aan het niveau.", voltooid: true, duur: "10 min", type: "video", video: "https://www.hartstichting.nl/hart-en-vaatziekten/video/hartfalen" },
+    { titel: "Veilig bewegen bij NYHA II", beschrijving: "Bij NYHA klasse II (zoals Adriaan) zijn er klachten bij normale inspanning. Dat betekent: wandelen mag, trap lopen met rustpauzes, lichte stoelgymnastiek. Vermijd: zware tillen, rennen, of doorduwen bij benauwdheid. De Borg-schaal (6-20) helpt: blijf onder de 13 (enigszins zwaar).", voltooid: true, duur: "12 min", type: "tekst" },
+    { titel: "Oefenvideo: 10 minuten stoelgymnastiek", beschrijving: "Volg deze sessie van Bewegen met Bart: zittende oefeningen die veilig zijn bij hartfalen. Armen, schouders, benen. Gebruik eventueel lichte gewichtjes (flesjes water). Ideaal om samen te doen tijdens een bezoek.", voltooid: false, duur: "12 min", type: "video", video: "https://www.youtube.com/@BewegenMetBart" },
+    { titel: "Wanneer stoppen? Alarmsignalen", beschrijving: "Stop direct met bewegen als Adriaan: pijn op de borst heeft, heel benauwd wordt en niet meer kan praten, duizelig wordt of bijna flauwvalt, of ongewoon moe is. Meld dit aan de verzorging. Let ook op: gezwollen enkels na inspanning kunnen wijzen op vochtophoping.", voltooid: false, duur: "8 min", type: "tekst" },
+    { titel: "Een beweegplan maken met het zorgteam", beschrijving: "Bespreek met de fysiotherapeut en verzorging welke oefeningen passen bij Adriaans niveau. Doel: 2x per dag 10 minuten. Familie kan 1-2 sessies per week invullen. Registreer voortgang in de app en vier kleine overwinningen samen.", voltooid: false, duur: "10 min", type: "interactief" },
+  ],
 };
 
 // ══════════════════════════════════════════

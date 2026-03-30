@@ -348,59 +348,15 @@ window.FamilieBerichten = function FamilieBerichten({ lid, addToast }) {
 };
 
 // ══════════════════════════════════════════
-// LEREN — familie (ongewijzigd, lid-onafhankelijk)
+// LEREN — familie (gebruikt gedeeld ModuleOverzicht component)
 // ══════════════════════════════════════════
 window.FamilieLeren = function FamilieLeren({ addToast }) {
-  const { useState } = React;
-  const [modalModule, setModalModule] = useState(null);
-  var modules = window.familieModules;
-  var shared = window.gedeeldeModule;
-
-  var statusLabel = function(s) {
-    if (s === 'bezig') return { label: 'Bezig', color: C_F.oranje, bg: C_F.oranjeLicht };
-    return { label: 'Nog te starten', color: C_F.tekstMuted, bg: C_F.achtergrond };
-  };
-
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
     React.createElement(SectionTitle, null, 'Leren over de zorg voor ' + window.patient.roepnaam),
     React.createElement('div', { style: { fontSize: 13, color: C_F.tekstSecundair, marginBottom: 12, lineHeight: 1.5 } },
       'Kennis over de aandoeningen van ' + window.patient.roepnaam + ' maakt uw bezoeken waardevoller en helpt het re-ablement traject.'),
-
-    React.createElement(Card, { style: { border: '2px solid ' + C_F.groen } },
-      React.createElement('div', { style: { fontSize: 11, fontWeight: 600, color: C_F.groen, marginBottom: 4 } }, 'AANBEVOLEN'),
-      React.createElement('div', { style: { fontSize: 15, fontWeight: 600, color: C_F.tekstPrimair, marginBottom: 4 } }, shared.naam),
-      React.createElement('div', { style: { fontSize: 13, color: C_F.tekstSecundair, marginBottom: 8 } }, shared.beschrijving),
-      React.createElement('div', { style: { fontSize: 12, color: C_F.tekstMuted, marginBottom: 6 } }, shared.voltooid + ' van ' + shared.totaal + ' onderdelen'),
-      React.createElement(ProgressBar, { percentage: shared.voltooid / shared.totaal * 100, color: C_F.groen }),
-      React.createElement('button', { onClick: function() { addToast('E-learning wordt geladen', 'success'); }, style: {
-        background: C_F.groen, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 10,
-      } }, 'Ga verder')
-    ),
-
-    React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_F.tekstSecundair, margin: '16px 0 8px' } }, 'Alle modules'),
-    modules.map(function(m, i) {
-      var st = statusLabel(m.status);
-      return React.createElement(Card, { key: i, style: { cursor: 'pointer' }, onClick: function() { setModalModule(m); } },
-        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: m.status === 'bezig' ? 6 : 0 } },
-          React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_F.tekstPrimair, flex: 1, marginRight: 8 } }, m.naam),
-          React.createElement(Badge, { label: st.label, color: st.color, bgColor: st.bg })
-        ),
-        m.status === 'bezig' && React.createElement(ProgressBar, { percentage: m.voortgang, color: C_F.groen })
-      );
-    }),
-
+    React.createElement(ModuleOverzicht, { modules: window.familieModules, shared: window.gedeeldeModule, addToast: addToast, accentKleur: C_F.groen, rol: 'familie' }),
     React.createElement('div', { style: { fontSize: 12, color: C_F.tekstMuted, textAlign: 'center', marginTop: 16, fontStyle: 'italic' } },
-      'Uw betrokkenheid maakt verschil in het herstel van ' + window.patient.roepnaam),
-
-    modalModule && React.createElement(Modal, { title: modalModule.naam, onClose: function() { setModalModule(null); } },
-      React.createElement('p', { style: { fontSize: 14, color: C_F.tekstSecundair, lineHeight: 1.6, marginBottom: 12 } }, modalModule.beschrijving),
-      modalModule.status === 'bezig' && React.createElement('div', { style: { marginBottom: 12 } },
-        React.createElement('div', { style: { fontSize: 12, color: C_F.tekstMuted, marginBottom: 4 } }, 'Voortgang: ' + modalModule.voortgang + '%'),
-        React.createElement(ProgressBar, { percentage: modalModule.voortgang, color: C_F.groen })
-      ),
-      React.createElement('button', { onClick: function() { addToast('E-learning wordt geladen', 'success'); setModalModule(null); }, style: {
-        background: C_F.groen, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%',
-      } }, modalModule.status === 'niet_gestart' ? 'Start module' : 'Ga verder')
-    )
+      'Uw betrokkenheid maakt verschil in het herstel van ' + window.patient.roepnaam)
   );
 };
