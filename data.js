@@ -106,10 +106,24 @@ window.berichten = [
   { id: 4, van: 'Kevin R. (verzorgende)', datum: 'Gisteren 17:45', tekst: 'Zeker! Ik leg hem klaar. Fijne avond.', isFamilie: false },
 ];
 
-// ── Familie leden ──
+// ── Familie leden (inlogbare profielen) ──
 window.familieleden = [
-  { naam: 'Martha Jansen', relatie: 'Dochter', telefoon: '06-1234****', bezoekfrequentie: '3x per week', laatsteBezoek: 'Gisteren', isHoofdcontact: true },
-  { naam: 'Peter Jansen', relatie: 'Zoon', telefoon: '06-5678****', bezoekfrequentie: '1x per week', laatsteBezoek: '4 dagen geleden', isHoofdcontact: false },
+  { id: 'martha', naam: 'Martha Jansen', roepnaam: 'Martha', relatie: 'Dochter', telefoon: '06-1234****', bezoekfrequentie: '3x per week', laatsteBezoek: 'Gisteren', isHoofdcontact: true, initialen: 'MJ', kleur: '#2D9D78' },
+  { id: 'peter', naam: 'Peter Jansen', roepnaam: 'Peter', relatie: 'Zoon', telefoon: '06-5678****', bezoekfrequentie: '1x per week', laatsteBezoek: '4 dagen geleden', isHoofdcontact: false, initialen: 'PJ', kleur: '#4A7FB5' },
+  { id: 'lisa', naam: 'Lisa van Dijk-Jansen', roepnaam: 'Lisa', relatie: 'Schoondochter', telefoon: '06-9012****', bezoekfrequentie: '1x per 2 weken', laatsteBezoek: 'Vorige week zondag', isHoofdcontact: false, initialen: 'LJ', kleur: '#E8732A' },
+  { id: 'adriaan', naam: 'Adriaan Jansen', roepnaam: 'Adriaan', relatie: 'Pati\u00EBnt', telefoon: null, bezoekfrequentie: null, laatsteBezoek: null, isHoofdcontact: false, initialen: 'AJ', kleur: '#E8732A', isPatient: true },
+];
+
+// ── Familiechat (contextgebonden aan planning + zorg) ──
+window.familiechat = [
+  { id: 1, van: 'martha', datum: 'Vandaag 09:14', tekst: 'Hoi allemaal, papa was onrustig vannacht volgens het rapport. Ik ga vanmiddag langs. Kan iemand dinsdag middag?', context: null },
+  { id: 2, van: 'peter', datum: 'Vandaag 09:31', tekst: 'Dinsdag kan ik niet, ik zit in Rotterdam. Woensdag middag zou ik kunnen maar ben er niet 100% zeker van.', context: null },
+  { id: 3, van: 'lisa', datum: 'Vandaag 09:45', tekst: 'Ik kan dinsdag middag! Zal ik me inschrijven? Dan neem ik ook zijn favoriete koekjes mee.', context: null },
+  { id: 4, van: 'martha', datum: 'Vandaag 09:48', tekst: 'Top Lisa! Fijn. Peter, als je woensdag kunt zou dat ook goed zijn, dan is er elke dag iemand.', context: null },
+  { id: 5, van: 'peter', datum: 'Vandaag 10:02', tekst: 'Ik zet woensdag op onder voorbehoud. Hoor morgen of mijn vergadering verzet kan worden.', context: 'planning:woensdag' },
+  { id: 6, van: 'martha', datum: 'Vandaag 10:15', tekst: 'Heeft iemand trouwens de module "Omgaan met dementie" al bekeken? Volgens het zorgteam is dat echt aan te raden.', context: 'leren' },
+  { id: 7, van: 'lisa', datum: 'Vandaag 10:22', tekst: 'Nog niet, ga ik dit weekend doen. Is er ook iets over de medicijnen? Ik vind het soms lastig te volgen wat hij allemaal slikt.', context: 'leren' },
+  { id: 8, van: 'martha', datum: 'Vandaag 11:03', tekst: 'Ja! Er is een module "Medicijnen begrijpen". En heeft iemand zaterdag middag trouwens? Dat staat ook nog open.', context: 'planning:zaterdag' },
 ];
 
 window.verzorgendeModules = [
