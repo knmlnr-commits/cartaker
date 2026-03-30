@@ -262,6 +262,7 @@ window.StemmingWidget = function StemmingWidget({ bewonerId, gebruikerNaam, gebr
 window.ConsultDetail = function ConsultDetail({ consult, onTerug, addToast, readOnly }) {
   var { useState } = React;
   var [nieuwBericht, setNieuwBericht] = useState('');
+  var [deelMetFamilie, setDeelMetFamilie] = useState(true);
   var c = consult;
   if (!c) return null;
 
@@ -382,13 +383,22 @@ window.ConsultDetail = function ConsultDetail({ consult, onTerug, addToast, read
             value: nieuwBericht,
             onChange: function(e) { setNieuwBericht(e.target.value); },
             placeholder: 'Bericht aan behandelaar...',
-            onKeyDown: function(e) { if (e.key === 'Enter' && nieuwBericht.trim()) { addToast('Bericht verzonden', 'success'); setNieuwBericht(''); } },
+            onKeyDown: function(e) { if (e.key === 'Enter' && nieuwBericht.trim()) { addToast('Bericht verzonden' + (deelMetFamilie ? ' (ook gedeeld met familie)' : ''), 'success'); setNieuwBericht(''); } },
             style: { flex: 1, padding: '10px 12px', borderRadius: 8, border: '1px solid ' + C.border, fontSize: 13, fontFamily: "'DM Sans', sans-serif", outline: 'none', color: C.tekstPrimair }
           }),
           React.createElement('button', {
-            onClick: function() { if (nieuwBericht.trim()) { addToast('Bericht verzonden', 'success'); setNieuwBericht(''); } },
+            onClick: function() { if (nieuwBericht.trim()) { addToast('Bericht verzonden' + (deelMetFamilie ? ' (ook gedeeld met familie)' : ''), 'success'); setNieuwBericht(''); } },
             style: { background: C.oranje, color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '10px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }
           }, 'Stuur')
+        ),
+        // Deel met familie vinkje
+        React.createElement('label', { style: { display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, cursor: 'pointer', fontSize: 12, color: C.tekstSecundair } },
+          React.createElement('input', {
+            type: 'checkbox', checked: deelMetFamilie,
+            onChange: function() { setDeelMetFamilie(!deelMetFamilie); },
+            style: { accentColor: C.oranje, width: 16, height: 16, cursor: 'pointer' }
+          }),
+          'Deel dit bericht ook met familie'
         )
       )
     ),

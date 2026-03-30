@@ -12,25 +12,31 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner 
   var totaal = bewoners.reduce(function(s, b) { return s + b.takenTotaal; }, 0);
   var alerts = bewoners.filter(function(b) { return b.alert; });
 
+  // Scroll naar sectie
+  var scrollNaar = function(id) {
+    var el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
-    // Wijk stats
+    // Wijk stats — klikbaar
     React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 } },
-      React.createElement(Card, { style: { padding: 10, textAlign: 'center' } },
+      React.createElement(Card, { style: { padding: 10, textAlign: 'center', cursor: 'pointer' }, onClick: function() { scrollNaar('wijk-bewoners'); } },
         React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: C_V.oranje } }, bewoners.length),
         React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, 'Bewoners')
       ),
-      React.createElement(Card, { style: { padding: 10, textAlign: 'center' } },
+      React.createElement(Card, { style: { padding: 10, textAlign: 'center', cursor: 'pointer' }, onClick: function() { scrollNaar('wijk-bewoners'); } },
         React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: C_V.tekstPrimair } }, totaalOpen),
         React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, 'Taken open')
       ),
-      React.createElement(Card, { style: { padding: 10, textAlign: 'center' } },
+      React.createElement(Card, { style: { padding: 10, textAlign: 'center', cursor: alerts.length > 0 ? 'pointer' : 'default' }, onClick: function() { if (alerts.length > 0) scrollNaar('wijk-alerts'); } },
         React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: alerts.length > 0 ? C_V.rood : C_V.groen } }, alerts.length),
         React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, 'Alerts')
       )
     ),
 
     // Alerts bovenaan
-    alerts.length > 0 && React.createElement('div', null,
+    alerts.length > 0 && React.createElement('div', { id: 'wijk-alerts' },
       alerts.map(function(b) {
         var isU2 = b.alert === 'U2';
         return React.createElement('div', { key: b.id + '_alert', onClick: function() { onSelectBewoner(b); },
@@ -49,7 +55,7 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner 
     ),
 
     // Bewoners lijst
-    React.createElement(SectionTitle, null, 'Mijn bewoners'),
+    React.createElement('div', { id: 'wijk-bewoners' }, React.createElement(SectionTitle, null, 'Mijn bewoners')),
     bewoners.map(function(b) {
       var gedaan = b.takenTotaal - b.takenOpen;
       var pct = Math.round(gedaan / b.takenTotaal * 100);
@@ -341,6 +347,27 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
           background: sel ? C_V.oranjeLicht : C_V.kaartWit, color: sel ? C_V.oranje : C_V.tekstSecundair, transition: 'all 0.2s',
         } }, c.label);
       })
+    ),
+    // Snelknoppen: vitalen ophalen + EPD
+    React.createElement('div', { style: { display: 'flex', gap: 8, marginBottom: 12 } },
+      React.createElement('button', { onClick: function() {
+        var bew = window.bewoners.find(function(b) { return b.id === bewoner; });
+        if (bew && bew.iot) {
+          var v = bew.iot;
+          var regel = 'Vitalen ' + bew.roepnaam + ': Pols ' + v.hartslag.waarde + ', SpO2 ' + v.saturatie.waarde + '%, Temp ' + v.temperatuur.waarde + '\u00B0C, RR ' + v.bloeddruk.waarde + ', Gewicht ' + v.gewicht.waarde + 'kg';
+          setTekst(function(prev) { return prev ? prev + '\n' + regel : regel; });
+          addToast('Vitalen opgehaald van IoT sensoren', 'success');
+        }
+      }, style: { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 8, border: '1px solid ' + C_V.border, background: C_V.kaartWit, fontSize: 12, fontWeight: 500, color: C_V.tekstSecundair, cursor: 'pointer' } },
+        React.createElement('span', { style: { fontSize: 14 } }, '\u2764\uFE0F'),
+        'Vitalen ophalen'
+      ),
+      React.createElement('button', { onClick: function() {
+        addToast('NUTS koppeling: EPD wordt geraadpleegd...', 'success');
+      }, style: { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 8, border: '1px solid ' + C_V.blauw, background: C_V.blauwLicht, fontSize: 12, fontWeight: 500, color: C_V.blauw, cursor: 'pointer' } },
+        React.createElement('span', { style: { fontSize: 14 } }, '\uD83D\uDD12'),
+        'EPD raadplegen (NUTS)'
+      )
     ),
     React.createElement(Card, null,
       React.createElement('textarea', {
