@@ -457,8 +457,7 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
               typeIcon(les.type) + ' ' + (les.type === 'video' ? 'Video' : les.type === 'interactief' ? 'Interactief' : les.type === 'toets' ? 'Toets' : 'Lesstof') + ' \u00B7 ' + les.duur
             )
           ),
-          les.video && React.createElement('span', { style: { fontSize: 12, color: kleur, fontWeight: 500 } }, '\u25B6'),
-          React.createElement('span', { style: { fontSize: 14, color: C_V.tekstMuted } }, '\u25B6')
+          React.createElement('span', { style: { fontSize: 14, color: les.video ? kleur : C_V.tekstMuted } }, '\u25B6')
         );
       })
     );
