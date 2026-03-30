@@ -76,9 +76,9 @@ window.Modal = function Modal({ title, children, onClose }) {
 };
 
 // ── Card ──
-window.Card = function Card({ children, style }) {
+window.Card = function Card({ children, style, onClick }) {
   return (
-    <div style={{
+    <div onClick={onClick} style={{
       background: C.kaartWit, borderRadius: 12, padding: 16, marginBottom: 12,
       border: `1px solid ${C.border}`, ...style,
     }}>{children}</div>

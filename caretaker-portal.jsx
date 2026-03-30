@@ -1,6 +1,6 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
-var APP_VERSION = 'v3.4.0';
+var APP_VERSION = 'v3.4.1';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
