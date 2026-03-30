@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v4.2.2';
+var APP_VERSION = 'v4.2.3';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -136,7 +136,7 @@ function RolKeuze() {
             <div>
               <div style={{ fontSize: 16, fontWeight: 700, color: C.tekstPrimair }}>Ik werk in de zorg</div>
               <div style={{ fontSize: 13, color: C.tekstSecundair }}>Doel: dagelijkse zorg uitvoeren en rapporteren</div>
-              <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 2 }}>Helpende \u00B7 Verzorgende \u00B7 Verpleegkundige</div>
+              <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 2 }}>Helpende &middot; Verzorgende &middot; Verpleegkundige</div>
             </div>
           </div>
         </div>
@@ -150,7 +150,7 @@ function RolKeuze() {
             <div>
               <div style={{ fontSize: 16, fontWeight: 700, color: C.tekstPrimair }}>Ik ben familie / pati&euml;nt</div>
               <div style={{ fontSize: 13, color: C.tekstSecundair }}>Doel: betrokken blijven en samenwerken</div>
-              <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 2 }}>Gezin \u00B7 Ondersteuner \u00B7 Pati\u00EBnt</div>
+              <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 2 }}>Gezin &middot; Ondersteuner &middot; Pati&euml;nt</div>
             </div>
           </div>
         </div>
@@ -202,7 +202,7 @@ function FamilieKeuze() {
                 }}>{lid.initialen}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 16, fontWeight: 600, color: C.tekstPrimair }}>{lid.roepnaam}</div>
-                  <div style={{ fontSize: 13, color: li.kleur, fontWeight: 500 }}>{lid.relatie}{lid.isHoofdcontact ? ' \u00B7 1e contactpersoon' : ''}</div>
+                  <div style={{ fontSize: 13, color: li.kleur, fontWeight: 500 }}>{lid.relatie}{lid.isHoofdcontact ? ' \u00B7 1e contact' : ''}</div>
                   <div style={{ fontSize: 11, color: C.tekstMuted }}>{li.doel}</div>
                 </div>
               </div>
