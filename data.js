@@ -67,11 +67,137 @@ window.gedeeldeModule = {
   beschrijving: "Deze module helpt mantelzorgers om veilig en effectief bewegingsoefeningen te begeleiden bij pati\u00EBnten met hartfalen.",
 };
 
-window.triageCategorieen = [
-  "Bewustzijn / verwardheid",
-  "Pijn (borst, buik, hoofd)",
-  "Ademhaling / benauwdheid",
-  "Val / letsel",
-  "Koorts / infectie",
-  "Gedragsverandering",
+// ══════════════════════════════════════════
+// NTS-gebaseerde triage data
+// Gebaseerd op de Nederlandse Triage Standaard (NHG/InEen)
+// Aangepast voor geriatrische setting
+// ══════════════════════════════════════════
+
+window.ntsIngangsklachten = [
+  {
+    id: 'bewustzijn',
+    naam: 'Bewustzijnsstoornis',
+    icon: '\uD83E\uDDE0',
+    toelichting: 'Verminderd bewustzijn, niet aanspreekbaar, verwardheid',
+    discriminatoren: [
+      { id: 'bew_1', vraag: 'Is de pati\u00EBnt aanspreekbaar?', opties: ['Ja', 'Nee, reageert niet'], urgentieImpact: { 'Nee, reageert niet': 'U1' } },
+      { id: 'bew_2', vraag: 'Is er sprake van een acute verandering in bewustzijn (< 24 uur)?', opties: ['Ja, acuut ontstaan', 'Nee, geleidelijk'], urgentieImpact: { 'Ja, acuut ontstaan': 'U1' } },
+      { id: 'bew_3', vraag: 'Reageert de pati\u00EBnt op pijnprikkels?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Nee': 'U0' } },
+      { id: 'bew_4', vraag: 'Is er sprake van koorts (> 38.5\u00B0C)?', opties: ['Ja', 'Nee', 'Onbekend'], urgentieImpact: { 'Ja': 'U2' } },
+      { id: 'bew_5', vraag: 'Gebruikt pati\u00EBnt bloedverdunners of anti-epileptica?', opties: ['Ja', 'Nee', 'Onbekend'], urgentieImpact: {} },
+    ],
+  },
+  {
+    id: 'pijn_borst',
+    naam: 'Pijn op de borst',
+    icon: '\u2764\uFE0F',
+    toelichting: 'Retrosternale pijn, druk op de borst, uitstraling',
+    discriminatoren: [
+      { id: 'pb_1', vraag: 'Is de pijn acuut ontstaan (< 12 uur geleden)?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U1' } },
+      { id: 'pb_2', vraag: 'Straalt de pijn uit naar kaak, arm of rug?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U1' } },
+      { id: 'pb_3', vraag: 'Is er sprake van transpireren, misselijkheid of bleekheid?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U1' } },
+      { id: 'pb_4', vraag: 'Is er sprake van benauwdheid bij de pijn?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U1' } },
+      { id: 'pb_5', vraag: 'Heeft pati\u00EBnt bekende cardiale voorgeschiedenis?', opties: ['Ja', 'Nee', 'Onbekend'], urgentieImpact: { 'Ja': 'U2' } },
+    ],
+  },
+  {
+    id: 'dyspnoe',
+    naam: 'Benauwdheid / Dyspnoe',
+    icon: '\uD83C\uDF2C\uFE0F',
+    toelichting: 'Kortademigheid, ademhalingsproblemen, saturatiedaling',
+    discriminatoren: [
+      { id: 'dy_1', vraag: 'Is de pati\u00EBnt in staat om in zinnen te spreken?', opties: ['Ja, hele zinnen', 'Alleen losse woorden', 'Kan niet spreken'], urgentieImpact: { 'Kan niet spreken': 'U0', 'Alleen losse woorden': 'U1' } },
+      { id: 'dy_2', vraag: 'Wat is de saturatie (SpO2)?', opties: ['> 94%', '90-94%', '< 90%', 'Niet gemeten'], urgentieImpact: { '< 90%': 'U1', '90-94%': 'U2' } },
+      { id: 'dy_3', vraag: 'Is de benauwdheid acuut ontstaan (< 2 uur)?', opties: ['Ja', 'Nee, geleidelijk'], urgentieImpact: { 'Ja': 'U1' } },
+      { id: 'dy_4', vraag: 'Gebruikt pati\u00EBnt zuurstof thuis?', opties: ['Ja', 'Nee'], urgentieImpact: {} },
+      { id: 'dy_5', vraag: 'Is er sprake van stridor of piepende ademhaling?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U2' } },
+    ],
+  },
+  {
+    id: 'vallen',
+    naam: 'Val / Trauma',
+    icon: '\u26A0\uFE0F',
+    toelichting: 'Val uit hoogte, van bed, heupletsel, hoofdletsel',
+    discriminatoren: [
+      { id: 'val_1', vraag: 'Is er sprake van hoofdletsel?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U2' } },
+      { id: 'val_2', vraag: 'Gebruikt pati\u00EBnt antistolling (bloedverdunners)?', opties: ['Ja', 'Nee', 'Onbekend'], urgentieImpact: { 'Ja': 'U2' } },
+      { id: 'val_3', vraag: 'Kan de pati\u00EBnt het aangedane lichaamsdeel belasten/bewegen?', opties: ['Ja', 'Nee, sterk beperkt'], urgentieImpact: { 'Nee, sterk beperkt': 'U3' } },
+      { id: 'val_4', vraag: 'Is er sprake van een zichtbare vervorming of open wond?', opties: ['Ja, vervorming', 'Ja, open wond', 'Nee'], urgentieImpact: { 'Ja, vervorming': 'U2', 'Ja, open wond': 'U3' } },
+      { id: 'val_5', vraag: 'Was er sprake van bewustzijnsverlies bij de val?', opties: ['Ja', 'Nee', 'Onbekend'], urgentieImpact: { 'Ja': 'U2' } },
+    ],
+  },
+  {
+    id: 'koorts',
+    naam: 'Koorts / Infectie',
+    icon: '\uD83C\uDF21\uFE0F',
+    toelichting: 'Temperatuurverhoging, rillen, infectieverschijnselen',
+    discriminatoren: [
+      { id: 'ko_1', vraag: 'Wat is de temperatuur?', opties: ['< 38.0\u00B0C', '38.0 - 39.0\u00B0C', '39.0 - 40.0\u00B0C', '> 40.0\u00B0C', 'Niet gemeten'], urgentieImpact: { '> 40.0\u00B0C': 'U2', '39.0 - 40.0\u00B0C': 'U3' } },
+      { id: 'ko_2', vraag: 'Is er sprake van rilkoorts of koude rillingen?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U2' } },
+      { id: 'ko_3', vraag: 'Is er sprake van verminderde vochtinname (< 24 uur)?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U3' } },
+      { id: 'ko_4', vraag: 'Zijn er tekenen van een urineweginfectie (troebele/stinkende urine)?', opties: ['Ja', 'Nee', 'Onbekend'], urgentieImpact: {} },
+      { id: 'ko_5', vraag: 'Is de pati\u00EBnt immuungecompromitteerd of gebruikt deze immunosuppressiva?', opties: ['Ja', 'Nee', 'Onbekend'], urgentieImpact: { 'Ja': 'U2' } },
+    ],
+  },
+  {
+    id: 'gedrag',
+    naam: 'Gedragsverandering / Delier',
+    icon: '\uD83D\uDCA4',
+    toelichting: 'Agitatie, onrust, hallucinaties, dag-nachtritme verstoord',
+    discriminatoren: [
+      { id: 'ge_1', vraag: 'Is de gedragsverandering acuut ontstaan (< 24 uur)?', opties: ['Ja', 'Nee, geleidelijk'], urgentieImpact: { 'Ja': 'U2' } },
+      { id: 'ge_2', vraag: 'Is er sprake van (zelf)verwondingsgevaar?', opties: ['Ja, acuut gevaar', 'Mogelijk risico', 'Nee'], urgentieImpact: { 'Ja, acuut gevaar': 'U1', 'Mogelijk risico': 'U3' } },
+      { id: 'ge_3', vraag: 'Is er een fluctuerend bewustzijn (helder \u2194 verward)?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U2' } },
+      { id: 'ge_4', vraag: 'Zijn er aanwijzingen voor een somatische oorzaak (koorts, pijn, urineretentie)?', opties: ['Ja', 'Nee', 'Onbekend'], urgentieImpact: { 'Ja': 'U2' } },
+      { id: 'ge_5', vraag: 'Is er recent medicatie gewijzigd?', opties: ['Ja', 'Nee', 'Onbekend'], urgentieImpact: {} },
+    ],
+  },
+  {
+    id: 'pijn_buik',
+    naam: 'Buikpijn',
+    icon: '\uD83E\uDDB7',
+    toelichting: 'Abdominale pijn, misselijkheid, braken, obstipatie',
+    discriminatoren: [
+      { id: 'bu_1', vraag: 'Is de buik hard en opgezet?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U2' } },
+      { id: 'bu_2', vraag: 'Is er sprake van bloed bij ontlasting of braken?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U2' } },
+      { id: 'bu_3', vraag: 'Hoe lang bestaan de klachten?', opties: ['< 6 uur', '6-24 uur', '> 24 uur'], urgentieImpact: { '< 6 uur': 'U3' } },
+      { id: 'bu_4', vraag: 'Is er sprake van niet kunnen plassen (urineretentie)?', opties: ['Ja', 'Nee', 'Onbekend'], urgentieImpact: { 'Ja': 'U3' } },
+      { id: 'bu_5', vraag: 'Heeft de pati\u00EBnt de afgelopen 3 dagen ontlasting gehad?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Nee': 'U4' } },
+    ],
+  },
+  {
+    id: 'huid',
+    naam: 'Huidproblemen / Wonden',
+    icon: '\uD83E\uDE79',
+    toelichting: 'Decubitus, roodheid, wonddehiscentie, allergische reactie',
+    discriminatoren: [
+      { id: 'hu_1', vraag: 'Is er sprake van een allergische reactie met zwelling van gezicht/keel?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U1' } },
+      { id: 'hu_2', vraag: 'Is de wond actief bloedend en niet te stelpen?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U2' } },
+      { id: 'hu_3', vraag: 'Zijn er tekenen van wondinfectie (roodheid, warmte, pus)?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U3' } },
+      { id: 'hu_4', vraag: 'Welke graad decubitus (indien van toepassing)?', opties: ['Graad 1 (roodheid)', 'Graad 2 (blaar/oppervlakkig)', 'Graad 3-4 (diep)', 'Niet van toepassing'], urgentieImpact: { 'Graad 3-4 (diep)': 'U3' } },
+      { id: 'hu_5', vraag: 'Is er sprake van koorts bij de wond?', opties: ['Ja', 'Nee'], urgentieImpact: { 'Ja': 'U3' } },
+    ],
+  },
 ];
+
+// ABCDE-vitale parameters invoer
+window.abcdeParameters = [
+  { id: 'ademfrequentie', label: 'Ademfrequentie', eenheid: '/min', normaal: '12-20', type: 'number', placeholder: 'bv. 18' },
+  { id: 'saturatie', label: 'SpO2 (saturatie)', eenheid: '%', normaal: '> 94%', type: 'number', placeholder: 'bv. 96' },
+  { id: 'polsfrequentie', label: 'Polsfrequentie', eenheid: '/min', normaal: '60-100', type: 'number', placeholder: 'bv. 78' },
+  { id: 'bloeddruk_sys', label: 'Bloeddruk systolisch', eenheid: 'mmHg', normaal: '100-150', type: 'number', placeholder: 'bv. 130' },
+  { id: 'bloeddruk_dia', label: 'Bloeddruk diastolisch', eenheid: 'mmHg', normaal: '60-90', type: 'number', placeholder: 'bv. 80' },
+  { id: 'temperatuur', label: 'Temperatuur', eenheid: '\u00B0C', normaal: '36.0-37.5', type: 'number', placeholder: 'bv. 37.2' },
+  { id: 'bewustzijn_avpu', label: 'Bewustzijn (AVPU)', eenheid: '', normaal: 'Alert', type: 'select', opties: ['Alert', 'Voice (reageert op aanspreken)', 'Pain (reageert op pijn)', 'Unresponsive'] },
+  { id: 'pijnscore', label: 'Pijnscore (NRS)', eenheid: '/10', normaal: '0-3', type: 'range', min: 0, max: 10 },
+];
+
+// Urgentie niveaus conform NTS
+window.urgentieNiveaus = {
+  U0: { label: 'U0 \u2014 Reanimatie', kleur: '#2D2D2D', achtergrond: '#E8E8E8', icon: '\u26AB', beschrijving: 'Directe reanimatie noodzakelijk. BLS/ALS protocol starten. 112 bellen.', reactietijd: 'Onmiddellijk' },
+  U1: { label: 'U1 \u2014 Levensbedreigend', kleur: '#D94F4F', achtergrond: '#FCEAEA', icon: '\uD83D\uDD34', beschrijving: 'Potentieel levensbedreigend. Directe medische interventie vereist.', reactietijd: 'Binnen 15 minuten' },
+  U2: { label: 'U2 \u2014 Spoed', kleur: '#E8732A', achtergrond: '#FFF3EB', icon: '\uD83D\uDFE0', beschrijving: 'Spoedgeval. Snelle medische beoordeling noodzakelijk.', reactietijd: 'Binnen 1 uur' },
+  U3: { label: 'U3 \u2014 Urgent', kleur: '#4A7FB5', achtergrond: '#EBF2F9', icon: '\uD83D\uDD35', beschrijving: 'Urgent maar niet acuut bedreigend. Beoordeling op korte termijn.', reactietijd: 'Binnen 3 uur' },
+  U4: { label: 'U4 \u2014 Niet urgent', kleur: '#2D9D78', achtergrond: '#E8F5F0', icon: '\uD83D\uDFE2', beschrijving: 'Niet-urgent. Kan wachten op reguliere dienst.', reactietijd: 'Binnen 24 uur' },
+  U5: { label: 'U5 \u2014 Advies', kleur: '#666666', achtergrond: '#F7F7F7', icon: '\u26AA', beschrijving: 'Geen acute zorgvraag. Telefonisch advies volstaat.', reactietijd: 'Volgende werkdag' },
+};
