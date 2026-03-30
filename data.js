@@ -544,6 +544,71 @@ window.gedeeldeModule = {
 };
 
 // ══════════════════════════════════════════
+// GAMIFICATION — levels, XP, badges
+// ══════════════════════════════════════════
+
+window.gamification = {
+  verzorgende: {
+    levels: [
+      { niveau: 1, naam: 'Starter', xpNodig: 0, beschrijving: 'Je eerste stappen in GeriCall', kleur: '#AAAAAA' },
+      { niveau: 2, naam: 'Basis', xpNodig: 100, beschrijving: 'Basiscertificaat behaald', kleur: '#4A7FB5', vereisten: ['Minimaal 1 module afgerond', 'Klantcertificaat behaald'] },
+      { niveau: 3, naam: 'Bekwaam', xpNodig: 300, beschrijving: 'Meerdere modules afgerond, kennis op orde', kleur: '#2D9D78', vereisten: ['Minimaal 3 modules afgerond', '10 rapportages geschreven', '1 consult ingediend'] },
+      { niveau: 4, naam: 'Ervaren', xpNodig: 600, beschrijving: 'Gevorderde kennis, betrouwbare kracht', kleur: '#E8732A', vereisten: ['Alle verplichte modules afgerond', '50 rapportages geschreven', '5 consulten ingediend'] },
+      { niveau: 5, naam: 'Expert', xpNodig: 1000, beschrijving: 'Volledig gecertificeerd, kan collega\u2019s begeleiden', kleur: '#C45E1E', vereisten: ['Alle modules afgerond incl. aanbevolen', '100 rapportages', 'Mentor voor nieuwe medewerkers'] },
+    ],
+    // Huidige voortgang Sandra B.
+    huidig: {
+      xp: 340,
+      niveau: 3,
+      modulesAfgerond: 1,
+      lessenAfgerond: 8,
+      rapportagesGeschreven: 24,
+      consultenIngediend: 2,
+      badges: [
+        { naam: 'Eerste module', icon: '\uD83C\uDF1F', behaaldOp: '15 jan 2026' },
+        { naam: 'Klantcertificaat Zonnehof', icon: '\uD83C\uDFE5', behaaldOp: '16 jan 2026' },
+        { naam: '10 rapportages', icon: '\uD83D\uDCDD', behaaldOp: '28 jan 2026' },
+        { naam: 'Eerste consult', icon: '\uD83D\uDD14', behaaldOp: '3 feb 2026' },
+      ],
+      volgendeActies: [
+        { actie: 'Rond module "Hartfalen herkennen" af', xp: 80, type: 'module', voortgang: '3/5 lessen' },
+        { actie: 'Start module "ABCDE bij dementie"', xp: 100, type: 'module', voortgang: 'Nog te starten' },
+        { actie: 'Schrijf nog 26 rapportages', xp: 40, type: 'rapportage', voortgang: '24/50' },
+        { actie: 'Dien nog 3 consulten in', xp: 30, type: 'consult', voortgang: '2/5' },
+      ],
+    },
+  },
+  familie: {
+    levels: [
+      { niveau: 1, naam: 'Betrokken', xpNodig: 0, beschrijving: 'U bent gestart met het ondersteunen van uw naaste', kleur: '#AAAAAA' },
+      { niveau: 2, naam: 'Actief', xpNodig: 50, beschrijving: 'Regelmatige bezoeken en eerste kennis opgedaan', kleur: '#4A7FB5', vereisten: ['Minimaal 1 module gestart', '3 bezoeken gepland'] },
+      { niveau: 3, naam: 'Mantelzorger', xpNodig: 150, beschrijving: 'Verdiepte kennis, actief betrokken bij het re-ablement', kleur: '#2D9D78', vereisten: ['Minimaal 2 modules afgerond', 'Weekplanning regelmatig ingevuld', 'Stemming bijgehouden'] },
+      { niveau: 4, naam: 'Zorgpartner', xpNodig: 300, beschrijving: 'Volwaardig partner in het zorgteam', kleur: '#E8732A', vereisten: ['Alle familiemodules afgerond', 'Actief in familiechat', 'Beweegplan samen uitgevoerd'] },
+    ],
+    // Martha
+    huidig: {
+      xp: 85,
+      niveau: 2,
+      modulesGestart: 1,
+      lessenAfgerond: 2,
+      bezoekenGepland: 8,
+      berichtenVerstuurd: 12,
+      badges: [
+        { naam: 'Eerste bezoek gepland', icon: '\uD83D\uDCC5', behaaldOp: '5 jan 2026' },
+        { naam: 'Eerste module gestart', icon: '\uD83D\uDCDA', behaaldOp: '18 mrt 2026' },
+        { naam: 'Trouwe bezoeker', icon: '\u2764\uFE0F', behaaldOp: '1 mrt 2026' },
+      ],
+      volgendeActies: [
+        { actie: 'Rond "Bewegen met je naaste" af', xp: 40, type: 'module', voortgang: '2/5 lessen' },
+        { actie: 'Start "Medicijnen begrijpen"', xp: 30, type: 'module', voortgang: 'Nog te starten' },
+        { actie: 'Vul het weekplan 2 weken achter elkaar in', xp: 20, type: 'planning', voortgang: '1/2 weken' },
+        { actie: 'Voltooi de gedeelde module "Beweging bij hartfalen"', xp: 50, type: 'module', voortgang: '2/5 lessen' },
+      ],
+    },
+  },
+};
+
+// ══════════════════════════════════════════
 // E-learning suggesties (catalogus met aanbevelingen)
 // ══════════════════════════════════════════
 window.moduleSuggesties = {

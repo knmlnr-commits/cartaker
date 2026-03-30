@@ -629,10 +629,76 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
 
   // Toon suggesties uitklapbaar + filter
   var [suggestiesOpen, setSuggestiesOpen] = useState(false);
-  var [urgentieFilter, setUrgentieFilter] = useState(null); // null = alle, 'verplicht', 'aanbevolen', 'optioneel'
+  var [urgentieFilter, setUrgentieFilter] = useState(null);
+  var [toonActies, setToonActies] = useState(false);
+
+  // Gamification data
+  var gam = window.gamification && window.gamification[rol];
+  var gamHuidig = gam && gam.huidig;
+  var gamLevels = gam && gam.levels;
+  var huidigLevel = gamLevels && gamHuidig ? gamLevels.find(function(l) { return l.niveau === gamHuidig.niveau; }) : null;
+  var volgendLevel = gamLevels && gamHuidig ? gamLevels.find(function(l) { return l.niveau === gamHuidig.niveau + 1; }) : null;
+  var xpVoorVolgend = volgendLevel ? volgendLevel.xpNodig - gamHuidig.xp : 0;
+  var xpPercentage = volgendLevel ? Math.round((gamHuidig.xp - (huidigLevel ? huidigLevel.xpNodig : 0)) / (volgendLevel.xpNodig - (huidigLevel ? huidigLevel.xpNodig : 0)) * 100) : 100;
 
   // ── Modules lijst ──
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
+
+    // Level card
+    gamHuidig && huidigLevel && React.createElement('div', { style: { background: C_V.kaartWit, borderRadius: 12, padding: 16, marginBottom: 12, border: '1px solid ' + C_V.border } },
+      // Level header
+      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 } },
+        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10 } },
+          React.createElement('div', { style: { width: 36, height: 36, borderRadius: 18, background: huidigLevel.kleur + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, color: huidigLevel.kleur } }, huidigLevel.niveau),
+          React.createElement('div', null,
+            React.createElement('div', { style: { fontSize: 15, fontWeight: 600, color: C_V.tekstPrimair } }, huidigLevel.naam),
+            React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, gamHuidig.xp + ' XP')
+          )
+        ),
+        gamHuidig.badges && React.createElement('div', { style: { display: 'flex', gap: 2 } },
+          gamHuidig.badges.slice(-3).map(function(b, i) {
+            return React.createElement('span', { key: i, title: b.naam + ' (' + b.behaaldOp + ')', style: { fontSize: 16 } }, b.icon);
+          })
+        )
+      ),
+
+      // XP naar volgend level
+      volgendLevel && React.createElement('div', null,
+        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 4 } },
+          React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, 'Nog ' + xpVoorVolgend + ' XP naar ' + volgendLevel.naam),
+          React.createElement('span', { style: { fontSize: 11, fontWeight: 600, color: volgendLevel.kleur } }, 'Level ' + volgendLevel.niveau)
+        ),
+        React.createElement(ProgressBar, { percentage: xpPercentage, color: volgendLevel.kleur, height: 6 })
+      ),
+      !volgendLevel && React.createElement('div', { style: { fontSize: 12, color: C_V.groen, fontWeight: 500 } }, '\u2713 Hoogste niveau bereikt'),
+
+      // Vereisten volgend level
+      volgendLevel && volgendLevel.vereisten && React.createElement('div', { style: { marginTop: 10, padding: '8px 0 0', borderTop: '1px solid ' + C_V.border } },
+        React.createElement('div', { style: { fontSize: 12, fontWeight: 500, color: C_V.tekstSecundair, marginBottom: 4 } }, 'Nodig voor ' + volgendLevel.naam + ':'),
+        volgendLevel.vereisten.map(function(v, i) {
+          return React.createElement('div', { key: i, style: { fontSize: 11, color: C_V.tekstMuted, padding: '1px 0' } }, '\u2022 ' + v);
+        })
+      ),
+
+      // Volgende acties
+      gamHuidig.volgendeActies && React.createElement('div', { style: { marginTop: 8 } },
+        React.createElement('button', {
+          onClick: function() { setToonActies(!toonActies); },
+          style: { background: 'none', border: 'none', fontSize: 12, color: kleur, cursor: 'pointer', fontWeight: 500, padding: 0 }
+        }, toonActies ? 'Verberg acties' : 'Wat kan ik doen? (' + gamHuidig.volgendeActies.length + ')'),
+        toonActies && React.createElement('div', { style: { marginTop: 6 } },
+          gamHuidig.volgendeActies.map(function(a, i) {
+            return React.createElement('div', { key: i, style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: i < gamHuidig.volgendeActies.length - 1 ? '1px solid ' + C_V.border : 'none' } },
+              React.createElement('div', { style: { flex: 1 } },
+                React.createElement('div', { style: { fontSize: 12, color: C_V.tekstPrimair } }, a.actie),
+                React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, a.voortgang)
+              ),
+              React.createElement('span', { style: { fontSize: 11, fontWeight: 600, color: kleur, flexShrink: 0 } }, '+' + a.xp + ' XP')
+            );
+          })
+        )
+      )
+    ),
 
     // Zoekbalk
     React.createElement('div', { style: { position: 'relative', marginBottom: 16 } },
