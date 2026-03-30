@@ -328,14 +328,41 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
   var [zichtbaarFamilie, setZichtbaarFamilie] = useState(true);
   var [zoekRapportage, setZoekRapportage] = useState('');
   var [toonAlle, setToonAlle] = useState(false);
+  var [datumVan, setDatumVan] = useState('');
+  var [datumTot, setDatumTot] = useState('');
+  var [toonDatumFilter, setToonDatumFilter] = useState(false);
   var cats = [{ id: 'ochtend', label: 'Ochtend' },{ id: 'middag', label: 'Middag' },{ id: 'avond', label: 'Avond' },{ id: 'nacht', label: 'Nacht' }];
+
+  // Snelfilters voor datum
+  var snelFilters = [
+    { label: 'Vandaag', filter: function(d) { return d.indexOf('Vandaag') !== -1; } },
+    { label: 'Gisteren', filter: function(d) { return d.indexOf('Gisteren') !== -1; } },
+    { label: 'Deze week', filter: function() { return true; } },
+  ];
 
   // Rapportages voor geselecteerde bewoner
   var alleRapportages = (window.dagrapportages && window.dagrapportages[bewoner]) || [];
-  var gefilterd = zoekRapportage.trim()
-    ? alleRapportages.filter(function(r) { var q = zoekRapportage.toLowerCase(); return r.tekst.toLowerCase().indexOf(q) !== -1 || r.auteur.toLowerCase().indexOf(q) !== -1 || r.datum.toLowerCase().indexOf(q) !== -1; })
-    : alleRapportages;
-  var zichtbaar = toonAlle || zoekRapportage.trim() ? gefilterd : gefilterd.slice(0, 4);
+  var gefilterd = alleRapportages.filter(function(r) {
+    // Trefwoord filter
+    if (zoekRapportage.trim()) {
+      var q = zoekRapportage.toLowerCase();
+      if (r.tekst.toLowerCase().indexOf(q) === -1 && r.auteur.toLowerCase().indexOf(q) === -1 && r.datum.toLowerCase().indexOf(q) === -1) return false;
+    }
+    // Datum range filter (als datum velden ingevuld)
+    if (datumVan || datumTot) {
+      // Parse mock datums naar vergelijkbare waarde
+      var dagMap = { 'Vandaag': '2026-03-30', 'Gisteren': '2026-03-29', 'Eergisteren': '2026-03-28', '27 mrt': '2026-03-27', '26 mrt': '2026-03-26', '25 mrt': '2026-03-25' };
+      var rDatum = null;
+      Object.keys(dagMap).forEach(function(k) { if (r.datum.indexOf(k) !== -1) rDatum = dagMap[k]; });
+      if (rDatum) {
+        if (datumVan && rDatum < datumVan) return false;
+        if (datumTot && rDatum > datumTot) return false;
+      }
+    }
+    return true;
+  });
+  var heeftFilter = zoekRapportage.trim() || datumVan || datumTot;
+  var zichtbaar = toonAlle || heeftFilter ? gefilterd : gefilterd.slice(0, 4);
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
     React.createElement(SectionTitle, null, 'Rapportage invullen'),
@@ -401,14 +428,33 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
       React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, alleRapportages.length + ' totaal')
     ),
 
-    // Zoeken in rapportages
-    React.createElement('div', { style: { position: 'relative', marginBottom: 10 } },
-      React.createElement('input', {
-        value: zoekRapportage, onChange: function(e) { setZoekRapportage(e.target.value); },
-        placeholder: 'Zoek in rapportages...',
-        style: { width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid ' + C_V.border, fontSize: 13, fontFamily: "'DM Sans', sans-serif", outline: 'none', color: C_V.tekstPrimair, background: C_V.kaartWit }
-      }),
-      zoekRapportage && React.createElement('button', { onClick: function() { setZoekRapportage(''); }, style: { position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', fontSize: 14, color: C_V.tekstMuted, cursor: 'pointer' } }, '\u2715')
+    // Zoeken + datum filter
+    React.createElement('div', { style: { marginBottom: 10 } },
+      // Trefwoord + filter toggle
+      React.createElement('div', { style: { display: 'flex', gap: 6 } },
+        React.createElement('div', { style: { position: 'relative', flex: 1 } },
+          React.createElement('input', {
+            value: zoekRapportage, onChange: function(e) { setZoekRapportage(e.target.value); },
+            placeholder: 'Zoek op trefwoord...',
+            style: { width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid ' + C_V.border, fontSize: 13, fontFamily: "'DM Sans', sans-serif", outline: 'none', color: C_V.tekstPrimair, background: C_V.kaartWit }
+          }),
+          zoekRapportage && React.createElement('button', { onClick: function() { setZoekRapportage(''); }, style: { position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', fontSize: 14, color: C_V.tekstMuted, cursor: 'pointer' } }, '\u2715')
+        ),
+        React.createElement('button', {
+          onClick: function() { setToonDatumFilter(!toonDatumFilter); },
+          style: { padding: '8px 10px', borderRadius: 8, border: '1px solid ' + (toonDatumFilter || datumVan || datumTot ? C_V.oranje : C_V.border), background: toonDatumFilter || datumVan || datumTot ? C_V.oranjeLicht : C_V.kaartWit, fontSize: 13, color: toonDatumFilter || datumVan || datumTot ? C_V.oranje : C_V.tekstMuted, cursor: 'pointer', flexShrink: 0 }
+        }, '\uD83D\uDCC5')
+      ),
+      // Datum range
+      toonDatumFilter && React.createElement('div', { style: { display: 'flex', gap: 8, marginTop: 8, alignItems: 'center' } },
+        React.createElement('label', { style: { fontSize: 12, color: C_V.tekstSecundair, flexShrink: 0 } }, 'Van'),
+        React.createElement('input', { type: 'date', value: datumVan, onChange: function(e) { setDatumVan(e.target.value); }, style: { flex: 1, padding: '6px 8px', borderRadius: 6, border: '1px solid ' + C_V.border, fontSize: 12, fontFamily: "'DM Sans', sans-serif", color: C_V.tekstPrimair } }),
+        React.createElement('label', { style: { fontSize: 12, color: C_V.tekstSecundair, flexShrink: 0 } }, 't/m'),
+        React.createElement('input', { type: 'date', value: datumTot, onChange: function(e) { setDatumTot(e.target.value); }, style: { flex: 1, padding: '6px 8px', borderRadius: 6, border: '1px solid ' + C_V.border, fontSize: 12, fontFamily: "'DM Sans', sans-serif", color: C_V.tekstPrimair } }),
+        (datumVan || datumTot) && React.createElement('button', { onClick: function() { setDatumVan(''); setDatumTot(''); }, style: { background: 'none', border: 'none', fontSize: 14, color: C_V.tekstMuted, cursor: 'pointer' } }, '\u2715')
+      ),
+      // Resultaat teller
+      heeftFilter && React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted, marginTop: 6 } }, gefilterd.length + ' van ' + alleRapportages.length + ' rapportages')
     ),
 
     // Lijst
@@ -429,11 +475,11 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
     }),
 
     // Meer laden
-    !zoekRapportage.trim() && !toonAlle && gefilterd.length > 4 && React.createElement('button', {
+    !heeftFilter && !toonAlle && gefilterd.length > 4 && React.createElement('button', {
       onClick: function() { setToonAlle(true); },
       style: { background: 'none', border: '1px solid ' + C_V.border, borderRadius: 8, padding: '10px', fontSize: 13, color: C_V.tekstSecundair, cursor: 'pointer', width: '100%', marginTop: 4 }
     }, 'Toon alle ' + gefilterd.length + ' rapportages'),
-    toonAlle && !zoekRapportage.trim() && React.createElement('button', {
+    toonAlle && !heeftFilter && React.createElement('button', {
       onClick: function() { setToonAlle(false); },
       style: { background: 'none', border: 'none', fontSize: 12, color: C_V.tekstMuted, cursor: 'pointer', width: '100%', marginTop: 4, textAlign: 'center' }
     }, 'Toon minder')
