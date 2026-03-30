@@ -467,12 +467,72 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
     );
   }
 
+  // ── Zoek state ──
+  var [zoekterm, setZoekterm] = useState('');
+  var suggesties = (window.moduleSuggesties && window.moduleSuggesties[rol]) || [];
+
+  // Filter modules + suggesties op zoekterm
+  var zoekFilter = function(tekst) {
+    if (!zoekterm.trim()) return true;
+    var q = zoekterm.toLowerCase();
+    return tekst.toLowerCase().indexOf(q) !== -1;
+  };
+  var gefilterdModules = modules.filter(function(m) { return zoekFilter(m.naam + ' ' + m.beschrijving); });
+  var gefilterdSuggesties = suggesties.filter(function(s) {
+    return zoekFilter(s.naam + ' ' + s.reden + ' ' + s.tags.join(' '));
+  });
+  var sharedMatch = shared && zoekFilter(shared.naam + ' ' + (shared.beschrijving || ''));
+
+  var urgentieKleur = function(u) {
+    if (u === 'verplicht') return { kleur: C_V.rood, bg: C_V.roodLicht, label: 'Verplicht' };
+    if (u === 'aanbevolen') return { kleur: C_V.oranje, bg: C_V.oranjeLicht, label: 'Aanbevolen' };
+    return { kleur: C_V.blauw, bg: C_V.blauwLicht, label: 'Optioneel' };
+  };
+
   // ── Modules lijst ──
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
-    React.createElement(SectionTitle, null, rol === 'verzorgende' ? 'Verplichte modules' : 'Modules voor familie'),
+
+    // Zoekbalk
+    React.createElement('div', { style: { position: 'relative', marginBottom: 16 } },
+      React.createElement('input', {
+        value: zoekterm,
+        onChange: function(e) { setZoekterm(e.target.value); },
+        placeholder: '\uD83D\uDD0D Zoek modules, lessen of onderwerpen...',
+        style: { width: '100%', padding: '12px 14px 12px 14px', borderRadius: 10, border: '1px solid ' + C_V.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", outline: 'none', color: C_V.tekstPrimair, background: C_V.kaartWit }
+      }),
+      zoekterm && React.createElement('button', {
+        onClick: function() { setZoekterm(''); },
+        style: { position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', fontSize: 16, color: C_V.tekstMuted, cursor: 'pointer' }
+      }, '\u2715')
+    ),
+
+    // Suggesties — altijd bovenaan (tenzij zoekterm actief en geen match)
+    (!zoekterm || gefilterdSuggesties.length > 0) && React.createElement('div', null,
+      React.createElement(SectionTitle, null, '\uD83D\uDCA1 Aanbevolen voor jou'),
+      React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, marginBottom: 8 } },
+        rol === 'verzorgende' ? 'Op basis van je huidige bewoners en hun diagnoses' : 'Speciaal geselecteerd voor de situatie van ' + window.patient.roepnaam
+      ),
+      (zoekterm ? gefilterdSuggesties : suggesties.slice(0, 3)).map(function(s, i) {
+        var urg = urgentieKleur(s.urgentie);
+        return React.createElement(Card, { key: 'sug-' + i, style: { cursor: 'pointer', borderLeft: '3px solid ' + urg.kleur }, onClick: function() { addToast('Module "' + s.naam + '" wordt geopend...'); } },
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 } },
+            React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair, flex: 1, marginRight: 8 } }, s.naam),
+            React.createElement(Badge, { label: urg.label, color: urg.kleur, bgColor: urg.bg })
+          ),
+          React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, lineHeight: 1.5, marginBottom: 4 } }, s.reden),
+          React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, s.duur + ' \u00B7 ' + s.aanbieder)
+        );
+      }),
+      !zoekterm && suggesties.length > 3 && React.createElement('button', {
+        onClick: function() { setZoekterm(' '); },
+        style: { background: 'none', border: 'none', fontSize: 13, color: kleur, cursor: 'pointer', fontWeight: 500, padding: '4px 0', marginBottom: 12 }
+      }, 'Bekijk alle ' + suggesties.length + ' suggesties \u2192')
+    ),
+
+    React.createElement(SectionTitle, null, rol === 'verzorgende' ? 'Mijn modules' : 'Modules voor familie'),
 
     // Klantcertificaat (alleen verzorgende)
-    rol === 'verzorgende' && React.createElement(Card, { style: { background: C_V.groenLicht, border: '1px solid ' + C_V.groen, padding: 12 } },
+    !zoekterm && rol === 'verzorgende' && React.createElement(Card, { style: { background: C_V.groenLicht, border: '1px solid ' + C_V.groen, padding: 12 } },
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
         React.createElement('span', { style: { fontSize: 20 } }, '\u2705'),
         React.createElement('div', null,
@@ -482,7 +542,9 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
       )
     ),
 
-    modules.map(function(m, i) {
+    gefilterdModules.length === 0 && zoekterm && React.createElement('div', { style: { fontSize: 13, color: C_V.tekstMuted, textAlign: 'center', padding: '20px 0' } }, 'Geen modules gevonden voor "' + zoekterm + '"'),
+
+    gefilterdModules.map(function(m, i) {
       var st = statusLabel(m.status);
       var voltooid = m.lessen ? m.lessen.filter(function(l) { return l.voltooid; }).length : 0;
       var totaal = m.lessen ? m.lessen.length : 0;
@@ -498,7 +560,7 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
     }),
 
     // Shared module
-    shared && React.createElement('div', null,
+    shared && sharedMatch && React.createElement('div', null,
       React.createElement(SectionTitle, null, 'Kennismodule bij pati\u00EBnt'),
       React.createElement(Card, { style: { border: '2px solid ' + kleur, cursor: 'pointer' }, onClick: function() { setOpenModule(shared); } },
         shared.aanbieder && React.createElement('div', { style: { fontSize: 11, fontWeight: 600, color: kleur, marginBottom: 4 } }, shared.aanbieder),

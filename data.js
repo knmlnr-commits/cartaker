@@ -410,6 +410,28 @@ window.gedeeldeModule = {
 };
 
 // ══════════════════════════════════════════
+// E-learning suggesties (catalogus met aanbevelingen)
+// ══════════════════════════════════════════
+window.moduleSuggesties = {
+  verzorgende: [
+    { naam: "Valpreventie bij ouderen", reden: "Mw. Visser heeft een recente heupfractuur \u2014 valpreventie is essentieel", duur: "1.5 uur", aanbieder: "Vilans", urgentie: "aanbevolen", tags: ["val", "heup", "mobiliteit"] },
+    { naam: "Pijnmanagement bij dementie", reden: "Dhr. Jansen kan pijn moeilijk uiten door dementie \u2014 leer non-verbale pijnsignalen herkennen", duur: "1 uur", aanbieder: "V&VN", urgentie: "aanbevolen", tags: ["pijn", "dementie", "observatie"] },
+    { naam: "Diabetes bij ouderen \u2014 hypo herkennen", reden: "Mw. de Groot heeft diabetes type 2 \u2014 herken de signalen van een hypoglykemie", duur: "45 min", aanbieder: "Diabetesvereniging", urgentie: "aanbevolen", tags: ["diabetes", "hypo", "bloedsuiker"] },
+    { naam: "Omgaan met afasie na CVA", reden: "Dhr. van Dam heeft afasie \u2014 leer effectief communiceren zonder woorden", duur: "1 uur", aanbieder: "Afasievereniging", urgentie: "optioneel", tags: ["afasie", "CVA", "communicatie"] },
+    { naam: "COPD-exacerbatie herkennen", reden: "Mw. de Groot heeft COPD Gold III \u2014 weet wanneer je moet escaleren", duur: "1 uur", aanbieder: "Longfonds", urgentie: "aanbevolen", tags: ["COPD", "ademhaling", "exacerbatie"] },
+    { naam: "Medicatieveiligheid in de VVT", reden: "U werkt met 4 bewoners met complexe medicatie \u2014 verdiep uw kennis", duur: "2 uur", aanbieder: "GeriCall Academy", urgentie: "verplicht", tags: ["medicatie", "veiligheid"] },
+    { naam: "Nachtelijke onrust bij dementie", reden: "Dhr. Jansen was onrustig vannacht \u2014 leer dag-nachtritme te ondersteunen", duur: "45 min", aanbieder: "Alzheimer Nederland", urgentie: "optioneel", tags: ["dementie", "nacht", "onrust", "slaap"] },
+  ],
+  familie: [
+    { naam: "Vallen voorkomen: wat kunt u doen?", reden: "Uw vader heeft een verhoogd valrisico \u2014 leer hoe u bezoeken veiliger maakt", duur: "30 min", aanbieder: "VeiligheidNL", urgentie: "aanbevolen", tags: ["val", "veiligheid"] },
+    { naam: "Voeding bij hartfalen", reden: "Adriaan heeft een natriumbeperkt dieet \u2014 weet wat u w\u00E9l en niet kunt meenemen", duur: "20 min", aanbieder: "Hartstichting", urgentie: "aanbevolen", tags: ["voeding", "hartfalen", "natrium"] },
+    { naam: "Wat is re-ablement?", reden: "Adriaan zit in een re-ablement traject \u2014 begrijp uw rol daarin", duur: "15 min", aanbieder: "GeriCall Academy", urgentie: "aanbevolen", tags: ["reablement", "herstel"] },
+    { naam: "Praten over het einde", reden: "Voorbereid zijn op gesprekken over de toekomst, wensen en grenzen", duur: "25 min", aanbieder: "PZNL (Palliatieve Zorg)", urgentie: "optioneel", tags: ["palliatief", "gesprek", "wensen"] },
+    { naam: "Mantelzorg en zelfzorg", reden: "Zorgen voor een naaste is zwaar \u2014 vergeet uzelf niet", duur: "20 min", aanbieder: "MantelzorgNL", urgentie: "optioneel", tags: ["mantelzorg", "zelfzorg", "belasting"] },
+  ],
+};
+
+// ══════════════════════════════════════════
 // NTS-gebaseerde triage data
 // Gebaseerd op de Nederlandse Triage Standaard (NHG/InEen)
 // Aangepast voor geriatrische setting
