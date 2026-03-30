@@ -34,13 +34,13 @@ window.stemmingen = {
   visser: { score: 2, label: 'Niet zo goed', door: 'Sandra B.', rol: 'verzorgende', tijd: 'Vandaag 07:55', history: [] },
 };
 
-// Stemming opties (1-5)
+// Stemming opties (1-5) — rustig, zonder emoji
 window.stemmingOpties = [
-  { score: 1, emoji: '\uD83D\uDE1E', label: 'Slecht', kleur: '#D94F4F' },
-  { score: 2, emoji: '\uD83D\uDE1F', label: 'Niet zo goed', kleur: '#E8732A' },
-  { score: 3, emoji: '\uD83D\uDE10', label: 'Gaat redelijk', kleur: '#E8732A' },
-  { score: 4, emoji: '\uD83D\uDE42', label: 'Gaat goed', kleur: '#2D9D78' },
-  { score: 5, emoji: '\uD83D\uDE04', label: 'Gaat prima!', kleur: '#2D9D78' },
+  { score: 1, label: 'Slecht', kleur: '#D94F4F' },
+  { score: 2, label: 'Matig', kleur: '#E8732A' },
+  { score: 3, label: 'Redelijk', kleur: '#AAAAAA' },
+  { score: 4, label: 'Goed', kleur: '#2D9D78' },
+  { score: 5, label: 'Prima', kleur: '#2D9D78' },
 ];
 
 window.bewoners = [

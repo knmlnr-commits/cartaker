@@ -59,17 +59,18 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner 
       return React.createElement(Card, { key: b.id, style: { cursor: 'pointer', padding: 12 }, onClick: function() { onSelectBewoner(b); } },
         React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } },
           React.createElement('div', { style: {
-            width: 44, height: 44, borderRadius: 22, background: b.alert ? (b.alert === 'U2' ? C_V.roodLicht : C_V.oranjeLicht) : C_V.blauwLicht,
+            width: 44, height: 44, borderRadius: 22, background: C_V.achtergrond,
             display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700,
-            color: b.alert ? (b.alert === 'U2' ? C_V.rood : C_V.oranje) : C_V.blauw, flexShrink: 0,
+            color: C_V.tekstSecundair, flexShrink: 0,
+            border: b.alert ? '2px solid ' + (b.alert === 'U2' ? C_V.rood : C_V.oranje) : '1px solid ' + C_V.border,
           } }, b.initialen),
           React.createElement('div', { style: { flex: 1 } },
             React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+              React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, b.roepnaam),
               React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
-                React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, b.roepnaam),
-                React.createElement(StemmingWidget, { bewonerId: b.id, compact: true, gebruikerNaam: 'Sandra B.', gebruikerRol: 'verzorgende' })
-              ),
-              React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, 'Kamer ' + b.kamer)
+                React.createElement(StemmingWidget, { bewonerId: b.id, compact: true, gebruikerNaam: 'Sandra B.', gebruikerRol: 'verzorgende' }),
+                React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, '\u00B7 Kamer ' + b.kamer)
+              )
             ),
             React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, marginBottom: 4 } }, b.diagnose.substring(0, 40) + (b.diagnose.length > 40 ? '...' : '')),
             // Taken progress
@@ -80,7 +81,7 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner 
             // IoT warnings
             iotWarnings.length > 0 && React.createElement('div', { style: { display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' } },
               iotWarnings.map(function(w) {
-                return React.createElement('span', { key: w[0], style: { fontSize: 10, background: C_V.oranjeLicht, color: C_V.oranje, padding: '1px 6px', borderRadius: 4, fontWeight: 500 } },
+                return React.createElement('span', { key: w[0], style: { fontSize: 10, background: C_V.achtergrond, color: C_V.tekstSecundair, padding: '1px 6px', borderRadius: 4, fontWeight: 400 } },
                   w[0] === 'saturatie' ? 'SpO2 ' + w[1].waarde + '%' : w[0] === 'slaap' ? 'Slaap \u2193' : w[0] === 'gewicht' ? 'Gewicht \u2191' : w[0] === 'hartslag' ? 'Pols \u2191' : w[0] === 'bloeddruk' ? 'RR \u2191' : w[0]);
               })
             )

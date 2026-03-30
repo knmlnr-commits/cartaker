@@ -163,8 +163,7 @@ window.SectionTitle = function SectionTitle({ children }) {
 };
 
 // ── Stemming Widget ──
-// Compact: toont huidige stemming + wie/wanneer
-// Expanded: laat kiezen uit 5 smileys
+// Rustig ontwerp: gekleurde bolletjes + tekst, geen emoji's
 window.StemmingWidget = function StemmingWidget({ bewonerId, gebruikerNaam, gebruikerRol, onUpdate, compact }) {
   var { useState } = React;
   var [kiezen, setKiezen] = useState(false);
@@ -189,67 +188,68 @@ window.StemmingWidget = function StemmingWidget({ bewonerId, gebruikerNaam, gebr
     if (onUpdate) onUpdate();
   };
 
-  // Compact versie (voor wijkoverzicht)
+  // Compact: klein bolletje met kleur
   if (compact) {
-    return React.createElement('span', {
+    return React.createElement('div', {
       title: huidige.label + ' \u2014 ' + stemming.door + ' (' + stemming.tijd + ')',
-      style: { fontSize: 18, cursor: 'pointer' },
-      onClick: function(e) { e.stopPropagation(); setKiezen(!kiezen); }
-    }, huidige.emoji);
+      style: { display: 'flex', alignItems: 'center', gap: 4 }
+    },
+      React.createElement('div', { style: { width: 8, height: 8, borderRadius: 4, background: huidige.kleur } }),
+      React.createElement('span', { style: { fontSize: 10, color: C.tekstMuted } }, huidige.label)
+    );
   }
 
-  return React.createElement(Card, { style: { padding: 12 } },
+  return React.createElement('div', { style: { background: C.kaartWit, borderRadius: 12, padding: '14px 16px', marginBottom: 12, border: '1px solid ' + C.border } },
     // Huidige stemming
-    React.createElement('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: kiezen ? 10 : 0 } },
+    React.createElement('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10 } },
-        React.createElement('span', { style: { fontSize: 32 } }, huidige.emoji),
+        React.createElement('div', { style: { width: 12, height: 12, borderRadius: 6, background: huidige.kleur, flexShrink: 0 } }),
         React.createElement('div', null,
-          React.createElement('div', { style: { fontSize: 15, fontWeight: 600, color: huidige.kleur } }, huidige.label),
-          React.createElement('div', { style: { fontSize: 11, color: C.tekstMuted } }, stemming.door + ' \u00B7 ' + stemming.tijd)
+          React.createElement('span', { style: { fontSize: 14, fontWeight: 500, color: C.tekstPrimair } }, huidige.label),
+          React.createElement('span', { style: { fontSize: 12, color: C.tekstMuted, marginLeft: 8 } }, stemming.door + ', ' + stemming.tijd)
         )
       ),
       React.createElement('button', {
         onClick: function() { setKiezen(!kiezen); },
-        style: { background: kiezen ? C.border : C.oranjeLicht, border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 500, color: kiezen ? C.tekstMuted : C.oranje, cursor: 'pointer' }
-      }, kiezen ? 'Annuleren' : 'Bijwerken')
+        style: { background: 'none', border: '1px solid ' + C.border, borderRadius: 6, padding: '4px 10px', fontSize: 12, color: C.tekstSecundair, cursor: 'pointer' }
+      }, kiezen ? 'Annuleer' : 'Wijzig')
     ),
 
-    // Keuze smileys
-    kiezen && React.createElement('div', null,
-      React.createElement('div', { style: { fontSize: 12, color: C.tekstSecundair, marginBottom: 8 } }, 'Hoe gaat het nu?'),
-      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', gap: 4 } },
+    // Keuze
+    kiezen && React.createElement('div', { style: { marginTop: 12, paddingTop: 12, borderTop: '1px solid ' + C.border } },
+      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', gap: 6 } },
         opties.map(function(o) {
           var actief = o.score === stemming.score;
           return React.createElement('button', {
             key: o.score,
             onClick: function() { updateStemming(o); },
             style: {
-              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-              padding: '8px 4px', borderRadius: 10, cursor: 'pointer', transition: 'all 0.2s',
-              background: actief ? o.kleur + '18' : C.kaartWit,
-              border: '2px solid ' + (actief ? o.kleur : C.border),
+              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+              padding: '10px 2px', borderRadius: 8, cursor: 'pointer', transition: 'all 0.15s',
+              background: actief ? C.achtergrond : 'transparent',
+              border: '1px solid ' + (actief ? C.tekstMuted : 'transparent'),
             }
           },
-            React.createElement('span', { style: { fontSize: 24 } }, o.emoji),
-            React.createElement('span', { style: { fontSize: 9, color: o.kleur, fontWeight: 500 } }, o.label)
+            React.createElement('div', { style: { width: 14, height: 14, borderRadius: 7, background: o.kleur, transition: 'transform 0.15s', transform: actief ? 'scale(1.3)' : 'scale(1)' } }),
+            React.createElement('span', { style: { fontSize: 10, color: C.tekstSecundair, fontWeight: actief ? 600 : 400 } }, o.label)
           );
         })
       )
     ),
 
-    // Historie link
+    // Historie
     !kiezen && stemming.history && stemming.history.length > 1 && React.createElement('div', null,
       React.createElement('button', {
         onClick: function() { setShowHistorie(!showHistorie); },
-        style: { background: 'none', border: 'none', fontSize: 11, color: C.tekstMuted, cursor: 'pointer', marginTop: 6, padding: 0 }
-      }, showHistorie ? 'Verberg historie' : 'Toon historie (' + stemming.history.length + ')'),
+        style: { background: 'none', border: 'none', fontSize: 11, color: C.tekstMuted, cursor: 'pointer', marginTop: 8, padding: 0 }
+      }, showHistorie ? 'Verberg' : stemming.history.length + ' eerdere updates'),
 
       showHistorie && React.createElement('div', { style: { marginTop: 6 } },
         stemming.history.map(function(h, i) {
           var hOpt = opties.find(function(o) { return o.score === h.score; }) || opties[2];
-          return React.createElement('div', { key: i, style: { display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < stemming.history.length - 1 ? '1px solid ' + C.border : 'none' } },
-            React.createElement('span', { style: { fontSize: 16 } }, hOpt.emoji),
-            React.createElement('span', { style: { fontSize: 11, color: C.tekstSecundair, flex: 1 } }, h.door),
+          return React.createElement('div', { key: i, style: { display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' } },
+            React.createElement('div', { style: { width: 6, height: 6, borderRadius: 3, background: hOpt.kleur, flexShrink: 0 } }),
+            React.createElement('span', { style: { fontSize: 11, color: C.tekstSecundair, flex: 1 } }, hOpt.label + ' \u2014 ' + h.door),
             React.createElement('span', { style: { fontSize: 11, color: C.tekstMuted } }, h.tijd)
           );
         })
