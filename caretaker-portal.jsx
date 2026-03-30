@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v3.6.2';
+var APP_VERSION = 'v3.6.3';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -237,7 +237,7 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab }) {
     <div style={{ minHeight: '100vh', background: C.achtergrond }}>
       <div style={{ maxWidth: 420, margin: '0 auto', padding: '0 16px 100px', minHeight: '100vh' }}>
         <div style={{ padding: '12px 0 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div onClick={function() { handleTab('taken'); }} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
             <GeriCallLogo />
             <span style={{ fontSize: 11, fontWeight: 600, color: C.oranje, background: C.oranjeLicht, padding: '2px 8px', borderRadius: 4 }}>ZORG</span>
           </div>
@@ -308,7 +308,7 @@ function AppFamilie({ lid, initialTab }) {
     <div style={{ minHeight: '100vh', background: C.achtergrond }}>
       <div style={{ maxWidth: 420, margin: '0 auto', padding: '0 16px 100px', minHeight: '100vh' }}>
         <div style={{ padding: '12px 0 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div onClick={function() { handleTab('overzicht'); }} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
             <GeriCallLogo />
             <span style={{ fontSize: 11, fontWeight: 600, color: C.groen, background: C.groenLicht, padding: '2px 8px', borderRadius: 4 }}>{isPatient ? 'MIJN PORTAL' : 'FAMILIE'}</span>
           </div>
