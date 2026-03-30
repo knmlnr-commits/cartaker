@@ -29,6 +29,11 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, on
   var aantalBerichten = window.familiechat.length;
 
   var [, forceUpdate] = useState(0);
+  var [toonAlleRapportages, setToonAlleRapportages] = useState(false);
+
+  // Rapportages: haal per bewoner, filter op zichtbaar voor familie
+  var alleRapportages = ((window.dagrapportages && window.dagrapportages.jansen) || []).filter(function(r) { return r.zichtbaarFamilie; });
+  var zichtbareRapportages = toonAlleRapportages ? alleRapportages : alleRapportages.slice(0, 3);
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
 
@@ -71,8 +76,7 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, on
 
     // Rapportages (alleen lijn1 + patient)
     t.rapportages && React.createElement(SectionTitle, null, isPatient ? 'Wat zeggen ze over mij?' : 'Hoe was het?'),
-    t.rapportages &&
-    window.dagrapportages.slice(0, 3).map(function(r, i) {
+    t.rapportages && zichtbareRapportages.map(function(r, i) {
       return React.createElement(Card, { key: i, style: { padding: 12, borderLeft: '3px solid ' + (r.isFamilie ? C_F.groen : C_F.oranje) } },
         React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 4 } },
           React.createElement('span', { style: { fontSize: 13, fontWeight: 600, color: r.isFamilie ? C_F.groen : C_F.oranje } }, r.isFamilie ? 'Familiebezoek' : r.auteur),
@@ -81,6 +85,14 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, on
         React.createElement('div', { style: { fontSize: 14, color: C_F.tekstPrimair, lineHeight: 1.6 } }, r.tekst)
       );
     }),
+    t.rapportages && !toonAlleRapportages && alleRapportages.length > 3 && React.createElement('button', {
+      onClick: function() { setToonAlleRapportages(true); },
+      style: { background: 'none', border: '1px solid ' + C_F.border, borderRadius: 8, padding: '10px', fontSize: 13, color: C_F.tekstSecundair, cursor: 'pointer', width: '100%', marginBottom: 12 }
+    }, 'Toon alle ' + alleRapportages.length + ' rapportages'),
+    t.rapportages && toonAlleRapportages && React.createElement('button', {
+      onClick: function() { setToonAlleRapportages(false); },
+      style: { background: 'none', border: 'none', fontSize: 12, color: C_F.tekstMuted, cursor: 'pointer', width: '100%', marginBottom: 12, textAlign: 'center' }
+    }, 'Toon minder'),
 
     // Re-ablement
     t.reablement && !isPatient && React.createElement('div', null,
