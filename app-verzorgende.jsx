@@ -1,95 +1,88 @@
-// GeriCall — Verzorgende secties
-// Taakgericht, kort, direct. "Wat moet ik NU doen?"
+// GeriCall — Verzorgende secties v2
+// Wijkoverzicht → inzoomen op bewoner → taken/vitalen/notities
 
 const C_V = window.COLORS;
 
 // ══════════════════════════════════════════
-// TAKEN — dagelijks taakscherm
+// WIJK OVERZICHT — alle bewoners in één oogopslag
 // ══════════════════════════════════════════
-window.VerzorgendeTaken = function VerzorgendeTaken({ addToast }) {
-  const { useState } = React;
-  const p = window.patient;
-  const [taken, setTaken] = useState([
-    { id: 1, tekst: 'ADL ochtend \u2014 douchen, aankleden', tijd: '07:30', gedaan: true },
-    { id: 2, tekst: 'Medicatie ochtend \u2014 Metoprolol, Furosemide', tijd: '08:00', gedaan: true },
-    { id: 3, tekst: 'Ontbijt begeleiden \u2014 natriumbeperkt', tijd: '08:30', gedaan: false },
-    { id: 4, tekst: 'Vochtinname registreren', tijd: '10:00', gedaan: false },
-    { id: 5, tekst: 'Looptraining 10 min (zie bewegingsplan)', tijd: '10:30', gedaan: false },
-    { id: 6, tekst: 'Dagrapportage ochtend invullen', tijd: '12:00', gedaan: false },
-    { id: 7, tekst: 'Medicatie middag \u2014 Rivastigmine pleister', tijd: '12:30', gedaan: false },
-  ]);
-
-  const toggle = (id) => {
-    setTaken(prev => prev.map(t => t.id === id ? { ...t, gedaan: !t.gedaan } : t));
-    const taak = taken.find(t => t.id === id);
-    if (taak && !taak.gedaan) addToast('Taak afgerond', 'success');
-  };
-
-  const gedaan = taken.filter(t => t.gedaan).length;
+window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner }) {
+  var bewoners = window.bewoners;
+  var totaalOpen = bewoners.reduce(function(s, b) { return s + b.takenOpen; }, 0);
+  var totaal = bewoners.reduce(function(s, b) { return s + b.takenTotaal; }, 0);
+  var alerts = bewoners.filter(function(b) { return b.alert; });
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
-    React.createElement(SectionTitle, null, 'Taken vandaag'),
-    // Progress
-    React.createElement(Card, null,
-      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 6 } },
-        React.createElement('span', { style: { fontSize: 13, fontWeight: 500, color: C_V.tekstSecundair } }, gedaan + ' van ' + taken.length + ' taken'),
-        React.createElement('span', { style: { fontSize: 13, fontWeight: 700, color: C_V.oranje } }, Math.round(gedaan / taken.length * 100) + '%')
+    // Wijk stats
+    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 } },
+      React.createElement(Card, { style: { padding: 10, textAlign: 'center' } },
+        React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: C_V.oranje } }, bewoners.length),
+        React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, 'Bewoners')
       ),
-      React.createElement(ProgressBar, { percentage: gedaan / taken.length * 100 })
-    ),
-    // Alerts
-    p.openConsulten.length > 0 && React.createElement(Card, { style: { background: C_V.roodLicht, border: '1px solid ' + C_V.rood } },
-      React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
-        React.createElement('span', { style: { fontSize: 18 } }, '\u26A0\uFE0F'),
-        React.createElement('div', null,
-          React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_V.rood } }, 'Open consult #' + p.openConsulten[0].id),
-          React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, p.openConsulten[0].beschrijving || p.openConsulten[0].urgentie)
-        )
+      React.createElement(Card, { style: { padding: 10, textAlign: 'center' } },
+        React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: C_V.tekstPrimair } }, totaalOpen),
+        React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, 'Taken open')
+      ),
+      React.createElement(Card, { style: { padding: 10, textAlign: 'center' } },
+        React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: alerts.length > 0 ? C_V.rood : C_V.groen } }, alerts.length),
+        React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, 'Alerts')
       )
     ),
-    // Taken lijst
-    taken.map(function(t) {
-      return React.createElement('div', { key: t.id, onClick: function() { toggle(t.id); }, style: {
-        display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', marginBottom: 4,
-        background: C_V.kaartWit, borderRadius: 10, border: '1px solid ' + C_V.border, cursor: 'pointer',
-        opacity: t.gedaan ? 0.6 : 1, transition: 'all 0.2s',
-      } },
-        React.createElement('div', { style: {
-          width: 24, height: 24, borderRadius: 6, border: '2px solid ' + (t.gedaan ? C_V.groen : C_V.border),
-          background: t.gedaan ? C_V.groen : 'transparent',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 14, fontWeight: 700, flexShrink: 0,
-        } }, t.gedaan ? '\u2713' : ''),
-        React.createElement('div', { style: { flex: 1 } },
-          React.createElement('div', { style: { fontSize: 14, fontWeight: 500, color: C_V.tekstPrimair, textDecoration: t.gedaan ? 'line-through' : 'none' } }, t.tekst),
-          React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted } }, t.tijd)
-        )
-      );
-    }),
-    // Behandelplan quick access
-    React.createElement(SectionTitle, null, 'Behandelplan'),
-    React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginBottom: 8 } }, 'Tik voor details \u00B7 Wijzigingen via GeriForce'),
-    p.behandelplan.map(function(item, i) {
-      var actueel = item.status === 'Actueel';
-      return React.createElement(Card, { key: i, style: { padding: 12 } },
-        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
-          React.createElement('div', null,
-            React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, item.onderdeel),
-            React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, 'Bijgewerkt: ' + item.bijgewerkt)
+
+    // Alerts bovenaan
+    alerts.length > 0 && React.createElement('div', null,
+      alerts.map(function(b) {
+        var isU2 = b.alert === 'U2';
+        return React.createElement('div', { key: b.id + '_alert', onClick: function() { onSelectBewoner(b); },
+          style: { display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', marginBottom: 6,
+            background: isU2 ? C_V.roodLicht : C_V.oranjeLicht, borderRadius: 10, cursor: 'pointer',
+            border: '1px solid ' + (isU2 ? C_V.rood : C_V.oranje) }
+        },
+          React.createElement('span', { style: { fontSize: 16 } }, '\u26A0\uFE0F'),
+          React.createElement('div', { style: { flex: 1 } },
+            React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: isU2 ? C_V.rood : C_V.oranje } }, b.naam + ' \u00B7 Kamer ' + b.kamer),
+            React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, b.alertTekst)
           ),
-          React.createElement(Badge, { label: item.status, color: actueel ? C_V.groen : C_V.oranje, bgColor: actueel ? C_V.groenLicht : C_V.oranjeLicht })
-        )
-      );
-    }),
-    // Familieinfo
-    React.createElement(SectionTitle, null, 'Familie contacten'),
-    window.familieleden.map(function(f, i) {
-      return React.createElement(Card, { key: i, style: { padding: 12 } },
-        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
-          React.createElement('div', null,
-            React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, f.naam + (f.isHoofdcontact ? ' (1e contact)' : '')),
-            React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, f.relatie + ' \u00B7 Laatst: ' + f.laatsteBezoek)
+          React.createElement(Badge, { label: b.alert, color: isU2 ? C_V.rood : C_V.oranje, bgColor: isU2 ? C_V.roodLicht : C_V.oranjeLicht })
+        );
+      })
+    ),
+
+    // Bewoners lijst
+    React.createElement(SectionTitle, null, 'Mijn bewoners'),
+    bewoners.map(function(b) {
+      var gedaan = b.takenTotaal - b.takenOpen;
+      var pct = Math.round(gedaan / b.takenTotaal * 100);
+      // IoT quick glance: zoek afwijkingen
+      var iotWarnings = Object.entries(b.iot).filter(function(e) { return e[1].status === 'let_op'; });
+
+      return React.createElement(Card, { key: b.id, style: { cursor: 'pointer', padding: 12 }, onClick: function() { onSelectBewoner(b); } },
+        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } },
+          React.createElement('div', { style: {
+            width: 44, height: 44, borderRadius: 22, background: b.alert ? (b.alert === 'U2' ? C_V.roodLicht : C_V.oranjeLicht) : C_V.blauwLicht,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700,
+            color: b.alert ? (b.alert === 'U2' ? C_V.rood : C_V.oranje) : C_V.blauw, flexShrink: 0,
+          } }, b.initialen),
+          React.createElement('div', { style: { flex: 1 } },
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+              React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, b.roepnaam),
+              React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, 'Kamer ' + b.kamer)
+            ),
+            React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, marginBottom: 4 } }, b.diagnose.substring(0, 40) + (b.diagnose.length > 40 ? '...' : '')),
+            // Taken progress
+            React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
+              React.createElement('div', { style: { flex: 1 } }, React.createElement(ProgressBar, { percentage: pct, height: 4 })),
+              React.createElement('span', { style: { fontSize: 11, fontWeight: 600, color: pct === 100 ? C_V.groen : C_V.tekstMuted } }, gedaan + '/' + b.takenTotaal)
+            ),
+            // IoT warnings
+            iotWarnings.length > 0 && React.createElement('div', { style: { display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' } },
+              iotWarnings.map(function(w) {
+                return React.createElement('span', { key: w[0], style: { fontSize: 10, background: C_V.oranjeLicht, color: C_V.oranje, padding: '1px 6px', borderRadius: 4, fontWeight: 500 } },
+                  w[0] === 'saturatie' ? 'SpO2 ' + w[1].waarde + '%' : w[0] === 'slaap' ? 'Slaap \u2193' : w[0] === 'gewicht' ? 'Gewicht \u2191' : w[0] === 'hartslag' ? 'Pols \u2191' : w[0] === 'bloeddruk' ? 'RR \u2191' : w[0]);
+              })
+            )
           ),
-          React.createElement('div', { style: { fontSize: 12, color: C_V.blauw, fontWeight: 500 } }, f.telefoon)
+          React.createElement('span', { style: { fontSize: 14, color: C_V.tekstMuted } }, '\u25B6')
         )
       );
     })
@@ -97,48 +90,256 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast }) {
 };
 
 // ══════════════════════════════════════════
-// RAPPORTAGE — snel invullen
+// BEWONER DETAIL — taken + vitalen + notities + dossier
+// ══════════════════════════════════════════
+window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verzorgendeNaam }) {
+  const { useState } = React;
+  var b = bewoner;
+  var [taken, setTaken] = useState(b.taken);
+  var [notities, setNotities] = useState(b.notities);
+  var [nieuweNotitie, setNieuweNotitie] = useState('');
+  var [tabDetail, setTabDetail] = useState('taken');
+
+  var toggle = function(id) {
+    var nu = new Date();
+    var tijdStr = String(nu.getHours()).padStart(2,'0') + ':' + String(nu.getMinutes()).padStart(2,'0');
+    setTaken(function(prev) { return prev.map(function(t) {
+      if (t.id !== id) return t;
+      return Object.assign({}, t, { gedaan: !t.gedaan, door: t.gedaan ? null : verzorgendeNaam, gedaanOm: t.gedaan ? null : tijdStr });
+    }); });
+    addToast('Taak bijgewerkt', 'success');
+  };
+
+  var voegNotitieToe = function() {
+    if (!nieuweNotitie.trim()) return;
+    var nu = new Date();
+    var tijdStr = String(nu.getHours()).padStart(2,'0') + ':' + String(nu.getMinutes()).padStart(2,'0');
+    setNotities(function(prev) { return [{ tekst: nieuweNotitie, auteur: verzorgendeNaam, tijd: tijdStr }].concat(prev); });
+    setNieuweNotitie('');
+    addToast('Notitie opgeslagen', 'success');
+  };
+
+  var gedaan = taken.filter(function(t) { return t.gedaan; }).length;
+
+  // IoT status kleur
+  var iotKleur = function(status) {
+    if (status === 'let_op') return C_V.oranje;
+    if (status === 'alarm') return C_V.rood;
+    return C_V.groen;
+  };
+  var trendIcon = function(trend) {
+    if (!trend) return '';
+    if (trend === 'stijgend' || trend === 'licht stijgend') return ' \u2191';
+    if (trend === 'dalend') return ' \u2193';
+    if (trend === 'minder' || trend === 'onrustig' || trend === 'weinig beweging') return ' \u26A0';
+    return '';
+  };
+
+  var detailTabs = [
+    { id: 'taken', label: 'Taken (' + gedaan + '/' + taken.length + ')' },
+    { id: 'vitalen', label: 'Vitalen' },
+    { id: 'notities', label: 'Notities' },
+    { id: 'dossier', label: 'Dossier' },
+  ];
+
+  return React.createElement('div', { style: { animation: 'slideInRight 0.3s ease' } },
+    // Terug + header
+    React.createElement('button', { onClick: onTerug, style: { background: 'none', border: 'none', fontSize: 14, color: C_V.oranje, cursor: 'pointer', marginBottom: 8, fontWeight: 500 } }, '\u2190 Wijk overzicht'),
+
+    React.createElement(Card, { style: { padding: 12 } },
+      React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } },
+        React.createElement('div', { style: { width: 48, height: 48, borderRadius: 24, background: C_V.oranjeLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, color: C_V.oranje } }, b.initialen),
+        React.createElement('div', { style: { flex: 1 } },
+          React.createElement('div', { style: { fontSize: 17, fontWeight: 700, color: C_V.tekstPrimair } }, b.naam),
+          React.createElement('div', { style: { fontSize: 13, color: C_V.tekstSecundair } }, b.afdeling + ' \u00B7 Kamer ' + b.kamer),
+          React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted } }, b.diagnose)
+        )
+      )
+    ),
+
+    // Alert
+    b.openConsulten.length > 0 && React.createElement(Card, { style: { background: C_V.roodLicht, border: '1px solid ' + C_V.rood, padding: 10 } },
+      React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
+        React.createElement('span', { style: { fontSize: 16 } }, '\u26A0\uFE0F'),
+        React.createElement('div', { style: { flex: 1 } },
+          React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_V.rood } }, 'Consult #' + b.openConsulten[0].id + ' \u2014 ' + b.openConsulten[0].urgentie),
+          React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, b.openConsulten[0].beschrijving)
+        )
+      )
+    ),
+
+    // Detail tabs
+    React.createElement('div', { style: { display: 'flex', gap: 4, marginBottom: 12, overflowX: 'auto' } },
+      detailTabs.map(function(dt) {
+        var sel = tabDetail === dt.id;
+        return React.createElement('button', { key: dt.id, onClick: function() { setTabDetail(dt.id); }, style: {
+          padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: sel ? 600 : 400, whiteSpace: 'nowrap',
+          background: sel ? C_V.oranje : C_V.kaartWit, color: sel ? '#FFF' : C_V.tekstSecundair, transition: 'all 0.2s',
+        } }, dt.label);
+      })
+    ),
+
+    // ═══ TAKEN ═══
+    tabDetail === 'taken' && React.createElement('div', null,
+      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 6 } },
+        React.createElement('span', { style: { fontSize: 12, color: C_V.tekstMuted } }, 'Voortgang'),
+        React.createElement('span', { style: { fontSize: 12, fontWeight: 700, color: C_V.oranje } }, Math.round(gedaan / taken.length * 100) + '%')
+      ),
+      React.createElement(ProgressBar, { percentage: gedaan / taken.length * 100 }),
+      React.createElement('div', { style: { marginTop: 10 } },
+        taken.map(function(t) {
+          return React.createElement('div', { key: t.id, onClick: function() { toggle(t.id); }, style: {
+            display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', marginBottom: 4,
+            background: C_V.kaartWit, borderRadius: 8, border: '1px solid ' + C_V.border, cursor: 'pointer',
+            opacity: t.gedaan ? 0.7 : 1, transition: 'all 0.2s',
+          } },
+            React.createElement('div', { style: {
+              width: 22, height: 22, borderRadius: 6, border: '2px solid ' + (t.gedaan ? C_V.groen : C_V.border),
+              background: t.gedaan ? C_V.groen : 'transparent', marginTop: 1,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 12, fontWeight: 700, flexShrink: 0,
+            } }, t.gedaan ? '\u2713' : ''),
+            React.createElement('div', { style: { flex: 1 } },
+              React.createElement('div', { style: { fontSize: 13, fontWeight: 500, color: C_V.tekstPrimair, textDecoration: t.gedaan ? 'line-through' : 'none' } }, t.tekst),
+              React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } },
+                t.tijd + (t.gedaan ? ' \u00B7 \u2713 ' + t.door + ' om ' + t.gedaanOm : ''))
+            )
+          );
+        })
+      )
+    ),
+
+    // ═══ VITALEN (IoT) ═══
+    tabDetail === 'vitalen' && React.createElement('div', null,
+      React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginBottom: 8 } }, 'Realtime via IoT sensoren \u00B7 Philips ePatch + bedsensor'),
+      React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 } },
+        [
+          { key: 'hartslag', label: 'Hartslag', icon: '\u2764\uFE0F' },
+          { key: 'saturatie', label: 'SpO2', icon: '\uD83D\uDCA8' },
+          { key: 'temperatuur', label: 'Temperatuur', icon: '\uD83C\uDF21\uFE0F' },
+          { key: 'bloeddruk', label: 'Bloeddruk', icon: '\uD83E\uDE78' },
+          { key: 'beweging', label: 'Beweging', icon: '\uD83D\uDEB6' },
+          { key: 'valrisico', label: 'Valdetectie', icon: '\u26A0\uFE0F' },
+          { key: 'slaap', label: 'Slaap vannacht', icon: '\uD83D\uDCA4' },
+          { key: 'gewicht', label: 'Gewicht', icon: '\u2696\uFE0F' },
+        ].map(function(param) {
+          var data = b.iot[param.key];
+          var kleur = iotKleur(data.status);
+          return React.createElement(Card, { key: param.key, style: { padding: 10, border: data.status !== 'normaal' ? '1.5px solid ' + kleur : '1px solid ' + C_V.border } },
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 } },
+              React.createElement('span', { style: { fontSize: 16 } }, param.icon),
+              React.createElement('span', { style: { fontSize: 10, color: C_V.tekstMuted } }, data.updated)
+            ),
+            React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: kleur } }, data.waarde + trendIcon(data.trend)),
+            React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, param.label + (data.eenheid ? ' ' + data.eenheid : '')),
+            data.status === 'let_op' && React.createElement('div', { style: { fontSize: 10, color: C_V.oranje, fontWeight: 500, marginTop: 2 } }, '\u26A0 ' + (data.trend || 'Let op'))
+          );
+        })
+      ),
+      React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted, textAlign: 'center', marginTop: 8, fontStyle: 'italic' } },
+        'Sensoren: Philips ePatch (hartslag, SpO2) \u00B7 Withings bedsensor (slaap, beweging) \u00B7 Withings Body+ (gewicht)')
+    ),
+
+    // ═══ NOTITIES ═══
+    tabDetail === 'notities' && React.createElement('div', null,
+      React.createElement(Card, { style: { padding: 12 } },
+        React.createElement('textarea', {
+          value: nieuweNotitie,
+          onChange: function(e) { setNieuweNotitie(e.target.value); },
+          placeholder: 'Snelle notitie...',
+          style: { width: '100%', minHeight: 60, padding: 10, borderRadius: 8, border: '1px solid ' + C_V.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", resize: 'vertical', outline: 'none', color: C_V.tekstPrimair, marginBottom: 8 }
+        }),
+        React.createElement('button', { onClick: voegNotitieToe, style: {
+          background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 600, cursor: 'pointer', width: '100%',
+        } }, 'Notitie opslaan')
+      ),
+      notities.map(function(n, i) {
+        return React.createElement(Card, { key: i, style: { padding: 10, borderLeft: '3px solid ' + C_V.oranje } },
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 2 } },
+            React.createElement('span', { style: { fontSize: 12, fontWeight: 600, color: C_V.oranje } }, n.auteur),
+            React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, n.tijd)
+          ),
+          React.createElement('div', { style: { fontSize: 13, color: C_V.tekstPrimair, lineHeight: 1.5 } }, n.tekst)
+        );
+      })
+    ),
+
+    // ═══ DOSSIER ═══
+    tabDetail === 'dossier' && React.createElement('div', null,
+      // Re-ablement
+      b.reablement && React.createElement(Card, null,
+        React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_V.tekstSecundair, marginBottom: 4 } }, 'Re-ablement'),
+        React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, b.reablement.fase),
+        React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginBottom: 6 } }, b.reablement.coordinatorNaam),
+        React.createElement(ProgressBar, { percentage: b.reablement.voortgang }),
+        React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted, marginTop: 4 } }, b.reablement.voortgang + '% \u00B7 tot ' + b.reablement.einddatum)
+      ),
+      // Behandelplan
+      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_V.tekstSecundair, marginBottom: 6 } }, 'Behandelplan'),
+      b.behandelplan.map(function(item, i) {
+        var actueel = item.status === 'Actueel';
+        return React.createElement(Card, { key: i, style: { padding: 10 } },
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 } },
+            React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, item.onderdeel),
+            React.createElement(Badge, { label: item.status, color: actueel ? C_V.groen : C_V.oranje, bgColor: actueel ? C_V.groenLicht : C_V.oranjeLicht })
+          ),
+          React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, lineHeight: 1.5 } }, item.toelichting),
+          React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted, marginTop: 4 } }, 'Bijgewerkt: ' + item.bijgewerkt)
+        );
+      }),
+      React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginTop: 8 } }, 'Wijzigingen via GeriForce')
+    )
+  );
+};
+
+// ══════════════════════════════════════════
+// RAPPORTAGE (ongewijzigd maar nu met bewoner context)
 // ══════════════════════════════════════════
 window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
   const { useState } = React;
-  const [tekst, setTekst] = useState('');
-  const [categorie, setCategorie] = useState('ochtend');
-  const cats = [
-    { id: 'ochtend', label: 'Ochtend' },
-    { id: 'middag', label: 'Middag' },
-    { id: 'avond', label: 'Avond' },
-    { id: 'nacht', label: 'Nacht' },
-  ];
+  var [tekst, setTekst] = useState('');
+  var [categorie, setCategorie] = useState('ochtend');
+  var [bewoner, setBewoner] = useState(window.bewoners[0].id);
+  var cats = [{ id: 'ochtend', label: 'Ochtend' },{ id: 'middag', label: 'Middag' },{ id: 'avond', label: 'Avond' },{ id: 'nacht', label: 'Nacht' }];
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
     React.createElement(SectionTitle, null, 'Rapportage invullen'),
-    // Categorie keuze
+    // Bewoner keuze
+    React.createElement('div', { style: { display: 'flex', gap: 6, marginBottom: 8, overflowX: 'auto' } },
+      window.bewoners.map(function(b) {
+        var sel = bewoner === b.id;
+        return React.createElement('button', { key: b.id, onClick: function() { setBewoner(b.id); }, style: {
+          padding: '6px 12px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: sel ? 600 : 400, whiteSpace: 'nowrap',
+          background: sel ? C_V.oranje : C_V.kaartWit, color: sel ? '#FFF' : C_V.tekstSecundair, transition: 'all 0.2s',
+        } }, b.roepnaam);
+      })
+    ),
+    // Categorie
     React.createElement('div', { style: { display: 'flex', gap: 6, marginBottom: 12 } },
       cats.map(function(c) {
         var sel = categorie === c.id;
         return React.createElement('button', { key: c.id, onClick: function() { setCategorie(c.id); }, style: {
           flex: 1, padding: '8px 0', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: sel ? 600 : 400,
-          background: sel ? C_V.oranje : C_V.kaartWit, color: sel ? '#FFF' : C_V.tekstSecundair, transition: 'all 0.2s',
+          background: sel ? C_V.oranjeLicht : C_V.kaartWit, color: sel ? C_V.oranje : C_V.tekstSecundair, transition: 'all 0.2s',
         } }, c.label);
       })
     ),
     React.createElement(Card, null,
       React.createElement('textarea', {
         value: tekst, onChange: function(e) { setTekst(e.target.value); },
-        placeholder: 'Hoe was de ' + categorie + '? Beschrijf kort...\n\nBijv: ADL ging goed, medicatie ingenomen. Meneer was rustig.',
-        style: { width: '100%', minHeight: 120, padding: 12, borderRadius: 8, border: '1px solid ' + C_V.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", resize: 'vertical', outline: 'none', color: C_V.tekstPrimair }
+        placeholder: 'Rapportage voor ' + window.bewoners.find(function(b) { return b.id === bewoner; }).roepnaam + '...',
+        style: { width: '100%', minHeight: 100, padding: 12, borderRadius: 8, border: '1px solid ' + C_V.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", resize: 'vertical', outline: 'none', color: C_V.tekstPrimair }
       }),
-      React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginTop: 8 } }, 'Dit rapport wordt zichtbaar voor collega\'s \u00E9n familie.'),
+      React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginTop: 8 } }, 'Zichtbaar voor collega\'s \u00E9n familie.'),
       React.createElement('button', { onClick: function() {
         if (tekst.trim()) { addToast('Rapportage opgeslagen', 'success'); setTekst(''); } else addToast('Schrijf eerst een rapportage');
       }, style: { background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 8 } }, 'Opslaan')
     ),
-    // Eerdere rapportages
-    React.createElement(SectionTitle, null, 'Recente rapportages'),
+    // Recente rapportages
+    React.createElement(SectionTitle, null, 'Recent'),
     window.dagrapportages.map(function(r, i) {
-      return React.createElement(Card, { key: i, style: { padding: 12 } },
-        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 4 } },
-          React.createElement('span', { style: { fontSize: 13, fontWeight: 600, color: r.isFamilie ? C_V.groen : C_V.tekstPrimair } }, r.auteur + (r.isFamilie ? ' (familie)' : '')),
+      return React.createElement(Card, { key: i, style: { padding: 10 } },
+        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 2 } },
+          React.createElement('span', { style: { fontSize: 12, fontWeight: 600, color: r.isFamilie ? C_V.groen : C_V.oranje } }, r.auteur),
           React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, r.datum)
         ),
         React.createElement('div', { style: { fontSize: 13, color: C_V.tekstSecundair, lineHeight: 1.5 } }, r.tekst)
@@ -148,14 +349,13 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
 };
 
 // ══════════════════════════════════════════
-// LEREN — verzorgende
+// LEREN — verzorgende (ongewijzigd)
 // ══════════════════════════════════════════
 window.VerzorgendeLeren = function VerzorgendeLeren({ addToast }) {
   const { useState } = React;
-  const [modalModule, setModalModule] = useState(null);
+  var [modalModule, setModalModule] = useState(null);
   var modules = window.verzorgendeModules;
   var shared = window.gedeeldeModule;
-
   var statusLabel = function(s) {
     if (s === 'certificaat') return { label: 'Behaald \u2713', color: C_V.groen, bg: C_V.groenLicht };
     if (s === 'bezig') return { label: 'In uitvoering', color: C_V.oranje, bg: C_V.oranjeLicht };
@@ -164,8 +364,6 @@ window.VerzorgendeLeren = function VerzorgendeLeren({ addToast }) {
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
     React.createElement(SectionTitle, null, 'Verplichte modules'),
-    React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginBottom: 12 } }, 'Deze modules zijn vereist voor je inzet bij ' + window.patient.kamer.split(' \u00B7')[0]),
-    // Klantcertificaat
     React.createElement(Card, { style: { background: C_V.groenLicht, border: '1px solid ' + C_V.groen, padding: 12 } },
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
         React.createElement('span', { style: { fontSize: 20 } }, '\u2705'),
@@ -175,7 +373,6 @@ window.VerzorgendeLeren = function VerzorgendeLeren({ addToast }) {
         )
       )
     ),
-    // Modules
     modules.map(function(m, i) {
       var st = statusLabel(m.status);
       return React.createElement(Card, { key: i, style: { cursor: 'pointer' }, onClick: function() { setModalModule(m); } },
@@ -186,7 +383,6 @@ window.VerzorgendeLeren = function VerzorgendeLeren({ addToast }) {
         m.status === 'bezig' && React.createElement(ProgressBar, { percentage: m.voortgang })
       );
     }),
-    // Shared patient module
     React.createElement(SectionTitle, null, 'Kennismodule bij pati\u00EBnt'),
     React.createElement(Card, { style: { border: '2px solid ' + C_V.oranje } },
       React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair, marginBottom: 4 } }, shared.naam),
@@ -196,7 +392,6 @@ window.VerzorgendeLeren = function VerzorgendeLeren({ addToast }) {
         background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 10,
       } }, 'Ga verder')
     ),
-    // Modal
     modalModule && React.createElement(Modal, { title: modalModule.naam, onClose: function() { setModalModule(null); } },
       React.createElement('p', { style: { fontSize: 14, color: C_V.tekstSecundair, lineHeight: 1.6, marginBottom: 12 } }, modalModule.beschrijving),
       modalModule.status === 'bezig' && React.createElement('div', { style: { marginBottom: 12 } },

@@ -128,9 +128,12 @@ function FamilieKeuze({ onKies, onTerug }) {
 function AppVerzorgende({ onUitloggen }) {
   const [tab, setTab] = useState('taken');
   const [toasts, addToast] = useToasts();
-  const handleTab = (t) => { setTab(t); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const [selectedBewoner, setSelectedBewoner] = useState(null);
+  const verzorgendeNaam = 'Sandra B.';
+
+  const handleTab = (t) => { setTab(t); setSelectedBewoner(null); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const tabs = [
-    { id: 'taken', icon: '\u2705', label: 'Taken' },
+    { id: 'taken', icon: '\u2705', label: 'Wijk' },
     { id: 'rapportage', icon: '\u270D\uFE0F', label: 'Rapportage' },
     { id: 'melding', icon: '\uD83D\uDD14', label: 'Melding' },
     { id: 'leren', icon: '\uD83D\uDCDA', label: 'Leren' },
@@ -144,19 +147,24 @@ function AppVerzorgende({ onUitloggen }) {
             <GeriCallLogo />
             <span style={{ fontSize: 11, fontWeight: 600, color: C.oranje, background: C.oranjeLicht, padding: '2px 8px', borderRadius: 4 }}>ZORG</span>
           </div>
-          <button onClick={onUitloggen} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Uitloggen</button>
-        </div>
-        <Card style={{ background: C.oranjeLicht, border: 'none', padding: 12 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 500, color: C.oranjeDonker }}>Dienst vandaag</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: C.tekstPrimair }}>{window.patient.naam}</div>
-              <div style={{ fontSize: 12, color: C.tekstSecundair }}>{window.patient.kamer}</div>
-            </div>
-            <div style={{ width: 44, height: 44, borderRadius: 22, background: C.oranje, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontWeight: 700, fontSize: 16 }}>AJ</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 12, color: C.tekstSecundair }}>{verzorgendeNaam}</span>
+            <button onClick={onUitloggen} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Uit</button>
           </div>
-        </Card>
-        {tab === 'taken' && <VerzorgendeTaken addToast={addToast} />}
+        </div>
+
+        {/* Wijk header (alleen op wijkoverzicht) */}
+        {tab === 'taken' && !selectedBewoner && (
+          <Card style={{ background: C.oranjeLicht, border: 'none', padding: 12 }}>
+            <div style={{ fontSize: 13, fontWeight: 500, color: C.oranjeDonker }}>Dienst vandaag &middot; Afdeling Zonnehof</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.tekstPrimair }}>{window.bewoners.length} bewoners in uw wijk</div>
+            <div style={{ fontSize: 12, color: C.tekstSecundair }}>{formatDatum()}</div>
+          </Card>
+        )}
+
+        {/* Content */}
+        {tab === 'taken' && !selectedBewoner && <VerzorgendeTaken addToast={addToast} onSelectBewoner={(b) => { setSelectedBewoner(b); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />}
+        {tab === 'taken' && selectedBewoner && <BewonerDetail bewoner={selectedBewoner} addToast={addToast} onTerug={() => setSelectedBewoner(null)} verzorgendeNaam={verzorgendeNaam} />}
         {tab === 'rapportage' && <VerzorgendeRapportage addToast={addToast} />}
         {tab === 'melding' && <SectionMelding addToast={addToast} />}
         {tab === 'leren' && <VerzorgendeLeren addToast={addToast} />}

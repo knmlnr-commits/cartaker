@@ -147,8 +147,27 @@ window.SectionMelding = function SectionMelding({ addToast }) {
   // ── Step indicator ──
   var stapNamen = ['Klacht', 'Discriminatoren', 'ABCDE', 'Urgentie', 'Routering'];
 
+  // Direct bellen component
+  var BelKnop = function() {
+    return React.createElement('div', { style: { display: 'flex', gap: 8, marginBottom: 12 } },
+      React.createElement('a', { href: 'tel:0881234567',
+        style: { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          padding: '12px', borderRadius: 10, background: C_M.rood, color: '#FFFFFF',
+          fontSize: 14, fontWeight: 700, textDecoration: 'none', cursor: 'pointer' }
+      }, '\uD83D\uDCDE Bel direct GeriCall'),
+      React.createElement('a', { href: 'tel:112',
+        style: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+          padding: '12px 16px', borderRadius: 10, background: C_M.roodLicht, color: C_M.rood,
+          fontSize: 14, fontWeight: 700, textDecoration: 'none', cursor: 'pointer',
+          border: '2px solid ' + C_M.rood }
+      }, '112')
+    );
+  };
+
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
     React.createElement(SectionTitle, null, 'Melding doen / Consult aanvragen'),
+    // Altijd zichtbaar: direct bellen
+    React.createElement(BelKnop),
 
     // Step indicator
     React.createElement('div', { style: { display: 'flex', gap: 4, marginBottom: 8 } },
