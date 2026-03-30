@@ -115,7 +115,8 @@ window.SectionMelding = function SectionMelding({ addToast }) {
     const urg = berekenUrgentie();
     const route = bepaalRoute();
     return React.createElement('div', { style: { animation: 'scaleIn 0.4s ease', textAlign: 'center', padding: '20px 0' } },
-      React.createElement('div', { style: { width: 72, height: 72, borderRadius: 36, background: C_M.groenLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 36, animation: 'scaleIn 0.5s ease' } }, '\u2713'),
+      React.createElement('div', { style: { margin: '0 auto 12px', animation: 'scaleIn 0.5s ease' } }, React.createElement(GeriCallLogoSVG, { size: 48 })),
+      React.createElement('div', { style: { width: 56, height: 56, borderRadius: 28, background: C_M.groenLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 28, animation: 'scaleIn 0.5s ease' } }, '\u2713'),
       React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: C_M.groen, marginBottom: 4 } }, 'Melding ingediend'),
       React.createElement('div', { style: { fontSize: 14, color: C_M.tekstSecundair, marginBottom: 20 } }, 'Consult #C-2042'),
       React.createElement(Card, null,

@@ -39,11 +39,7 @@ function RolKeuze({ onKies }) {
   return (
     <div style={{ minHeight: '100vh', background: C.achtergrond, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ maxWidth: 420, width: '100%', padding: '32px 24px', textAlign: 'center' }}>
-        <div style={{ marginBottom: 32 }}>
-          <div style={{ width: 56, height: 56, borderRadius: 14, background: C.oranje, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontWeight: 800, fontSize: 28, marginBottom: 12 }}>G</div>
-          <div style={{ fontSize: 24, fontWeight: 700, color: C.tekstPrimair }}>GeriCall</div>
-          <div style={{ fontSize: 14, color: C.oranje, fontWeight: 600 }}>CareTaker Portal</div>
-        </div>
+        <GeriCallLogoBig />
         <div style={{ fontSize: 15, color: C.tekstSecundair, marginBottom: 32, lineHeight: 1.5 }}>
           Samen zorgen voor <strong style={{ color: C.tekstPrimair }}>{window.patient.naam}</strong>
         </div>
@@ -74,8 +70,9 @@ function RolKeuze({ onKies }) {
           </div>
         </div>
 
-        <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 24 }}>
-          GeriCall CareTaker Portal v3 &middot; Prototype
+        <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+          <GeriCallLogoSVG size={14} />
+          <span>GeriCall CareTaker Portal v3 &middot; Prototype</span>
         </div>
       </div>
     </div>
@@ -92,6 +89,7 @@ function FamilieKeuze({ onKies, onTerug }) {
       <div style={{ maxWidth: 420, width: '100%', padding: '32px 24px' }}>
         <button onClick={onTerug} style={{ background: 'none', border: 'none', fontSize: 14, color: C.tekstMuted, cursor: 'pointer', marginBottom: 16 }}>&larr; Terug</button>
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div style={{ display: 'inline-block', marginBottom: 8 }}><GeriCallLogoSVG size={40} /></div>
           <div style={{ fontSize: 20, fontWeight: 700, color: C.tekstPrimair }}>Wie ben je?</div>
           <div style={{ fontSize: 14, color: C.tekstSecundair, marginTop: 4 }}>
             Selecteer je naam om in te loggen
