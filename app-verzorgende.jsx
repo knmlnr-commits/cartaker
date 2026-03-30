@@ -331,6 +331,7 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
   var [datumVan, setDatumVan] = useState('');
   var [datumTot, setDatumTot] = useState('');
   var [toonDatumFilter, setToonDatumFilter] = useState(false);
+  var [toonEpd, setToonEpd] = useState(false);
   var cats = [{ id: 'ochtend', label: 'Ochtend' },{ id: 'middag', label: 'Middag' },{ id: 'avond', label: 'Avond' },{ id: 'nacht', label: 'Nacht' }];
 
   // Snelfilters voor datum
@@ -363,6 +364,11 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
   });
   var heeftFilter = zoekRapportage.trim() || datumVan || datumTot;
   var zichtbaar = toonAlle || heeftFilter ? gefilterd : gefilterd.slice(0, 4);
+
+  // EPD view
+  if (toonEpd) {
+    return React.createElement(EpdViewer, { bewonerId: bewoner, onSluit: function() { setToonEpd(false); } });
+  }
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
     React.createElement(SectionTitle, null, 'Rapportage invullen'),
@@ -401,7 +407,7 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
         'Vitalen ophalen'
       ),
       React.createElement('button', { onClick: function() {
-        addToast('NUTS koppeling: EPD wordt geraadpleegd...', 'success');
+        setToonEpd(true);
       }, style: { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 8, border: '1px solid ' + C_V.blauw, background: C_V.blauwLicht, fontSize: 12, fontWeight: 500, color: C_V.blauw, cursor: 'pointer' } },
         React.createElement('span', { style: { fontSize: 14 } }, '\uD83D\uDD12'),
         'EPD raadplegen (NUTS)'

@@ -398,3 +398,122 @@ window.ConsultDetail = function ConsultDetail({ consult, onTerug, addToast, read
     )
   );
 };
+
+// ── EPD Viewer (via NUTS koppeling) ──
+window.EpdViewer = function EpdViewer({ bewonerId, onSluit }) {
+  var { useState } = React;
+  var [tab, setTab] = useState('medicatie');
+  var epd = window.epdGegevens && window.epdGegevens[bewonerId];
+  var bew = window.bewoners.find(function(b) { return b.id === bewonerId; });
+  if (!epd || !bew) return null;
+
+  var tabs = [
+    { id: 'medicatie', label: 'Medicatie', count: epd.medicatie.length },
+    { id: 'allergieen', label: 'Allergie\u00EBn', count: epd.allergieen.length },
+    { id: 'lab', label: 'Lab', count: epd.labresultaten.length },
+    { id: 'historie', label: 'Historie', count: epd.voorgeschiedenis.length },
+    { id: 'overig', label: 'Overig', count: (epd.wilsverklaring ? 1 : 0) + epd.correspondentie.length },
+  ];
+
+  return React.createElement('div', { style: { animation: 'slideInRight 0.3s ease' } },
+    React.createElement('button', { onClick: onSluit, style: { background: 'none', border: 'none', fontSize: 14, color: C.tekstSecundair, cursor: 'pointer', marginBottom: 8, fontWeight: 500 } }, '\u2190 Terug'),
+    React.createElement('div', { style: { background: C.blauwLicht, borderRadius: 12, padding: 14, marginBottom: 12, border: '1px solid ' + C.blauw } },
+      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+        React.createElement('div', null,
+          React.createElement('div', { style: { fontSize: 11, fontWeight: 600, color: C.blauw } }, '\uD83D\uDD12 EPD via NUTS'),
+          React.createElement('div', { style: { fontSize: 16, fontWeight: 700, color: C.tekstPrimair } }, bew.naam),
+          React.createElement('div', { style: { fontSize: 12, color: C.tekstSecundair } }, 'BSN ' + epd.bsn + ' \u00B7 ' + bew.afdeling + ' Kamer ' + bew.kamer)
+        ),
+        React.createElement('div', { style: { textAlign: 'right' } },
+          React.createElement('div', { style: { fontSize: 11, color: C.tekstMuted } }, 'Huisarts'),
+          React.createElement('div', { style: { fontSize: 11, color: C.tekstSecundair } }, epd.huisarts.split(',')[0])
+        )
+      )
+    ),
+    React.createElement('div', { style: { display: 'flex', gap: 4, marginBottom: 12, overflowX: 'auto' } },
+      tabs.map(function(t) {
+        var sel = tab === t.id;
+        return React.createElement('button', { key: t.id, onClick: function() { setTab(t.id); }, style: {
+          padding: '6px 10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: sel ? 600 : 400, whiteSpace: 'nowrap',
+          background: sel ? C.blauw : C.kaartWit, color: sel ? '#FFF' : C.tekstSecundair,
+        } }, t.label + (t.count > 0 ? ' (' + t.count + ')' : ''));
+      })
+    ),
+    tab === 'medicatie' && epd.medicatie.map(function(m, i) {
+      return React.createElement(Card, { key: i, style: { padding: 12 } },
+        React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C.tekstPrimair } }, m.naam),
+        React.createElement('div', { style: { fontSize: 13, color: C.tekstSecundair } }, m.dosering),
+        React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted, marginTop: 4 } }, m.indicatie + ' \u00B7 ' + m.voorschrijver),
+        m.opmerking && React.createElement('div', { style: { fontSize: 11, color: C.oranje, marginTop: 4, fontWeight: 500 } }, '\u26A0 ' + m.opmerking)
+      );
+    }),
+    tab === 'allergieen' && (epd.allergieen.length === 0
+      ? React.createElement('div', { style: { fontSize: 13, color: C.groen, textAlign: 'center', padding: '20px 0' } }, 'Geen bekende allergie\u00EBn')
+      : epd.allergieen.map(function(a, i) {
+        return React.createElement(Card, { key: i, style: { padding: 12, borderLeft: '3px solid ' + (a.ernst === 'Ernstig' ? C.rood : C.oranje) } },
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+            React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C.tekstPrimair } }, a.stof),
+            React.createElement(Badge, { label: a.ernst, color: a.ernst === 'Ernstig' ? C.rood : C.oranje, bgColor: a.ernst === 'Ernstig' ? C.roodLicht : C.oranjeLicht })
+          ),
+          React.createElement('div', { style: { fontSize: 13, color: C.tekstSecundair, marginTop: 4 } }, a.type + ': ' + a.reactie)
+        );
+      })
+    ),
+    tab === 'lab' && (epd.labresultaten.length === 0
+      ? React.createElement('div', { style: { fontSize: 13, color: C.tekstMuted, textAlign: 'center', padding: '20px 0' } }, 'Geen recente labresultaten')
+      : React.createElement(Card, { style: { padding: 0, overflow: 'hidden' } },
+        epd.labresultaten.map(function(l, i) {
+          return React.createElement('div', { key: i, style: { display: 'flex', alignItems: 'center', padding: '8px 12px', borderBottom: i < epd.labresultaten.length - 1 ? '1px solid ' + C.border : 'none', background: l.afwijkend ? C.roodLicht : 'transparent' } },
+            React.createElement('div', { style: { flex: 1 } },
+              React.createElement('div', { style: { fontSize: 13, fontWeight: l.afwijkend ? 600 : 400, color: l.afwijkend ? C.rood : C.tekstPrimair } }, l.bepaling),
+              React.createElement('div', { style: { fontSize: 11, color: C.tekstMuted } }, l.datum)
+            ),
+            React.createElement('div', { style: { textAlign: 'right' } },
+              React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: l.afwijkend ? C.rood : C.tekstPrimair } }, l.waarde + ' ' + l.eenheid),
+              React.createElement('div', { style: { fontSize: 10, color: C.tekstMuted } }, 'ref: ' + l.referentie)
+            )
+          );
+        })
+      )
+    ),
+    tab === 'historie' && (epd.voorgeschiedenis.length === 0
+      ? React.createElement('div', { style: { fontSize: 13, color: C.tekstMuted, textAlign: 'center', padding: '20px 0' } }, 'Geen voorgeschiedenis')
+      : epd.voorgeschiedenis.map(function(v, i) {
+        return React.createElement('div', { key: i, style: { display: 'flex', gap: 10, marginBottom: 4 } },
+          React.createElement('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 16 } },
+            React.createElement('div', { style: { width: 8, height: 8, borderRadius: 4, background: C.blauw, marginTop: 5 } }),
+            i < epd.voorgeschiedenis.length - 1 && React.createElement('div', { style: { width: 1, flex: 1, background: C.border, minHeight: 16 } })
+          ),
+          React.createElement(Card, { style: { flex: 1, padding: 10, marginBottom: 0 } },
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between' } },
+              React.createElement('span', { style: { fontSize: 13, fontWeight: 600, color: C.tekstPrimair } }, v.diagnose),
+              React.createElement('span', { style: { fontSize: 12, color: C.tekstMuted } }, v.jaar)
+            ),
+            React.createElement('div', { style: { fontSize: 11, color: C.tekstMuted } }, v.specialist)
+          )
+        );
+      })
+    ),
+    tab === 'overig' && React.createElement('div', null,
+      epd.wilsverklaring && React.createElement(Card, { style: { borderLeft: '3px solid ' + C.rood, padding: 12 } },
+        React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C.rood, marginBottom: 6 } }, 'Wilsverklaring / Behandelwensen'),
+        React.createElement('div', { style: { fontSize: 13, color: C.tekstPrimair, marginBottom: 2 } }, 'Reanimatie: ' + epd.wilsverklaring.reanimatie),
+        React.createElement('div', { style: { fontSize: 13, color: C.tekstPrimair, marginBottom: 6 } }, 'IC: ' + epd.wilsverklaring.ic),
+        React.createElement('div', { style: { fontSize: 11, color: C.tekstMuted } }, 'Besproken ' + epd.wilsverklaring.besprokenOp + ' met ' + epd.wilsverklaring.besprokenMet),
+        epd.wilsverklaring.opmerking && React.createElement('div', { style: { fontSize: 12, color: C.tekstSecundair, marginTop: 4, fontStyle: 'italic' } }, epd.wilsverklaring.opmerking)
+      ),
+      !epd.wilsverklaring && React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted, padding: '8px 0' } }, 'Geen wilsverklaring geregistreerd'),
+      epd.correspondentie.length > 0 && React.createElement(SectionTitle, null, 'Brieven'),
+      epd.correspondentie.map(function(br, i) {
+        return React.createElement(Card, { key: i, style: { padding: 12 } },
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 4 } },
+            React.createElement('span', { style: { fontSize: 13, fontWeight: 600, color: C.tekstPrimair } }, br.onderwerp),
+            React.createElement('span', { style: { fontSize: 11, color: C.tekstMuted } }, br.datum)
+          ),
+          React.createElement('div', { style: { fontSize: 12, color: C.tekstSecundair } }, br.van),
+          React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted, lineHeight: 1.5, marginTop: 2 } }, br.samenvatting)
+        );
+      })
+    )
+  );
+};
