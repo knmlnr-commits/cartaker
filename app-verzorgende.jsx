@@ -325,6 +325,7 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
   var [tekst, setTekst] = useState('');
   var [categorie, setCategorie] = useState('ochtend');
   var [bewoner, setBewoner] = useState(window.bewoners[0].id);
+  var [zichtbaarFamilie, setZichtbaarFamilie] = useState(true);
   var cats = [{ id: 'ochtend', label: 'Ochtend' },{ id: 'middag', label: 'Middag' },{ id: 'avond', label: 'Avond' },{ id: 'nacht', label: 'Nacht' }];
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
@@ -376,9 +377,13 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
         placeholder: 'Rapportage voor ' + window.bewoners.find(function(b) { return b.id === bewoner; }).roepnaam + '...',
         style: { width: '100%', minHeight: 100, padding: 12, borderRadius: 8, border: '1px solid ' + C_V.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", resize: 'vertical', outline: 'none', color: C_V.tekstPrimair }
       }),
-      React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginTop: 8 } }, 'Zichtbaar voor collega\'s \u00E9n familie.'),
+      React.createElement('label', { style: { display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, cursor: 'pointer', fontSize: 12, color: C_V.tekstSecundair } },
+        React.createElement('input', { type: 'checkbox', checked: zichtbaarFamilie, onChange: function() { setZichtbaarFamilie(!zichtbaarFamilie); }, style: { accentColor: C_V.oranje, width: 16, height: 16, cursor: 'pointer' } }),
+        'Zichtbaar voor familie'
+      ),
+      React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted, marginTop: 4 } }, 'Altijd zichtbaar voor collega\u2019s' + (zichtbaarFamilie ? ' en familie' : '')),
       React.createElement('button', { onClick: function() {
-        if (tekst.trim()) { addToast('Rapportage opgeslagen', 'success'); setTekst(''); } else addToast('Schrijf eerst een rapportage');
+        if (tekst.trim()) { addToast('Rapportage opgeslagen' + (zichtbaarFamilie ? '' : ' (alleen collega\u2019s)'), 'success'); setTekst(''); } else addToast('Schrijf eerst een rapportage');
       }, style: { background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 8 } }, 'Opslaan')
     ),
     // Recente rapportages
