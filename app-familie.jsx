@@ -250,7 +250,8 @@ window.FamilieWeekplan = function FamilieWeekplan({ lid, addToast }) {
               isOpenSlot && !isPatient && React.createElement('button', {
                 onClick: function(e) { e.stopPropagation(); claimSlot(i, j); },
                 style: { background: C_F.groen, color: '#FFF', border: 'none', borderRadius: 6, padding: '6px 10px', fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }
-              }, 'Ik kom')
+              }, 'Ik kom'),
+              !isOpenSlot && isMijn && React.createElement(AgendaKnop, { titel: s.taak, datum: dag.datum, addToast: addToast })
             );
           })
         )

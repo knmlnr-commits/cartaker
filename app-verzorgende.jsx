@@ -277,7 +277,10 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
           placeholder: 'Snelle notitie...',
           style: { width: '100%', minHeight: 60, padding: 10, borderRadius: 8, border: '1px solid ' + C_V.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", resize: 'vertical', outline: 'none', color: C_V.tekstPrimair, marginBottom: 8 }
         }),
-        React.createElement(FotoUpload, { label: 'Foto bij notitie', addToast: addToast }),
+        React.createElement('div', { style: { display: 'flex', gap: 6, marginBottom: 6 } },
+          React.createElement('div', { style: { flex: 1 } }, React.createElement(FotoUpload, { label: 'Foto', addToast: addToast })),
+          React.createElement('div', { style: { flex: 1 } }, React.createElement(SpraakNotitie, { addToast: addToast, onResult: function(txt) { setNieuweNotitie(function(prev) { return prev ? prev + ' ' + txt : txt; }); } }))
+        ),
         React.createElement('button', { onClick: voegNotitieToe, style: {
           background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 6,
         } }, 'Notitie opslaan')
@@ -532,7 +535,10 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast, weerga
     ),
     // Rapportages voor deze bewoner
     React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 } },
+    React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
       React.createElement(SectionTitle, null, 'Rapportages ' + window.bewoners.find(function(b) { return b.id === bewoner; }).roepnaam),
+      React.createElement(PrintKnop, { label: 'Print' })
+    ),
       React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, alleRapportages.length + ' totaal')
     ),
 

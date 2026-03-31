@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v4.7.3';
+var APP_VERSION = 'v5.0.0';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -306,6 +306,9 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
     return null;
   });
   var [bewonerTab, setBewonerTab] = useState(initialBewonerTab || 'taken');
+  var [toonZoek, setToonZoek] = useState(false);
+  var [toonInstellingen, setToonInstellingen] = useState(false);
+  var [toonAudit, setToonAudit] = useState(false);
   var verzorgendeNaam = profiel.naam;
 
   // Toegang op basis van weergave
@@ -396,12 +399,16 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ fontSize: 12, color: C.tekstSecundair }}>{verzorgendeNaam}</span>
+            <button onClick={function() { setToonZoek(true); }} style={{ background: 'none', border: 'none', fontSize: 16, cursor: 'pointer', padding: '2px', color: C.tekstMuted }}>&#x1F50D;</button>
             <NotificatieBel rol="zorg" addToast={addToast} />
-            <ShareLink />
+            <button onClick={function() { setToonInstellingen(true); }} style={{ background: 'none', border: 'none', fontSize: 14, cursor: 'pointer', padding: '2px', color: C.tekstMuted }}>&#x2699;&#xFE0F;</button>
             <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Uit</button>
           </div>
         </div>
         <div style={{ marginBottom: 12 }}><WeergaveSwitcher /></div>
+        {toonZoek && React.createElement(AppZoeken, { onSluit: function() { setToonZoek(false); }, addToast: addToast })}
+        {toonInstellingen && React.createElement(InstellingenModal, { onSluit: function() { setToonInstellingen(false); }, addToast: addToast })}
+        {toonAudit && React.createElement(AuditTrailViewer, { onSluit: function() { setToonAudit(false); } })}
 
         {tab === 'taken' && !selectedBewoner && (
           <Card style={{ background: C.oranjeLicht, border: 'none', padding: 12 }}>
@@ -567,9 +574,21 @@ function AppFamilie({ lid, initialTab }) {
 // ══════════════════════════════════════════
 function App() {
   var route = useHashRouter();
+  var [toonOnboarding, setToonOnboarding] = useState(function() { return !window._onboardingGezien; });
+
+  // Audit log bij navigatie
+  React.useEffect(function() {
+    if (route.scherm && route.scherm !== 'rolkeuze') {
+      window.logAudit && window.logAudit('Systeem', 'Navigatie', route.scherm + (route.profielId ? '/' + route.profielId : '') + (route.lidId ? '/' + route.lidId : ''));
+    }
+  }, [route.scherm, route.profielId, route.lidId]);
 
   if (route.scherm === 'rolkeuze') {
-    return React.createElement(RolKeuze);
+    return React.createElement('div', null,
+      React.createElement(RolKeuze),
+      React.createElement(PrivacyNotice),
+      React.createElement(OfflineIndicator)
+    );
   }
   if (route.scherm === 'zorg_keuze') {
     return React.createElement(ZorgKeuze);
@@ -579,22 +598,30 @@ function App() {
   }
   if (route.scherm === 'verzorgende') {
     var zorgProfiel = window.zorgprofielen.find(function(p) { return p.id === route.profielId; }) || window.zorgprofielen[0];
-    return React.createElement(AppVerzorgende, {
-      initialTab: route.tab,
-      initialBewonerId: route.bewonerId,
-      initialBewonerTab: route.bewonerTab,
-      zorgProfiel: zorgProfiel,
-      key: 'zorg-' + zorgProfiel.id
-    });
+    return React.createElement('div', null,
+      toonOnboarding && React.createElement(Onboarding, { rol: 'zorg', onSluit: function() { window._onboardingGezien = true; setToonOnboarding(false); } }),
+      React.createElement(OfflineIndicator),
+      React.createElement(AppVerzorgende, {
+        initialTab: route.tab,
+        initialBewonerId: route.bewonerId,
+        initialBewonerTab: route.bewonerTab,
+        zorgProfiel: zorgProfiel,
+        key: 'zorg-' + zorgProfiel.id
+      })
+    );
   }
   if (route.scherm === 'familie') {
     var lid = window.familieleden.find(function(f) { return f.id === route.lidId; });
     if (!lid) return React.createElement(FamilieKeuze);
-    return React.createElement(AppFamilie, {
-      lid: lid,
-      initialTab: route.tab,
-      key: 'familie-' + lid.id
-    });
+    return React.createElement('div', null,
+      toonOnboarding && React.createElement(Onboarding, { rol: 'familie', onSluit: function() { window._onboardingGezien = true; setToonOnboarding(false); } }),
+      React.createElement(OfflineIndicator),
+      React.createElement(AppFamilie, {
+        lid: lid,
+        initialTab: route.tab,
+        key: 'familie-' + lid.id
+      })
+    );
   }
   return React.createElement(RolKeuze);
 }
