@@ -320,6 +320,102 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
 };
 
 // ══════════════════════════════════════════
+// OVERDRACHT — shift handover
+// ══════════════════════════════════════════
+window.OverdrachtScherm = function OverdrachtScherm({ verzorgendeNaam, addToast }) {
+  var { useState } = React;
+  var bewoners = window.bewoners;
+  var [algemeenNotitie, setAlgemeenNotitie] = useState('');
+  var [ingediend, setIngediend] = useState(false);
+  var [aandachtspunten, setAandachtspunten] = useState({});
+
+  var nu = new Date();
+  var uur = nu.getHours();
+  var dienst = uur < 15 ? 'ochtend \u2192 middag' : uur < 23 ? 'middag \u2192 avond' : 'avond \u2192 nacht';
+
+  var toggleAandacht = function(bewId, punt) {
+    var key = bewId + '_' + punt;
+    var nw = Object.assign({}, aandachtspunten);
+    nw[key] = !nw[key];
+    setAandachtspunten(nw);
+  };
+
+  if (ingediend) {
+    return React.createElement('div', { style: { textAlign: 'center', padding: '40px 0', animation: 'scaleIn 0.4s ease' } },
+      React.createElement('div', { style: { width: 56, height: 56, borderRadius: 28, background: C_V.groenLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 28 } }, '\u2713'),
+      React.createElement('div', { style: { fontSize: 18, fontWeight: 700, color: C_V.groen, marginBottom: 4 } }, 'Overdracht verstuurd'),
+      React.createElement('div', { style: { fontSize: 14, color: C_V.tekstSecundair, marginBottom: 20 } }, 'De volgende dienst ontvangt een notificatie'),
+      React.createElement('button', { onClick: function() { setIngediend(false); setAlgemeenNotitie(''); setAandachtspunten({}); }, style: {
+        background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '12px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+      } }, 'Nieuwe overdracht')
+    );
+  }
+
+  return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
+    React.createElement(SectionTitle, null, 'Dienst overdracht'),
+    React.createElement('div', { style: { fontSize: 13, color: C_V.tekstSecundair, marginBottom: 12 } }, verzorgendeNaam + ' \u00B7 ' + dienst),
+
+    // Per bewoner: samenvatting + aandachtspunten
+    bewoners.map(function(b) {
+      var gedaan = b.taken.filter(function(t) { return t.gedaan; }).length;
+      var stm = window.stemmingen[b.id];
+      var stOpt = window.stemmingOpties;
+      var huidige = stOpt.find(function(o) { return o.score === (stm ? stm.score : 3); }) || stOpt[2];
+      var laatsteNotitie = b.notities && b.notities[0];
+
+      var mogelijkeAandacht = [];
+      if (b.alert) mogelijkeAandacht.push('Open consult: ' + (b.alertTekst || b.alert));
+      if (b.iot && b.iot.saturatie && b.iot.saturatie.status === 'let_op') mogelijkeAandacht.push('SpO2 let op: ' + b.iot.saturatie.waarde + '%');
+      if (b.iot && b.iot.slaap && b.iot.slaap.status === 'let_op') mogelijkeAandacht.push('Slaap: ' + b.iot.slaap.waarde);
+      if (gedaan < b.taken.length) mogelijkeAandacht.push('Taken niet volledig: ' + gedaan + '/' + b.taken.length);
+      mogelijkeAandacht.push('Stemming: ' + huidige.label);
+
+      return React.createElement(Card, { key: b.id, style: { padding: 12 } },
+        // Header
+        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 } },
+          React.createElement('div', { style: { width: 12, height: 12, borderRadius: 6, background: huidige.kleur } }),
+          React.createElement('div', { style: { fontSize: 15, fontWeight: 600, color: C_V.tekstPrimair, flex: 1 } }, b.roepnaam),
+          React.createElement('span', { style: { fontSize: 12, color: C_V.tekstMuted } }, 'Kamer ' + b.kamer)
+        ),
+        // Laatste notitie
+        laatsteNotitie && React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, marginBottom: 8, padding: '6px 8px', background: C_V.achtergrond, borderRadius: 6, lineHeight: 1.4 } },
+          laatsteNotitie.tekst
+        ),
+        // Aandachtspunten als vinkjes
+        mogelijkeAandacht.map(function(punt, i) {
+          var key = b.id + '_' + punt;
+          var checked = aandachtspunten[key];
+          return React.createElement('label', { key: i, style: { display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', cursor: 'pointer', fontSize: 13, color: C_V.tekstPrimair } },
+            React.createElement('input', { type: 'checkbox', checked: checked || false, onChange: function() { toggleAandacht(b.id, punt); }, style: { accentColor: C_V.oranje, width: 16, height: 16 } }),
+            React.createElement('span', { style: { color: checked ? C_V.oranje : C_V.tekstPrimair } }, punt)
+          );
+        })
+      );
+    }),
+
+    // Algemene notitie
+    React.createElement(Card, { style: { padding: 12 } },
+      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_V.tekstSecundair, marginBottom: 6 } }, 'Algemene opmerkingen'),
+      React.createElement('textarea', {
+        value: algemeenNotitie, onChange: function(e) { setAlgemeenNotitie(e.target.value); },
+        placeholder: 'Iets wat de volgende dienst moet weten...',
+        style: { width: '100%', minHeight: 70, padding: 10, borderRadius: 8, border: '1px solid ' + C_V.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", resize: 'vertical', outline: 'none', color: C_V.tekstPrimair }
+      })
+    ),
+
+    // Indienen
+    React.createElement('button', { onClick: function() {
+      var aangevinkt = Object.values(aandachtspunten).filter(function(v) { return v; }).length;
+      if (aangevinkt === 0 && !algemeenNotitie.trim()) { addToast('Vink minimaal 1 aandachtspunt aan of schrijf een opmerking'); return; }
+      setIngediend(true);
+      addToast('Overdracht verstuurd', 'success');
+    }, style: {
+      background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 8,
+    } }, 'Verstuur overdracht')
+  );
+};
+
+// ══════════════════════════════════════════
 // RAPPORTAGE (ongewijzigd maar nu met bewoner context)
 // ══════════════════════════════════════════
 window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast, weergave }) {

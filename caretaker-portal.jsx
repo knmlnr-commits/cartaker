@@ -380,6 +380,7 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
   var alleTabs = [
     { id: 'taken', icon: '\u2705', label: 'Wijk', show: true },
     { id: 'rapportage', icon: '\u270D\uFE0F', label: 'Rapportage', show: true },
+    { id: 'overdracht', icon: '\uD83D\uDD04', label: 'Overdracht', show: true },
     { id: 'melding', icon: '\uD83D\uDD14', label: 'Melding', show: toegang.melding },
     { id: 'leren', icon: '\uD83D\uDCDA', label: 'Leren', show: toegang.leren },
   ];
@@ -413,6 +414,7 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
         {tab === 'taken' && !selectedBewoner && <VerzorgendeTaken addToast={addToast} onSelectBewoner={handleSelectBewoner} toegang={toegang} weergave={weergave} />}
         {tab === 'taken' && selectedBewoner && <BewonerDetail bewoner={selectedBewoner} addToast={addToast} onTerug={handleBewonerTerug} verzorgendeNaam={verzorgendeNaam} initialTab={bewonerTab} toegang={toegang} weergave={weergave} />}
         {tab === 'rapportage' && <VerzorgendeRapportage addToast={addToast} toegang={toegang} weergave={weergave} />}
+        {tab === 'overdracht' && <OverdrachtScherm verzorgendeNaam={verzorgendeNaam} addToast={addToast} />}
         {tab === 'melding' && toegang.melding && <SectionMelding addToast={addToast} />}
         {tab === 'leren' && toegang.leren && <VerzorgendeLeren addToast={addToast} weergave={weergave} />}
         <div style={{ fontSize: 10, color: C.tekstMuted, textAlign: 'center', padding: '16px 0 4px', opacity: 0.6 }}>{APP_VERSION}</div>
