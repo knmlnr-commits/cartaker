@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v4.6.1';
+var APP_VERSION = 'v4.7.0';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -395,6 +395,7 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ fontSize: 12, color: C.tekstSecundair }}>{verzorgendeNaam}</span>
+            <NotificatieBel rol="zorg" addToast={addToast} />
             <ShareLink />
             <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Uit</button>
           </div>
@@ -514,6 +515,7 @@ function AppFamilie({ lid, initialTab }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{ width: 28, height: 28, borderRadius: 14, background: lid.kleur + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: lid.kleur }}>{lid.initialen}</div>
+            <NotificatieBel rol="familie" addToast={addToast} />
             <ShareLink />
             <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Wissel</button>
           </div>

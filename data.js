@@ -401,6 +401,25 @@ window.epdGegevens = {
 // Backward compat: patient = eerste bewoner
 window.patient = window.bewoners[0];
 
+// ── Notificaties per rol ──
+window.notificaties = {
+  zorg: [
+    { id: 1, type: 'consult', tekst: 'Consult #C-2041: Dr. Mahmoud heeft gereageerd', tijd: '09:20', gelezen: false, link: 'bewoner/jansen', urgentie: 'hoog' },
+    { id: 2, type: 'vitalen', tekst: 'SpO2 Adriaan gedaald naar 93%', tijd: '09:15', gelezen: false, link: 'bewoner/jansen/vitalen', urgentie: 'hoog' },
+    { id: 3, type: 'planning', tekst: 'Donderdag avond: verzorgende nog niet ingepland', tijd: '08:00', gelezen: false, link: null, urgentie: 'normaal' },
+    { id: 4, type: 'elearning', tekst: 'Module "Hartfalen herkennen" \u2014 2 lessen resterend', tijd: 'Gisteren', gelezen: true, link: null, urgentie: 'laag' },
+    { id: 5, type: 'rapportage', tekst: 'Dochter M. Jansen heeft een bezoekverslag geplaatst', tijd: 'Gisteren 14:00', gelezen: true, link: null, urgentie: 'normaal' },
+    { id: 6, type: 'stemming', tekst: 'Stemming Dina bijgewerkt: Matig', tijd: 'Gisteren 08:00', gelezen: true, link: 'bewoner/visser', urgentie: 'normaal' },
+  ],
+  familie: [
+    { id: 1, type: 'rapportage', tekst: 'Sandra B. heeft een ochtendrapportage geplaatst', tijd: '07:45', gelezen: false, link: null, urgentie: 'normaal' },
+    { id: 2, type: 'consult', tekst: 'Consult #C-2041: update van behandelend arts', tijd: '09:20', gelezen: false, link: null, urgentie: 'hoog' },
+    { id: 3, type: 'chat', tekst: 'Peter: "Ik zet woensdag op onder voorbehoud"', tijd: '10:02', gelezen: false, link: null, urgentie: 'normaal' },
+    { id: 4, type: 'stemming', tekst: 'Stemming bijgewerkt: Redelijk (Sandra B.)', tijd: '08:10', gelezen: true, link: null, urgentie: 'normaal' },
+    { id: 5, type: 'planning', tekst: 'Dinsdag middag: nog geen bezoek gepland', tijd: 'Gisteren', gelezen: true, link: null, urgentie: 'laag' },
+  ],
+};
+
 // ── Weekplanning: wie zorgt wanneer ──
 window.weekplanning = [
   { dag: 'Maandag', datum: '31 mrt', shifts: [

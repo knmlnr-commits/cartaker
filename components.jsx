@@ -2,6 +2,88 @@
 
 var C = window.COLORS;
 
+// ── Notificatie Bel + Panel ──
+window.NotificatieBel = function NotificatieBel({ rol, addToast }) {
+  var { useState } = React;
+  var [open, setOpen] = useState(false);
+  var notifs = (window.notificaties && window.notificaties[rol]) || [];
+  var ongelezen = notifs.filter(function(n) { return !n.gelezen; }).length;
+
+  var urgentieKleur = function(u) {
+    if (u === 'hoog') return C.rood;
+    if (u === 'normaal') return C.oranje;
+    return C.tekstMuted;
+  };
+  var typeIcon = function(t) {
+    if (t === 'consult') return '\uD83D\uDD14';
+    if (t === 'vitalen') return '\u2764\uFE0F';
+    if (t === 'planning') return '\uD83D\uDCC5';
+    if (t === 'elearning') return '\uD83D\uDCDA';
+    if (t === 'rapportage') return '\u270D\uFE0F';
+    if (t === 'stemming') return '\u25CF';
+    if (t === 'chat') return '\uD83D\uDCAC';
+    return '\uD83D\uDD14';
+  };
+
+  var markeerGelezen = function(id) {
+    notifs.forEach(function(n) { if (n.id === id) n.gelezen = true; });
+    setOpen(true); // force re-render
+  };
+  var markeerAlleGelezen = function() {
+    notifs.forEach(function(n) { n.gelezen = true; });
+    setOpen(true);
+    addToast('Alle meldingen gelezen', 'success');
+  };
+
+  return React.createElement('div', { style: { position: 'relative' } },
+    // Bel knop
+    React.createElement('button', { onClick: function() { setOpen(!open); }, style: {
+      background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', position: 'relative', padding: '4px',
+    } },
+      '\uD83D\uDD14',
+      ongelezen > 0 && React.createElement('div', { style: {
+        position: 'absolute', top: 0, right: 0, width: 16, height: 16, borderRadius: 8,
+        background: C.rood, color: '#FFF', fontSize: 10, fontWeight: 700,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      } }, ongelezen)
+    ),
+
+    // Panel
+    open && React.createElement('div', { style: {
+      position: 'absolute', top: '100%', right: 0, marginTop: 6, width: 320,
+      background: C.kaartWit, border: '1px solid ' + C.border, borderRadius: 14,
+      boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 200, maxHeight: 400, overflowY: 'auto',
+    } },
+      // Header
+      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', borderBottom: '1px solid ' + C.border } },
+        React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C.tekstPrimair } }, 'Meldingen' + (ongelezen > 0 ? ' (' + ongelezen + ')' : '')),
+        React.createElement('div', { style: { display: 'flex', gap: 8 } },
+          ongelezen > 0 && React.createElement('button', { onClick: markeerAlleGelezen, style: { background: 'none', border: 'none', fontSize: 11, color: C.oranje, cursor: 'pointer', fontWeight: 500 } }, 'Alles gelezen'),
+          React.createElement('button', { onClick: function() { setOpen(false); }, style: { background: 'none', border: 'none', fontSize: 16, color: C.tekstMuted, cursor: 'pointer' } }, '\u2715')
+        )
+      ),
+      // Items
+      notifs.length === 0 && React.createElement('div', { style: { padding: '24px 14px', textAlign: 'center', fontSize: 13, color: C.tekstMuted } }, 'Geen meldingen'),
+      notifs.map(function(n) {
+        return React.createElement('div', { key: n.id, onClick: function() { markeerGelezen(n.id); }, style: {
+          display: 'flex', gap: 10, padding: '10px 14px', cursor: 'pointer',
+          background: n.gelezen ? 'transparent' : C.achtergrond,
+          borderBottom: '1px solid ' + C.border,
+        } },
+          React.createElement('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 20, paddingTop: 2 } },
+            React.createElement('span', { style: { fontSize: 14 } }, typeIcon(n.type)),
+            !n.gelezen && React.createElement('div', { style: { width: 6, height: 6, borderRadius: 3, background: urgentieKleur(n.urgentie), marginTop: 4 } })
+          ),
+          React.createElement('div', { style: { flex: 1 } },
+            React.createElement('div', { style: { fontSize: 13, color: C.tekstPrimair, fontWeight: n.gelezen ? 400 : 600, lineHeight: 1.4 } }, n.tekst),
+            React.createElement('div', { style: { fontSize: 11, color: C.tekstMuted, marginTop: 2 } }, n.tijd)
+          )
+        );
+      })
+    )
+  );
+};
+
 // ── Logo (echte GeriCall afbeelding als base64) ──
 window.GeriCallLogoImg = function GeriCallLogoImg({ size }) {
   var s = size || 32;
