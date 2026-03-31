@@ -6,7 +6,8 @@ var C_F = window.COLORS;
 // ══════════════════════════════════════════
 // OVERZICHT — hoe gaat het met papa/mij?
 // ══════════════════════════════════════════
-window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, onNavigeer }) {
+window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, onNavigeer, weergave }) {
+  var w = weergave || 'normaal';
   const { useState } = React;
   const [toonDetails, setToonDetails] = useState(null);
   const [openConsult, setOpenConsult] = useState(null);
@@ -110,8 +111,8 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, on
       )
     ),
 
-    // Behandelplan
-    t.behandelplan && !isPatient && React.createElement('div', null,
+    // Behandelplan (alleen uitgebreid)
+    w === 'uitgebreid' && t.behandelplan && !isPatient && React.createElement('div', null,
       React.createElement(SectionTitle, null, 'Behandelplan'),
       React.createElement('div', { style: { fontSize: 12, color: C_F.tekstMuted, marginBottom: 8 } }, 'Tik voor toelichting'),
       p.behandelplan.map(function(item, i) {
@@ -134,8 +135,8 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, on
       })
     ),
 
-    // Open consult
-    t.consulten && p.openConsulten.length > 0 && React.createElement('div', null,
+    // Open consult (alleen uitgebreid)
+    w === 'uitgebreid' && t.consulten && p.openConsulten.length > 0 && React.createElement('div', null,
       React.createElement(SectionTitle, null, isPatient ? 'Lopende melding' : 'Lopende meldingen'),
       p.openConsulten.map(function(c) {
         var isU2 = c.urgentie.includes('U2');
@@ -371,13 +372,6 @@ window.FamilieBerichten = function FamilieBerichten({ lid, addToast }) {
 // ══════════════════════════════════════════
 // LEREN — familie (gebruikt gedeeld ModuleOverzicht component)
 // ══════════════════════════════════════════
-window.FamilieLeren = function FamilieLeren({ addToast }) {
-  return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
-    React.createElement(SectionTitle, null, 'Leren over de zorg voor ' + window.patient.roepnaam),
-    React.createElement('div', { style: { fontSize: 13, color: C_F.tekstSecundair, marginBottom: 12, lineHeight: 1.5 } },
-      'Kennis over de aandoeningen van ' + window.patient.roepnaam + ' maakt uw bezoeken waardevoller en helpt het re-ablement traject.'),
-    React.createElement(ModuleOverzicht, { modules: window.familieModules, shared: window.gedeeldeModule, addToast: addToast, accentKleur: C_F.groen, rol: 'familie' }),
-    React.createElement('div', { style: { fontSize: 12, color: C_F.tekstMuted, textAlign: 'center', marginTop: 16, fontStyle: 'italic' } },
-      'Uw betrokkenheid maakt verschil in het herstel van ' + window.patient.roepnaam)
-  );
+window.FamilieLeren = function FamilieLeren({ addToast, weergave }) {
+  return React.createElement(ModuleOverzicht, { modules: window.familieModules, shared: window.gedeeldeModule, addToast: addToast, accentKleur: C_F.groen, rol: 'familie', weergave: weergave });
 };

@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v4.4.0';
+var APP_VERSION = 'v4.5.0';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -409,11 +409,11 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
           </Card>
         )}
 
-        {tab === 'taken' && !selectedBewoner && <VerzorgendeTaken addToast={addToast} onSelectBewoner={handleSelectBewoner} toegang={toegang} />}
-        {tab === 'taken' && selectedBewoner && <BewonerDetail bewoner={selectedBewoner} addToast={addToast} onTerug={handleBewonerTerug} verzorgendeNaam={verzorgendeNaam} initialTab={bewonerTab} toegang={toegang} />}
-        {tab === 'rapportage' && <VerzorgendeRapportage addToast={addToast} toegang={toegang} />}
+        {tab === 'taken' && !selectedBewoner && <VerzorgendeTaken addToast={addToast} onSelectBewoner={handleSelectBewoner} toegang={toegang} weergave={weergave} />}
+        {tab === 'taken' && selectedBewoner && <BewonerDetail bewoner={selectedBewoner} addToast={addToast} onTerug={handleBewonerTerug} verzorgendeNaam={verzorgendeNaam} initialTab={bewonerTab} toegang={toegang} weergave={weergave} />}
+        {tab === 'rapportage' && <VerzorgendeRapportage addToast={addToast} toegang={toegang} weergave={weergave} />}
         {tab === 'melding' && toegang.melding && <SectionMelding addToast={addToast} />}
-        {tab === 'leren' && toegang.leren && <VerzorgendeLeren addToast={addToast} />}
+        {tab === 'leren' && toegang.leren && <VerzorgendeLeren addToast={addToast} weergave={weergave} />}
         <div style={{ fontSize: 10, color: C.tekstMuted, textAlign: 'center', padding: '16px 0 4px', opacity: 0.6 }}>{APP_VERSION}</div>
       </div>
       <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: C.kaartWit, borderTop: '1px solid ' + C.border, display: 'flex', zIndex: 800, paddingBottom: 'env(safe-area-inset-bottom, 12px)' }}>
@@ -536,10 +536,10 @@ function AppFamilie({ lid, initialTab }) {
           </div>
         </Card>
 
-        {tab === 'overzicht' && <FamilieOverzicht lid={lid} addToast={addToast} toegang={toegang} onNavigeer={handleTab} />}
+        {tab === 'overzicht' && <FamilieOverzicht lid={lid} addToast={addToast} toegang={toegang} onNavigeer={handleTab} weergave={weergave} />}
         {tab === 'week' && toegang.planning && <FamilieWeekplan lid={lid} addToast={addToast} />}
         {tab === 'berichten' && toegang.chat && <FamilieBerichten lid={lid} addToast={addToast} />}
-        {tab === 'leren' && toegang.leren && <FamilieLeren addToast={addToast} />}
+        {tab === 'leren' && toegang.leren && <FamilieLeren addToast={addToast} weergave={weergave} />}
         <div style={{ fontSize: 10, color: C.tekstMuted, textAlign: 'center', padding: '16px 0 4px', opacity: 0.6 }}>{APP_VERSION}</div>
       </div>
 

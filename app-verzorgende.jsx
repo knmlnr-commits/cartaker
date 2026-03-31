@@ -6,7 +6,8 @@ var C_V = window.COLORS;
 // ══════════════════════════════════════════
 // WIJK OVERZICHT — alle bewoners in één oogopslag
 // ══════════════════════════════════════════
-window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner }) {
+window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner, weergave }) {
+  var w = weergave || 'normaal';
   var bewoners = window.bewoners;
   var totaalOpen = bewoners.reduce(function(s, b) { return s + b.takenOpen; }, 0);
   var totaal = bewoners.reduce(function(s, b) { return s + b.takenTotaal; }, 0);
@@ -84,8 +85,8 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner 
               React.createElement('div', { style: { flex: 1 } }, React.createElement(ProgressBar, { percentage: pct, height: 4 })),
               React.createElement('span', { style: { fontSize: 11, fontWeight: 600, color: pct === 100 ? C_V.groen : C_V.tekstMuted } }, gedaan + '/' + b.takenTotaal)
             ),
-            // IoT warnings
-            iotWarnings.length > 0 && React.createElement('div', { style: { display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' } },
+            // IoT warnings (alleen uitgebreid)
+            w === 'uitgebreid' && iotWarnings.length > 0 && React.createElement('div', { style: { display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' } },
               iotWarnings.map(function(w) {
                 return React.createElement('span', { key: w[0], style: { fontSize: 10, background: C_V.achtergrond, color: C_V.tekstSecundair, padding: '1px 6px', borderRadius: 4, fontWeight: 400 } },
                   w[0] === 'saturatie' ? 'SpO2 ' + w[1].waarde + '%' : w[0] === 'slaap' ? 'Slaap \u2193' : w[0] === 'gewicht' ? 'Gewicht \u2191' : w[0] === 'hartslag' ? 'Pols \u2191' : w[0] === 'bloeddruk' ? 'RR \u2191' : w[0]);
@@ -102,8 +103,9 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner 
 // ══════════════════════════════════════════
 // BEWONER DETAIL — taken + vitalen + notities + dossier
 // ══════════════════════════════════════════
-window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verzorgendeNaam, initialTab, toegang }) {
+window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verzorgendeNaam, initialTab, toegang, weergave }) {
   var tg = toegang || window.zorgToegang.verzorgende;
+  var w = weergave || 'normaal';
   const { useState } = React;
   var b = bewoner;
   var [taken, setTaken] = useState(b.taken);
@@ -154,9 +156,9 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
 
   var detailTabs = [
     { id: 'taken', label: 'Taken (' + gedaan + '/' + taken.length + ')', show: true },
-    { id: 'vitalen', label: 'Vitalen', show: tg.iot },
+    { id: 'vitalen', label: 'Vitalen', show: w === 'uitgebreid' && tg.iot },
     { id: 'notities', label: 'Notities', show: true },
-    { id: 'dossier', label: 'Dossier', show: tg.dossier },
+    { id: 'dossier', label: 'Dossier', show: w === 'uitgebreid' && tg.dossier },
   ].filter(function(dt) { return dt.show; });
 
   return React.createElement('div', { style: { animation: 'slideInRight 0.3s ease' } },
@@ -182,8 +184,8 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
       onUpdate: function() { addToast('Stemming bijgewerkt', 'success'); }
     }),
 
-    // Alert (alleen bij consulten-toegang)
-    tg.consulten && b.openConsulten.length > 0 && React.createElement(Card, { style: { background: C_V.roodLicht, border: '1px solid ' + C_V.rood, padding: 10, cursor: 'pointer' }, onClick: function() { setOpenConsult(b.openConsulten[0]); } },
+    // Alert (alleen bij uitgebreid + consulten-toegang)
+    w === 'uitgebreid' && tg.consulten && b.openConsulten.length > 0 && React.createElement(Card, { style: { background: C_V.roodLicht, border: '1px solid ' + C_V.rood, padding: 10, cursor: 'pointer' }, onClick: function() { setOpenConsult(b.openConsulten[0]); } },
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
         React.createElement('span', { style: { fontSize: 16 } }, '\u26A0\uFE0F'),
         React.createElement('div', { style: { flex: 1 } },
@@ -320,7 +322,8 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
 // ══════════════════════════════════════════
 // RAPPORTAGE (ongewijzigd maar nu met bewoner context)
 // ══════════════════════════════════════════
-window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
+window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast, weergave }) {
+  var w = weergave || 'normaal';
   const { useState } = React;
   var [tekst, setTekst] = useState('');
   var [categorie, setCategorie] = useState('ochtend');
@@ -392,8 +395,8 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
         } }, c.label);
       })
     ),
-    // Snelknoppen: vitalen ophalen + EPD
-    React.createElement('div', { style: { display: 'flex', gap: 8, marginBottom: 12 } },
+    // Snelknoppen: vitalen ophalen + EPD (alleen uitgebreid)
+    w === 'uitgebreid' && React.createElement('div', { style: { display: 'flex', gap: 8, marginBottom: 12 } },
       React.createElement('button', { onClick: function() {
         var bew = window.bewoners.find(function(b) { return b.id === bewoner; });
         if (bew && bew.iot) {
@@ -434,8 +437,8 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
       React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, alleRapportages.length + ' totaal')
     ),
 
-    // Zoeken + datum filter
-    React.createElement('div', { style: { marginBottom: 10 } },
+    // Zoeken + datum filter (alleen uitgebreid)
+    w === 'uitgebreid' && React.createElement('div', { style: { marginBottom: 10 } },
       // Trefwoord + filter toggle
       React.createElement('div', { style: { display: 'flex', gap: 6 } },
         React.createElement('div', { style: { position: 'relative', flex: 1 } },
@@ -495,14 +498,15 @@ window.VerzorgendeRapportage = function VerzorgendeRapportage({ addToast }) {
 // ══════════════════════════════════════════
 // LEREN — verzorgende (volledig met lessen + video's)
 // ══════════════════════════════════════════
-window.VerzorgendeLeren = function VerzorgendeLeren({ addToast }) {
-  return React.createElement(ModuleOverzicht, { modules: window.verzorgendeModules, shared: window.gedeeldeModule, addToast: addToast, accentKleur: C_V.oranje, rol: 'verzorgende' });
+window.VerzorgendeLeren = function VerzorgendeLeren({ addToast, weergave }) {
+  return React.createElement(ModuleOverzicht, { modules: window.verzorgendeModules, shared: window.gedeeldeModule, addToast: addToast, accentKleur: C_V.oranje, rol: 'verzorgende', weergave: weergave });
 };
 
 // ══════════════════════════════════════════
 // GEDEELD: Module overzicht + les detail component
 // ══════════════════════════════════════════
-window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, accentKleur, rol }) {
+window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, accentKleur, rol, weergave }) {
+  var w = weergave || 'normaal';
   const { useState } = React;
   var [openModule, setOpenModule] = useState(null);
   var [openLes, setOpenLes] = useState(null);
@@ -650,8 +654,8 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
   // ── Modules lijst ──
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
 
-    // Level card
-    gamHuidig && huidigLevel && React.createElement('div', { style: { background: C_V.kaartWit, borderRadius: 12, padding: 16, marginBottom: 12, border: '1px solid ' + C_V.border } },
+    // Level card (alleen uitgebreid)
+    w === 'uitgebreid' && gamHuidig && huidigLevel && React.createElement('div', { style: { background: C_V.kaartWit, borderRadius: 12, padding: 16, marginBottom: 12, border: '1px solid ' + C_V.border } },
       // Level header
       React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 } },
         React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10 } },
@@ -706,8 +710,8 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
       )
     ),
 
-    // Zoekbalk
-    React.createElement('div', { style: { position: 'relative', marginBottom: 16 } },
+    // Zoekbalk (alleen uitgebreid)
+    w === 'uitgebreid' && React.createElement('div', { style: { position: 'relative', marginBottom: 16 } },
       React.createElement('input', {
         value: zoekterm,
         onChange: function(e) { setZoekterm(e.target.value); },
@@ -763,8 +767,8 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
       )
     ),
 
-    // ── Suggesties — ONDER de lopende modules ──
-    (function() {
+    // ── Suggesties — ONDER de lopende modules (alleen uitgebreid) ──
+    w === 'uitgebreid' && (function() {
       var alleSuggesties = zoekterm ? gefilterdSuggesties : suggesties;
       if (alleSuggesties.length === 0) return null;
 
