@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v4.3.1';
+var APP_VERSION = 'v4.3.2';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -299,9 +299,11 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
   var niveau = profiel.niveau;
   var toegang = window.zorgToegang[niveau] || window.zorgToegang.verzorgende;
   var [toasts, addToast] = useToasts();
+  var standaardEenvoudig = niveau === 'helpende';
+  var [eenvoudig, setEenvoudig] = useState(standaardEenvoudig);
 
-  // Helpende krijgt eenvoudige interface
-  if (niveau === 'helpende') {
+  // Eenvoudige interface
+  if (eenvoudig) {
     return (
       <div style={{ minHeight: '100vh', background: C.achtergrond }}>
         <div style={{ maxWidth: 420, margin: '0 auto', padding: '0 16px 100px', minHeight: '100vh' }}>
@@ -309,6 +311,7 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
             <GeriCallLogo />
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ fontSize: 13, color: C.tekstSecundair }}>{profiel.naam}</span>
+              <button onClick={function() { setEenvoudig(false); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, padding: '2px 8px', fontSize: 11, color: C.tekstMuted, cursor: 'pointer' }}>Volledig</button>
               <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Uit</button>
             </div>
           </div>
@@ -366,6 +369,7 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ fontSize: 12, color: C.tekstSecundair }}>{verzorgendeNaam}</span>
+            <button onClick={function() { setEenvoudig(true); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, padding: '2px 8px', fontSize: 11, color: C.tekstMuted, cursor: 'pointer' }}>Eenvoudig</button>
             <ShareLink />
             <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Uit</button>
           </div>
@@ -410,8 +414,11 @@ function AppFamilie({ lid, initialTab }) {
   var lijn = lid.lijn || (isPatient ? 'patient' : 'lijn1');
   var toegang = window.familieToegang[lijn] || window.familieToegang.lijn2;
 
-  // Patiënt en 2e-lijn krijgen eenvoudige interface
-  if (lijn === 'patient' || lijn === 'lijn2') {
+  var standaardEenvoudig = lijn === 'patient' || lijn === 'lijn2';
+  var [eenvoudig, setEenvoudig] = useState(standaardEenvoudig);
+
+  // Eenvoudige interface
+  if (eenvoudig) {
     return (
       <div style={{ minHeight: '100vh', background: C.achtergrond }}>
         <div style={{ maxWidth: 420, margin: '0 auto', padding: '0 16px 100px', minHeight: '100vh' }}>
@@ -419,6 +426,7 @@ function AppFamilie({ lid, initialTab }) {
             <GeriCallLogo />
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ fontSize: 13, color: C.tekstSecundair }}>{lid.roepnaam}</span>
+              <button onClick={function() { setEenvoudig(false); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, padding: '2px 8px', fontSize: 11, color: C.tekstMuted, cursor: 'pointer' }}>Volledig</button>
               <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Wissel</button>
             </div>
           </div>
@@ -458,6 +466,7 @@ function AppFamilie({ lid, initialTab }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{ width: 28, height: 28, borderRadius: 14, background: lid.kleur + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: lid.kleur }}>{lid.initialen}</div>
+            <button onClick={function() { setEenvoudig(true); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, padding: '2px 8px', fontSize: 11, color: C.tekstMuted, cursor: 'pointer' }}>Eenvoudig</button>
             <ShareLink />
             <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Wissel</button>
           </div>
