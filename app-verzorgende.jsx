@@ -276,8 +276,9 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
           placeholder: 'Snelle notitie...',
           style: { width: '100%', minHeight: 60, padding: 10, borderRadius: 8, border: '1px solid ' + C_V.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", resize: 'vertical', outline: 'none', color: C_V.tekstPrimair, marginBottom: 8 }
         }),
+        React.createElement(FotoUpload, { label: 'Foto bij notitie', addToast: addToast }),
         React.createElement('button', { onClick: voegNotitieToe, style: {
-          background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 600, cursor: 'pointer', width: '100%',
+          background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 6,
         } }, 'Notitie opslaan')
       ),
       notities.map(function(n, i) {

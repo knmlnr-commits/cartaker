@@ -84,6 +84,45 @@ window.NotificatieBel = function NotificatieBel({ rol, addToast }) {
   );
 };
 
+// ── Foto Upload (mock) ──
+window.FotoUpload = function FotoUpload({ label, onUpload, addToast }) {
+  var { useState, useRef } = React;
+  var [preview, setPreview] = useState(null);
+  var fileRef = useRef(null);
+
+  var handleFile = function(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      setPreview(ev.target.result);
+      if (addToast) addToast('Foto toegevoegd', 'success');
+      if (onUpload) onUpload(ev.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  if (preview) {
+    return React.createElement('div', { style: { position: 'relative', marginBottom: 8 } },
+      React.createElement('img', { src: preview, style: { width: '100%', borderRadius: 8, maxHeight: 200, objectFit: 'cover' } }),
+      React.createElement('button', { onClick: function() { setPreview(null); }, style: {
+        position: 'absolute', top: 6, right: 6, width: 24, height: 24, borderRadius: 12,
+        background: 'rgba(0,0,0,0.5)', color: '#FFF', border: 'none', fontSize: 14, cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      } }, '\u2715')
+    );
+  }
+
+  return React.createElement('div', { style: { display: 'flex', gap: 6 } },
+    React.createElement('input', { ref: fileRef, type: 'file', accept: 'image/*', capture: 'environment', onChange: handleFile, style: { display: 'none' } }),
+    React.createElement('button', { onClick: function() { fileRef.current && fileRef.current.click(); }, style: {
+      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+      padding: '8px 12px', borderRadius: 8, border: '1px dashed ' + C.border,
+      background: C.kaartWit, fontSize: 12, color: C.tekstSecundair, cursor: 'pointer',
+    } }, '\uD83D\uDCF7 ' + (label || 'Foto toevoegen'))
+  );
+};
+
 // ── Logo (echte GeriCall afbeelding als base64) ──
 window.GeriCallLogoImg = function GeriCallLogoImg({ size }) {
   var s = size || 32;
@@ -404,10 +443,7 @@ window.ConsultDetail = function ConsultDetail({ consult, onTerug, addToast, read
           ),
           React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
             React.createElement(Badge, { label: st.label, color: st.kleur, bgColor: st.bg }),
-            !readOnly && iv.status !== 'aangeleverd' && React.createElement('button', {
-              onClick: function() { addToast('Upload functie wordt geopend...'); },
-              style: { background: 'none', border: '1px solid ' + C.border, borderRadius: 6, padding: '3px 8px', fontSize: 11, color: C.tekstSecundair, cursor: 'pointer' }
-            }, 'Upload')
+            !readOnly && iv.status !== 'aangeleverd' && React.createElement(FotoUpload, { label: 'Upload', addToast: addToast })
           )
         );
       })
