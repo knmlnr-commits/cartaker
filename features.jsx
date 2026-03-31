@@ -87,25 +87,33 @@ window.OfflineIndicator = function OfflineIndicator() {
 // ══════════════════════════════════════════
 window.InstellingenModal = function InstellingenModal({ onSluit, addToast }) {
   var { useState } = React;
-  var [fontSize, setFontSize] = useState(100);
-  var [hoogContrast, setHoogContrast] = useState(false);
-  var [darkMode, setDarkMode] = useState(false);
-  var [taal, setTaal] = useState('nl');
+  var [fontSize, setFontSize] = useState(parseInt(document.documentElement.style.fontSize) || 100);
+  var [hoogContrast, setHoogContrast] = useState(document.body.classList.contains('hoog-contrast'));
+  var [darkMode, setDarkMode] = useState(document.body.classList.contains('dark-mode'));
 
-  var pasAan = function() {
-    document.documentElement.style.fontSize = fontSize + '%';
-    if (hoogContrast) {
-      document.body.style.filter = 'contrast(1.4)';
+  var toggleDark = function() {
+    var nieuw = !darkMode;
+    setDarkMode(nieuw);
+    if (nieuw) {
+      document.body.classList.add('dark-mode');
     } else {
-      document.body.style.filter = 'none';
+      document.body.classList.remove('dark-mode');
     }
-    if (darkMode) {
-      document.body.style.background = '#1a1a1a';
-      document.body.style.color = '#e0e0e0';
+  };
+
+  var toggleContrast = function() {
+    var nieuw = !hoogContrast;
+    setHoogContrast(nieuw);
+    if (nieuw) {
+      document.body.classList.add('hoog-contrast');
     } else {
-      document.body.style.background = '#F7F7F7';
-      document.body.style.color = '#2D2D2D';
+      document.body.classList.remove('hoog-contrast');
     }
+  };
+
+  var wijzigFontSize = function(val) {
+    setFontSize(val);
+    document.documentElement.style.fontSize = val + '%';
   };
 
   return React.createElement(Modal, { title: 'Instellingen', onClose: onSluit },
@@ -114,7 +122,7 @@ window.InstellingenModal = function InstellingenModal({ onSluit, addToast }) {
       React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_X.tekstSecundair, marginBottom: 6 } }, 'Tekstgrootte'),
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10 } },
         React.createElement('span', { style: { fontSize: 12, color: C_X.tekstMuted } }, 'A'),
-        React.createElement('input', { type: 'range', min: 80, max: 140, value: fontSize, onChange: function(e) { setFontSize(parseInt(e.target.value)); pasAan(); }, style: { flex: 1, accentColor: C_X.oranje } }),
+        React.createElement('input', { type: 'range', min: 80, max: 140, value: fontSize, onChange: function(e) { wijzigFontSize(parseInt(e.target.value)); }, style: { flex: 1, accentColor: C_X.oranje } }),
         React.createElement('span', { style: { fontSize: 18, color: C_X.tekstMuted } }, 'A'),
         React.createElement('span', { style: { fontSize: 12, color: C_X.tekstMuted, minWidth: 35 } }, fontSize + '%')
       )
@@ -122,20 +130,18 @@ window.InstellingenModal = function InstellingenModal({ onSluit, addToast }) {
     // Hoog contrast
     React.createElement('label', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderTop: '1px solid ' + C_X.border, cursor: 'pointer' } },
       React.createElement('span', { style: { fontSize: 14, color: C_X.tekstPrimair } }, 'Hoog contrast'),
-      React.createElement('input', { type: 'checkbox', checked: hoogContrast, onChange: function() { setHoogContrast(!hoogContrast); setTimeout(pasAan, 10); }, style: { accentColor: C_X.oranje, width: 18, height: 18 } })
+      React.createElement('input', { type: 'checkbox', checked: hoogContrast, onChange: toggleContrast, style: { accentColor: C_X.oranje, width: 18, height: 18 } })
     ),
     // Dark mode
     React.createElement('label', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderTop: '1px solid ' + C_X.border, cursor: 'pointer' } },
       React.createElement('span', { style: { fontSize: 14, color: C_X.tekstPrimair } }, 'Nachtmodus (dark mode)'),
-      React.createElement('input', { type: 'checkbox', checked: darkMode, onChange: function() { setDarkMode(!darkMode); setTimeout(pasAan, 10); }, style: { accentColor: C_X.oranje, width: 18, height: 18 } })
+      React.createElement('input', { type: 'checkbox', checked: darkMode, onChange: toggleDark, style: { accentColor: C_X.oranje, width: 18, height: 18 } })
     ),
     // Reset
     React.createElement('button', { onClick: function() {
       setFontSize(100); setHoogContrast(false); setDarkMode(false);
       document.documentElement.style.fontSize = '100%';
-      document.body.style.filter = 'none';
-      document.body.style.background = '#F7F7F7';
-      document.body.style.color = '#2D2D2D';
+      document.body.classList.remove('dark-mode', 'hoog-contrast');
       addToast('Instellingen gereset', 'success');
     }, style: {
       background: 'none', border: '1px solid ' + C_X.border, borderRadius: 8, padding: '8px', fontSize: 13,

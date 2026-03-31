@@ -26,6 +26,28 @@
     @keyframes scaleIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
     @keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(20px); } }
+
+    /* Dark mode */
+    body.dark-mode { background: #1a1a1a !important; color: #e0e0e0 !important; }
+    body.dark-mode div[style*="background: #FFFFFF"], body.dark-mode div[style*="background: rgb(255, 255, 255)"] { background: #2a2a2a !important; }
+    body.dark-mode [style*="#F7F7F7"] { background: #1a1a1a !important; }
+    body.dark-mode [style*="#E8E8E8"] { border-color: #3a3a3a !important; }
+    body.dark-mode [style*="color: #2D2D2D"] { color: #e0e0e0 !important; }
+    body.dark-mode [style*="color: #666666"] { color: #999 !important; }
+    body.dark-mode [style*="color: #AAAAAA"] { color: #777 !important; }
+    body.dark-mode input, body.dark-mode textarea, body.dark-mode select { background: #2a2a2a !important; color: #e0e0e0 !important; border-color: #3a3a3a !important; }
+    body.dark-mode button { color: inherit; }
+    body.dark-mode nav { background: #222 !important; border-color: #3a3a3a !important; }
+
+    /* Hoog contrast */
+    body.hoog-contrast { filter: contrast(1.4); }
+
+    /* Print */
+    @media print {
+      nav, button, .no-print { display: none !important; }
+      body { background: white !important; color: black !important; font-size: 12pt !important; }
+      div[style*="max-width: 420px"] { max-width: 100% !important; }
+    }
   </style>
 </head>
 <body>

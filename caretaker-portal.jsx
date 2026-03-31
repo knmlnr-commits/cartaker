@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v5.0.2';
+var APP_VERSION = 'v5.1.0';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -399,16 +399,13 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ fontSize: 12, color: C.tekstSecundair }}>{verzorgendeNaam}</span>
-            <button onClick={function() { setToonZoek(true); }} style={{ background: 'none', border: 'none', fontSize: 16, cursor: 'pointer', padding: '2px', color: C.tekstMuted }}>&#x1F50D;</button>
+            <button onClick={function() { setToonZoek(true); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, fontSize: 12, cursor: 'pointer', padding: '3px 8px', color: C.tekstSecundair }}>Zoek</button>
             <NotificatieBel rol="zorg" addToast={addToast} />
-            <button onClick={function() { setToonInstellingen(true); }} style={{ background: 'none', border: 'none', fontSize: 14, cursor: 'pointer', padding: '2px', color: C.tekstMuted }}>&#x2699;&#xFE0F;</button>
+            <button onClick={function() { setToonInstellingen(true); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, fontSize: 12, cursor: 'pointer', padding: '3px 8px', color: C.tekstSecundair }}>Inst.</button>
             <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Uit</button>
           </div>
         </div>
         <div style={{ marginBottom: 12 }}><WeergaveSwitcher /></div>
-        {toonZoek && React.createElement(AppZoeken, { onSluit: function() { setToonZoek(false); }, addToast: addToast })}
-        {toonInstellingen && React.createElement(InstellingenModal, { onSluit: function() { setToonInstellingen(false); }, addToast: addToast })}
-        {toonAudit && React.createElement(AuditTrailViewer, { onSluit: function() { setToonAudit(false); } })}
 
         {tab === 'taken' && !selectedBewoner && (
           <Card style={{ background: C.oranjeLicht, border: 'none', padding: 12 }}>
@@ -437,6 +434,9 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
         })}
       </nav>
       <ToastContainer toasts={toasts} />
+      {toonZoek && React.createElement(AppZoeken, { onSluit: function() { setToonZoek(false); }, addToast: addToast })}
+      {toonInstellingen && React.createElement(InstellingenModal, { onSluit: function() { setToonInstellingen(false); }, addToast: addToast })}
+      {toonAudit && React.createElement(AuditTrailViewer, { onSluit: function() { setToonAudit(false); } })}
     </div>
   );
 }
