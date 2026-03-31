@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v4.2.3';
+var APP_VERSION = 'v4.3.0';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -298,8 +298,29 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
   var profiel = zorgProfiel || window.zorgprofielen[0];
   var niveau = profiel.niveau;
   var toegang = window.zorgToegang[niveau] || window.zorgToegang.verzorgende;
-  var [tab, setTab] = useState(initialTab || 'taken');
   var [toasts, addToast] = useToasts();
+
+  // Helpende krijgt eenvoudige interface
+  if (niveau === 'helpende') {
+    return (
+      <div style={{ minHeight: '100vh', background: C.achtergrond }}>
+        <div style={{ maxWidth: 420, margin: '0 auto', padding: '0 16px 100px', minHeight: '100vh' }}>
+          <div style={{ padding: '12px 0 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <GeriCallLogo />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 13, color: C.tekstSecundair }}>{profiel.naam}</span>
+              <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Uit</button>
+            </div>
+          </div>
+          <EenvoudigZorg profiel={profiel} addToast={addToast} />
+          <div style={{ fontSize: 10, color: C.tekstMuted, textAlign: 'center', padding: '16px 0', opacity: 0.6 }}>{APP_VERSION}</div>
+        </div>
+        <ToastContainer toasts={toasts} />
+      </div>
+    );
+  }
+
+  var [tab, setTab] = useState(initialTab || 'taken');
   var [selectedBewoner, setSelectedBewoner] = useState(function() {
     if (initialBewonerId) return window.bewoners.find(function(b) { return b.id === initialBewonerId; }) || null;
     return null;
@@ -384,11 +405,32 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
 // APP FAMILIE — per ingelogd familielid
 // ══════════════════════════════════════════
 function AppFamilie({ lid, initialTab }) {
-  var [tab, setTab] = useState(initialTab || 'overzicht');
   var [toasts, addToast] = useToasts();
   var isPatient = lid.isPatient;
   var lijn = lid.lijn || (isPatient ? 'patient' : 'lijn1');
   var toegang = window.familieToegang[lijn] || window.familieToegang.lijn2;
+
+  // Patiënt en 2e-lijn krijgen eenvoudige interface
+  if (lijn === 'patient' || lijn === 'lijn2') {
+    return (
+      <div style={{ minHeight: '100vh', background: C.achtergrond }}>
+        <div style={{ maxWidth: 420, margin: '0 auto', padding: '0 16px 100px', minHeight: '100vh' }}>
+          <div style={{ padding: '12px 0 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <GeriCallLogo />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 13, color: C.tekstSecundair }}>{lid.roepnaam}</span>
+              <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Wissel</button>
+            </div>
+          </div>
+          <EenvoudigFamilie lid={lid} addToast={addToast} />
+          <div style={{ fontSize: 10, color: C.tekstMuted, textAlign: 'center', padding: '16px 0', opacity: 0.6 }}>{APP_VERSION}</div>
+        </div>
+        <ToastContainer toasts={toasts} />
+      </div>
+    );
+  }
+
+  var [tab, setTab] = useState(initialTab || 'overzicht');
 
   var handleTab = function(t) {
     setTab(t);
