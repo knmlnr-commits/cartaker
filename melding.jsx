@@ -165,10 +165,44 @@ window.SectionMelding = function SectionMelding({ addToast }) {
     );
   };
 
+  // Alle lopende consulten verzamelen
+  var lopendeConsulten = [];
+  window.bewoners.forEach(function(b) {
+    if (b.openConsulten) {
+      b.openConsulten.forEach(function(c) {
+        lopendeConsulten.push(Object.assign({}, c, { bewoner: b.roepnaam, bewonerId: b.id, kamer: b.kamer }));
+      });
+    }
+  });
+
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
     React.createElement(SectionTitle, null, 'Melding doen / Consult aanvragen'),
     // Altijd zichtbaar: direct bellen
     React.createElement(BelKnop),
+
+    // Lopende consulten overzicht
+    lopendeConsulten.length > 0 && React.createElement('div', { style: { marginBottom: 16 } },
+      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_M.tekstSecundair, marginBottom: 8 } }, 'Lopende meldingen (' + lopendeConsulten.length + ')'),
+      lopendeConsulten.map(function(c) {
+        var isU1 = c.urgentie.indexOf('U1') !== -1;
+        var isU2 = c.urgentie.indexOf('U2') !== -1;
+        var urgKleur = isU1 ? C_M.rood : isU2 ? C_M.oranje : C_M.blauw;
+        return React.createElement(Card, { key: c.id, style: { padding: 10, borderLeft: '3px solid ' + urgKleur, cursor: 'pointer' }, onClick: function() { addToast('Open consult #' + c.id + ' via bewoner ' + c.bewoner); } },
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 } },
+            React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
+              React.createElement('span', { style: { fontSize: 13, fontWeight: 600, color: C_M.tekstPrimair } }, '#' + c.id),
+              React.createElement('span', { style: { fontSize: 12, color: C_M.tekstSecundair } }, c.bewoner + ' \u00B7 Kamer ' + c.kamer)
+            ),
+            React.createElement(Badge, { label: c.urgentie.split(' \u2014 ')[0], color: urgKleur, bgColor: urgKleur + '18' })
+          ),
+          React.createElement('div', { style: { fontSize: 12, color: C_M.tekstSecundair } }, c.beschrijving),
+          React.createElement('div', { style: { fontSize: 11, color: C_M.tekstMuted, marginTop: 2 } }, c.status + ' \u00B7 ' + (c.arts || c.toewijzing) + ' \u00B7 ' + c.ingediend)
+        );
+      })
+    ),
+
+    // Nieuwe melding header
+    React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_M.tekstSecundair, marginBottom: 8 } }, 'Nieuwe melding'),
 
     // Step indicator
     React.createElement('div', { style: { display: 'flex', gap: 4, marginBottom: 8 } },
