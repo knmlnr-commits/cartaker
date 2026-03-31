@@ -334,10 +334,15 @@ window.OverdrachtScherm = function OverdrachtScherm({ verzorgendeNaam, addToast 
   var [algemeenNotitie, setAlgemeenNotitie] = useState('');
   var [ingediend, setIngediend] = useState(false);
   var [aandachtspunten, setAandachtspunten] = useState({});
+  var [gekozenOntvanger, setGekozenOntvanger] = useState(null);
 
   var nu = new Date();
   var uur = nu.getHours();
-  var dienst = uur < 15 ? 'ochtend \u2192 middag' : uur < 23 ? 'middag \u2192 avond' : 'avond \u2192 nacht';
+  var dienstLabel = uur < 15 ? 'Ochtenddienst' : uur < 23 ? 'Middagdienst' : 'Avonddienst';
+  var volgendeDienst = uur < 15 ? 'Middagdienst' : uur < 23 ? 'Avonddienst' : 'Nachtdienst';
+
+  // Mogelijke ontvangers (collega's die niet de huidige gebruiker zijn)
+  var ontvangers = window.zorgprofielen.filter(function(p) { return p.naam !== verzorgendeNaam; });
 
   var toggleAandacht = function(bewId, punt) {
     var key = bewId + '_' + punt;
@@ -346,22 +351,73 @@ window.OverdrachtScherm = function OverdrachtScherm({ verzorgendeNaam, addToast 
     setAandachtspunten(nw);
   };
 
+  var aantalAangevinkt = Object.values(aandachtspunten).filter(function(v) { return v; }).length;
+
+  // Success state
   if (ingediend) {
     return React.createElement('div', { style: { textAlign: 'center', padding: '40px 0', animation: 'scaleIn 0.4s ease' } },
       React.createElement('div', { style: { width: 56, height: 56, borderRadius: 28, background: C_V.groenLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 28 } }, '\u2713'),
       React.createElement('div', { style: { fontSize: 18, fontWeight: 700, color: C_V.groen, marginBottom: 4 } }, 'Overdracht verstuurd'),
-      React.createElement('div', { style: { fontSize: 14, color: C_V.tekstSecundair, marginBottom: 20 } }, 'De volgende dienst ontvangt een notificatie'),
-      React.createElement('button', { onClick: function() { setIngediend(false); setAlgemeenNotitie(''); setAandachtspunten({}); }, style: {
-        background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '12px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+      React.createElement('div', { style: { fontSize: 14, color: C_V.tekstSecundair, marginBottom: 4 } }, volgendeDienst + ' \u2192 ' + (gekozenOntvanger ? gekozenOntvanger.naam : 'volgende dienst')),
+      React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginBottom: 20 } }, aantalAangevinkt + ' aandachtspunten doorgegeven'),
+      // Samenvatting
+      React.createElement(Card, { style: { textAlign: 'left', padding: 12 } },
+        React.createElement('div', { style: { fontSize: 12, fontWeight: 600, color: C_V.tekstSecundair, marginBottom: 6 } }, 'Samenvatting'),
+        bewoners.map(function(b) {
+          var bPunten = Object.entries(aandachtspunten).filter(function(e) { return e[0].startsWith(b.id + '_') && e[1]; });
+          if (bPunten.length === 0) return null;
+          return React.createElement('div', { key: b.id, style: { marginBottom: 8 } },
+            React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_V.tekstPrimair } }, b.roepnaam),
+            bPunten.map(function(e, i) {
+              var punt = e[0].substring(b.id.length + 1);
+              return React.createElement('div', { key: i, style: { fontSize: 12, color: C_V.tekstSecundair, paddingLeft: 8 } }, '\u2022 ' + punt);
+            })
+          );
+        }),
+        algemeenNotitie && React.createElement('div', { style: { marginTop: 8, padding: '8px', background: C_V.achtergrond, borderRadius: 6, fontSize: 12, color: C_V.tekstSecundair } }, algemeenNotitie)
+      ),
+      React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted, marginTop: 12, fontStyle: 'italic' } }, (gekozenOntvanger ? gekozenOntvanger.naam : 'De ontvanger') + ' ontvangt een notificatie en moet de overdracht accepteren'),
+      React.createElement('button', { onClick: function() { setIngediend(false); setAlgemeenNotitie(''); setAandachtspunten({}); setGekozenOntvanger(null); }, style: {
+        background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '12px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 16,
       } }, 'Nieuwe overdracht')
     );
   }
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
     React.createElement(SectionTitle, null, 'Dienst overdracht'),
-    React.createElement('div', { style: { fontSize: 13, color: C_V.tekstSecundair, marginBottom: 12 } }, verzorgendeNaam + ' \u00B7 ' + dienst),
+
+    // Van → Naar
+    React.createElement(Card, { style: { padding: 12 } },
+      React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 } },
+        React.createElement('div', { style: { flex: 1 } },
+          React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, 'Van'),
+          React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, verzorgendeNaam),
+          React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, dienstLabel)
+        ),
+        React.createElement('div', { style: { fontSize: 18, color: C_V.tekstMuted } }, '\u2192'),
+        React.createElement('div', { style: { flex: 1 } },
+          React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, 'Naar (' + volgendeDienst + ')'),
+          gekozenOntvanger
+            ? React.createElement('div', null,
+                React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, gekozenOntvanger.naam),
+                React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, gekozenOntvanger.label),
+                React.createElement('button', { onClick: function() { setGekozenOntvanger(null); }, style: { background: 'none', border: 'none', fontSize: 11, color: C_V.oranje, cursor: 'pointer', padding: 0 } }, 'Wijzig')
+              )
+            : React.createElement('div', null,
+                ontvangers.map(function(o) {
+                  return React.createElement('button', { key: o.id, onClick: function() { setGekozenOntvanger(o); }, style: {
+                    display: 'block', width: '100%', textAlign: 'left', padding: '6px 8px', marginBottom: 2,
+                    borderRadius: 6, border: '1px solid ' + C_V.border, background: C_V.kaartWit,
+                    fontSize: 13, color: C_V.tekstPrimair, cursor: 'pointer',
+                  } }, o.naam + ' (' + o.label + ')');
+                })
+              )
+        )
+      )
+    ),
 
     // Per bewoner: samenvatting + aandachtspunten
+    React.createElement(SectionTitle, null, 'Aandachtspunten per bewoner'),
     bewoners.map(function(b) {
       var gedaan = b.taken.filter(function(t) { return t.gedaan; }).length;
       var stm = window.stemmingen[b.id];
@@ -377,17 +433,14 @@ window.OverdrachtScherm = function OverdrachtScherm({ verzorgendeNaam, addToast 
       mogelijkeAandacht.push('Stemming: ' + huidige.label);
 
       return React.createElement(Card, { key: b.id, style: { padding: 12 } },
-        // Header
         React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 } },
           React.createElement('div', { style: { width: 12, height: 12, borderRadius: 6, background: huidige.kleur } }),
           React.createElement('div', { style: { fontSize: 15, fontWeight: 600, color: C_V.tekstPrimair, flex: 1 } }, b.roepnaam),
           React.createElement('span', { style: { fontSize: 12, color: C_V.tekstMuted } }, 'Kamer ' + b.kamer)
         ),
-        // Laatste notitie
         laatsteNotitie && React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, marginBottom: 8, padding: '6px 8px', background: C_V.achtergrond, borderRadius: 6, lineHeight: 1.4 } },
           laatsteNotitie.tekst
         ),
-        // Aandachtspunten als vinkjes
         mogelijkeAandacht.map(function(punt, i) {
           var key = b.id + '_' + punt;
           var checked = aandachtspunten[key];
@@ -409,14 +462,19 @@ window.OverdrachtScherm = function OverdrachtScherm({ verzorgendeNaam, addToast 
       })
     ),
 
-    // Indienen
+    // Samenvatting + indienen
+    React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginTop: 4, marginBottom: 8 } },
+      aantalAangevinkt + ' aandachtspunten geselecteerd' + (gekozenOntvanger ? ' \u00B7 Naar: ' + gekozenOntvanger.naam : ' \u00B7 Selecteer een ontvanger')
+    ),
     React.createElement('button', { onClick: function() {
-      var aangevinkt = Object.values(aandachtspunten).filter(function(v) { return v; }).length;
-      if (aangevinkt === 0 && !algemeenNotitie.trim()) { addToast('Vink minimaal 1 aandachtspunt aan of schrijf een opmerking'); return; }
+      if (!gekozenOntvanger) { addToast('Selecteer eerst een collega voor de volgende dienst'); return; }
+      if (aantalAangevinkt === 0 && !algemeenNotitie.trim()) { addToast('Vink minimaal 1 aandachtspunt aan of schrijf een opmerking'); return; }
       setIngediend(true);
-      addToast('Overdracht verstuurd', 'success');
+      addToast('Overdracht verstuurd naar ' + gekozenOntvanger.naam, 'success');
     }, style: {
-      background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 8,
+      background: gekozenOntvanger && (aantalAangevinkt > 0 || algemeenNotitie.trim()) ? C_V.oranje : C_V.border,
+      color: gekozenOntvanger && (aantalAangevinkt > 0 || algemeenNotitie.trim()) ? '#FFF' : C_V.tekstMuted,
+      border: 'none', borderRadius: 8, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', width: '100%', transition: 'all 0.2s',
     } }, 'Verstuur overdracht')
   );
 };
