@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v4.3.2';
+var APP_VERSION = 'v4.3.3';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -301,6 +301,13 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
   var [toasts, addToast] = useToasts();
   var standaardEenvoudig = niveau === 'helpende';
   var [eenvoudig, setEenvoudig] = useState(standaardEenvoudig);
+  var [tab, setTab] = useState(initialTab || 'taken');
+  var [selectedBewoner, setSelectedBewoner] = useState(function() {
+    if (initialBewonerId) return window.bewoners.find(function(b) { return b.id === initialBewonerId; }) || null;
+    return null;
+  });
+  var [bewonerTab, setBewonerTab] = useState(initialBewonerTab || 'taken');
+  var verzorgendeNaam = profiel.naam;
 
   // Eenvoudige interface
   if (eenvoudig) {
@@ -322,14 +329,6 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
       </div>
     );
   }
-
-  var [tab, setTab] = useState(initialTab || 'taken');
-  var [selectedBewoner, setSelectedBewoner] = useState(function() {
-    if (initialBewonerId) return window.bewoners.find(function(b) { return b.id === initialBewonerId; }) || null;
-    return null;
-  });
-  var [bewonerTab, setBewonerTab] = useState(initialBewonerTab || 'taken');
-  var verzorgendeNaam = profiel.naam;
 
   var handleTab = function(t) {
     setTab(t);
@@ -413,9 +412,15 @@ function AppFamilie({ lid, initialTab }) {
   var isPatient = lid.isPatient;
   var lijn = lid.lijn || (isPatient ? 'patient' : 'lijn1');
   var toegang = window.familieToegang[lijn] || window.familieToegang.lijn2;
-
   var standaardEenvoudig = lijn === 'patient' || lijn === 'lijn2';
   var [eenvoudig, setEenvoudig] = useState(standaardEenvoudig);
+  var [tab, setTab] = useState(initialTab || 'overzicht');
+
+  var handleTab = function(t) {
+    setTab(t);
+    setHash('familie/' + lid.id + '/' + t);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Eenvoudige interface
   if (eenvoudig) {
@@ -437,14 +442,6 @@ function AppFamilie({ lid, initialTab }) {
       </div>
     );
   }
-
-  var [tab, setTab] = useState(initialTab || 'overzicht');
-
-  var handleTab = function(t) {
-    setTab(t);
-    setHash('familie/' + lid.id + '/' + t);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   var lijnLabel = { patient: 'Pati\u00EBnt', lijn1: 'Gezin', lijn2: 'Ondersteuner' };
 
