@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v4.3.0';
+var APP_VERSION = 'v4.3.1';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -160,7 +160,7 @@ function RolKeuze() {
           <span>GeriCall CareTaker Portal {APP_VERSION}</span>
         </div>
         <div style={{ fontSize: 10, color: C.tekstMuted, marginTop: 6, fontStyle: 'italic' }}>
-          Prototype \u2014 authenticatie via DigiD/UZI-pas wordt bij implementatie toegevoegd
+          Prototype &mdash; authenticatie via DigiD/UZI-pas wordt bij implementatie toegevoegd
         </div>
       </div>
     </div>
@@ -184,7 +184,7 @@ function FamilieKeuze() {
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div style={{ display: 'inline-block', marginBottom: 8 }}><GeriCallLogoImg size={40} /></div>
           <div style={{ fontSize: 20, fontWeight: 700, color: C.tekstPrimair }}>Wie ben je?</div>
-          <div style={{ fontSize: 12, color: C.tekstMuted, marginTop: 4 }}>Selecteer je naam \u2014 wat je ziet is afgestemd op je rol</div>
+          <div style={{ fontSize: 12, color: C.tekstMuted, marginTop: 4 }}>Selecteer je naam &mdash; wat je ziet is afgestemd op je rol</div>
         </div>
 
         {leden.map(function(lid) {
@@ -216,7 +216,7 @@ function FamilieKeuze() {
         })}
 
         <div style={{ fontSize: 10, color: C.tekstMuted, marginTop: 16, fontStyle: 'italic', textAlign: 'center' }}>
-          Prototype \u2014 authenticatie via DigiD wordt bij implementatie toegevoegd
+          Prototype &mdash; authenticatie via DigiD wordt bij implementatie toegevoegd
         </div>
       </div>
     </div>
@@ -252,7 +252,7 @@ function ZorgKeuze() {
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div style={{ display: 'inline-block', marginBottom: 8 }}><GeriCallLogoImg size={40} /></div>
           <div style={{ fontSize: 20, fontWeight: 700, color: C.tekstPrimair }}>Inloggen als zorgmedewerker</div>
-          <div style={{ fontSize: 12, color: C.tekstMuted, marginTop: 4 }}>Selecteer uw profiel \u2014 rechten zijn gekoppeld aan uw rol</div>
+          <div style={{ fontSize: 12, color: C.tekstMuted, marginTop: 4 }}>Selecteer uw profiel &mdash; rechten zijn gekoppeld aan uw rol</div>
         </div>
 
         {profielen.map(function(p) {
@@ -284,7 +284,7 @@ function ZorgKeuze() {
         })}
 
         <div style={{ fontSize: 10, color: C.tekstMuted, marginTop: 16, fontStyle: 'italic', textAlign: 'center' }}>
-          Prototype \u2014 authenticatie via UZI-pas wordt bij implementatie toegevoegd
+          Prototype &mdash; authenticatie via UZI-pas wordt bij implementatie toegevoegd
         </div>
       </div>
     </div>
