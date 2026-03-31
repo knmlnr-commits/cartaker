@@ -214,6 +214,7 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
         React.createElement('span', { style: { fontSize: 12, fontWeight: 700, color: C_V.oranje } }, Math.round(gedaan / taken.length * 100) + '%')
       ),
       React.createElement(ProgressBar, { percentage: gedaan / taken.length * 100 }),
+      gedaan === taken.length && React.createElement('div', { style: { textAlign: 'center', padding: '12px 0', fontSize: 14, color: C_V.groen, fontWeight: 600 } }, '\u2713 Alle taken afgerond!'),
       React.createElement('div', { style: { marginTop: 10 } },
         taken.map(function(t) {
           return React.createElement('div', { key: t.id, onClick: function() { toggle(t.id); }, style: {
@@ -281,6 +282,7 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
           background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 6,
         } }, 'Notitie opslaan')
       ),
+      notities.length === 0 && React.createElement('div', { style: { fontSize: 13, color: C_V.tekstMuted, textAlign: 'center', padding: '20px 0' } }, 'Nog geen notities voor deze bewoner'),
       notities.map(function(n, i) {
         return React.createElement(Card, { key: i, style: { padding: 10, borderLeft: '3px solid ' + C_V.oranje } },
           React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 2 } },

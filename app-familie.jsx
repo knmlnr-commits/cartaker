@@ -77,6 +77,7 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, on
 
     // Rapportages (alleen lijn1 + patient)
     t.rapportages && React.createElement(SectionTitle, null, isPatient ? 'Wat zeggen ze over mij?' : 'Hoe was het?'),
+    t.rapportages && zichtbareRapportages.length === 0 && React.createElement('div', { style: { fontSize: 13, color: C_F.tekstMuted, textAlign: 'center', padding: '16px 0' } }, 'Nog geen rapportages beschikbaar'),
     t.rapportages && zichtbareRapportages.map(function(r, i) {
       return React.createElement(Card, { key: i, style: { padding: 12, borderLeft: '3px solid ' + (r.isFamilie ? C_F.groen : C_F.oranje) } },
         React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 4 } },
@@ -311,6 +312,7 @@ window.FamilieBerichten = function FamilieBerichten({ lid, addToast }) {
 
     // Berichten
     React.createElement('div', { style: { marginBottom: 8 } },
+      berichten.length === 0 && React.createElement('div', { style: { fontSize: 14, color: C_F.tekstMuted, textAlign: 'center', padding: '32px 0' } }, 'Nog geen berichten. Stuur het eerste bericht!'),
       berichten.map(function(b) {
         var afzender = getLid(b.van);
         var isVanMij = b.van === lid.id;
