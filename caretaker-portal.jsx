@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v4.3.4';
+var APP_VERSION = 'v4.4.0';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -297,10 +297,9 @@ function ZorgKeuze() {
 function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgProfiel }) {
   var profiel = zorgProfiel || window.zorgprofielen[0];
   var niveau = profiel.niveau;
-  var toegang = window.zorgToegang[niveau] || window.zorgToegang.verzorgende;
   var [toasts, addToast] = useToasts();
-  var standaardEenvoudig = niveau === 'helpende';
-  var [eenvoudig, setEenvoudig] = useState(standaardEenvoudig);
+  var standaardWeergave = niveau === 'helpende' ? 'eenvoudig' : niveau === 'verpleegkundige' ? 'uitgebreid' : 'normaal';
+  var [weergave, setWeergave] = useState(standaardWeergave);
   var [tab, setTab] = useState(initialTab || 'taken');
   var [selectedBewoner, setSelectedBewoner] = useState(function() {
     if (initialBewonerId) return window.bewoners.find(function(b) { return b.id === initialBewonerId; }) || null;
@@ -309,8 +308,37 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
   var [bewonerTab, setBewonerTab] = useState(initialBewonerTab || 'taken');
   var verzorgendeNaam = profiel.naam;
 
+  // Toegang op basis van weergave
+  var toegangPerWeergave = {
+    eenvoudig:  { taken: true, rapportageLezen: true, rapportageSchrijven: true, stemming: true, iot: false, consulten: false, melding: false, behandelplan: false, dossier: false, leren: false },
+    normaal:    { taken: true, rapportageLezen: true, rapportageSchrijven: true, stemming: true, iot: false, consulten: false, melding: true,  behandelplan: true,  dossier: false, leren: true },
+    uitgebreid: { taken: true, rapportageLezen: true, rapportageSchrijven: true, stemming: true, iot: true,  consulten: true,  melding: true,  behandelplan: true,  dossier: true,  leren: true },
+  };
+  var toegang = toegangPerWeergave[weergave] || toegangPerWeergave.normaal;
+
+  // Weergave switcher component
+  var WeergaveSwitcher = function() {
+    var opties = [
+      { id: 'eenvoudig', label: 'Eenvoudig' },
+      { id: 'normaal', label: 'Normaal' },
+      { id: 'uitgebreid', label: 'Uitgebreid' },
+    ];
+    return React.createElement('div', { style: { display: 'flex', background: C.border, borderRadius: 8, padding: 2 } },
+      opties.map(function(o) {
+        var actief = weergave === o.id;
+        return React.createElement('button', { key: o.id, onClick: function() { setWeergave(o.id); }, style: {
+          flex: 1, padding: '4px 0', borderRadius: 6, border: 'none', cursor: 'pointer',
+          background: actief ? C.kaartWit : 'transparent',
+          color: actief ? C.tekstPrimair : C.tekstMuted,
+          fontSize: 11, fontWeight: actief ? 600 : 400, transition: 'all 0.2s',
+          boxShadow: actief ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+        } }, o.label);
+      })
+    );
+  };
+
   // Eenvoudige interface
-  if (eenvoudig) {
+  if (weergave === 'eenvoudig') {
     return (
       <div style={{ minHeight: '100vh', background: C.achtergrond }}>
         <div style={{ maxWidth: 420, margin: '0 auto', padding: '0 16px 100px', minHeight: '100vh' }}>
@@ -318,10 +346,10 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
             <GeriCallLogo />
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ fontSize: 13, color: C.tekstSecundair }}>{profiel.naam}</span>
-              <button onClick={function() { setEenvoudig(false); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, padding: '2px 8px', fontSize: 11, color: C.tekstMuted, cursor: 'pointer' }}>Volledig</button>
               <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Uit</button>
             </div>
           </div>
+          <div style={{ marginBottom: 12 }}><WeergaveSwitcher /></div>
           <EenvoudigZorg profiel={profiel} addToast={addToast} />
           <div style={{ fontSize: 10, color: C.tekstMuted, textAlign: 'center', padding: '16px 0', opacity: 0.6 }}>{APP_VERSION}</div>
         </div>
@@ -364,15 +392,14 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
         <div style={{ padding: '12px 0 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div onClick={function() { handleTab('taken'); }} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
             <GeriCallLogo />
-            <span style={{ fontSize: 11, fontWeight: 600, color: C.oranje, background: C.oranjeLicht, padding: '2px 8px', borderRadius: 4 }}>{(niveauLabel[niveau] || 'ZORG').toUpperCase()}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ fontSize: 12, color: C.tekstSecundair }}>{verzorgendeNaam}</span>
-            <button onClick={function() { setEenvoudig(true); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, padding: '2px 8px', fontSize: 11, color: C.tekstMuted, cursor: 'pointer' }}>Eenvoudig</button>
             <ShareLink />
             <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Uit</button>
           </div>
         </div>
+        <div style={{ marginBottom: 12 }}><WeergaveSwitcher /></div>
 
         {tab === 'taken' && !selectedBewoner && (
           <Card style={{ background: C.oranjeLicht, border: 'none', padding: 12 }}>
@@ -411,9 +438,8 @@ function AppFamilie({ lid, initialTab }) {
   var [toasts, addToast] = useToasts();
   var isPatient = lid.isPatient;
   var lijn = lid.lijn || (isPatient ? 'patient' : 'lijn1');
-  var toegang = window.familieToegang[lijn] || window.familieToegang.lijn2;
-  var standaardEenvoudig = lijn === 'patient' || lijn === 'lijn2';
-  var [eenvoudig, setEenvoudig] = useState(standaardEenvoudig);
+  var standaardWeergave = lijn === 'patient' ? 'eenvoudig' : lijn === 'lijn2' ? 'eenvoudig' : 'normaal';
+  var [weergave, setWeergave] = useState(standaardWeergave);
   var [tab, setTab] = useState(initialTab || 'overzicht');
 
   var handleTab = function(t) {
@@ -422,8 +448,36 @@ function AppFamilie({ lid, initialTab }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Toegang op basis van weergave
+  var toegangPerWeergave = {
+    eenvoudig: { stemming: true, planning: true, chat: true, rapportages: false, behandelplan: false, consulten: false, reablement: false, leren: false },
+    normaal:   { stemming: true, planning: true, chat: true, rapportages: true,  behandelplan: false, consulten: false, reablement: true,  leren: true },
+    uitgebreid:{ stemming: true, planning: true, chat: true, rapportages: true,  behandelplan: true,  consulten: true,  reablement: true,  leren: true },
+  };
+  var toegang = toegangPerWeergave[weergave] || toegangPerWeergave.normaal;
+
+  var FamWeergaveSwitcher = function() {
+    var opties = [
+      { id: 'eenvoudig', label: 'Eenvoudig' },
+      { id: 'normaal', label: 'Normaal' },
+      { id: 'uitgebreid', label: 'Uitgebreid' },
+    ];
+    return React.createElement('div', { style: { display: 'flex', background: C.border, borderRadius: 8, padding: 2 } },
+      opties.map(function(o) {
+        var actief = weergave === o.id;
+        return React.createElement('button', { key: o.id, onClick: function() { setWeergave(o.id); }, style: {
+          flex: 1, padding: '4px 0', borderRadius: 6, border: 'none', cursor: 'pointer',
+          background: actief ? C.kaartWit : 'transparent',
+          color: actief ? C.tekstPrimair : C.tekstMuted,
+          fontSize: 11, fontWeight: actief ? 600 : 400, transition: 'all 0.2s',
+          boxShadow: actief ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+        } }, o.label);
+      })
+    );
+  };
+
   // Eenvoudige interface
-  if (eenvoudig) {
+  if (weergave === 'eenvoudig') {
     return (
       <div style={{ minHeight: '100vh', background: C.achtergrond }}>
         <div style={{ maxWidth: 420, margin: '0 auto', padding: '0 16px 100px', minHeight: '100vh' }}>
@@ -431,10 +485,10 @@ function AppFamilie({ lid, initialTab }) {
             <GeriCallLogo />
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ fontSize: 13, color: C.tekstSecundair }}>{lid.roepnaam}</span>
-              <button onClick={function() { setEenvoudig(false); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, padding: '2px 8px', fontSize: 11, color: C.tekstMuted, cursor: 'pointer' }}>Volledig</button>
               <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Wissel</button>
             </div>
           </div>
+          <div style={{ marginBottom: 12 }}><FamWeergaveSwitcher /></div>
           <EenvoudigFamilie lid={lid} addToast={addToast} />
           <div style={{ fontSize: 10, color: C.tekstMuted, textAlign: 'center', padding: '16px 0', opacity: 0.6 }}>{APP_VERSION}</div>
         </div>
@@ -442,8 +496,6 @@ function AppFamilie({ lid, initialTab }) {
       </div>
     );
   }
-
-  var lijnLabel = { patient: 'Pati\u00EBnt', lijn1: 'Gezin', lijn2: 'Ondersteuner' };
 
   var alleTabs = [
     { id: 'overzicht', icon: '\u2764\uFE0F', label: isPatient ? 'Mijn dag' : window.patient.roepnaam, show: true },
@@ -459,15 +511,14 @@ function AppFamilie({ lid, initialTab }) {
         <div style={{ padding: '12px 0 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div onClick={function() { handleTab('overzicht'); }} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
             <GeriCallLogo />
-            <span style={{ fontSize: 11, fontWeight: 600, color: C.groen, background: C.groenLicht, padding: '2px 8px', borderRadius: 4 }}>{isPatient ? 'MIJN PORTAL' : (lijnLabel[lijn] || 'FAMILIE').toUpperCase()}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{ width: 28, height: 28, borderRadius: 14, background: lid.kleur + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: lid.kleur }}>{lid.initialen}</div>
-            <button onClick={function() { setEenvoudig(true); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, padding: '2px 8px', fontSize: 11, color: C.tekstMuted, cursor: 'pointer' }}>Eenvoudig</button>
             <ShareLink />
             <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Wissel</button>
           </div>
         </div>
+        <div style={{ marginBottom: 12 }}><FamWeergaveSwitcher /></div>
 
         <Card style={{ background: isPatient ? C.oranjeLicht : C.groenLicht, border: 'none', padding: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
