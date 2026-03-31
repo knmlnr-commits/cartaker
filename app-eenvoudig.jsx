@@ -10,12 +10,17 @@ var C_E = window.COLORS;
 window.EenvoudigZorg = function EenvoudigZorg({ profiel, addToast }) {
   var { useState } = React;
   var [gekozenBewoner, setGekozenBewoner] = useState(null);
+  var [taken, setTaken] = useState([]);
   var bewoners = window.bewoners;
+
+  var selecteerBewoner = function(b) {
+    setGekozenBewoner(b);
+    setTaken(b.taken.map(function(t) { return Object.assign({}, t); }));
+  };
 
   // ── Bewoner detail: taken ──
   if (gekozenBewoner) {
     var b = gekozenBewoner;
-    var [taken, setTaken] = useState(b.taken);
     var stemming = window.stemmingen[b.id];
     var stOpt = window.stemmingOpties;
     var huidige = stOpt.find(function(o) { return o.score === (stemming ? stemming.score : 3); }) || stOpt[2];
@@ -104,7 +109,7 @@ window.EenvoudigZorg = function EenvoudigZorg({ profiel, addToast }) {
       // Stoplicht
       var stoplicht = b.alert ? C_E.rood : pct === 100 ? C_E.groen : C_E.oranje;
 
-      return React.createElement('button', { key: b.id, onClick: function() { setGekozenBewoner(b); }, style: {
+      return React.createElement('button', { key: b.id, onClick: function() { selecteerBewoner(b); }, style: {
         display: 'flex', alignItems: 'center', gap: 16, width: '100%',
         padding: '18px 16px', marginBottom: 10, borderRadius: 16,
         background: C_E.kaartWit, border: '2px solid ' + C_E.border,
