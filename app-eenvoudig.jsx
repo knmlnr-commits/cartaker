@@ -119,7 +119,7 @@ window.EenvoudigZorg = function EenvoudigZorg({ profiel, addToast }) {
             color: '#FFF', fontSize: 18, fontWeight: 700,
           } }, tk.gedaan ? '\u2713' : ''),
           React.createElement('div', { style: { flex: 1 } },
-            React.createElement('div', { style: { fontSize: 16, fontWeight: 500, color: C_E.tekstPrimair, textDecoration: tk.gedaan ? 'line-through' : 'none' } }, tk.tekst),
+            React.createElement('div', { style: { fontSize: 16, fontWeight: 500, color: C_E.tekstPrimair, textDecoration: tk.gedaan ? 'line-through' : 'none' } }, vertaalTaak(tk.tekst, taal)),
             React.createElement('div', { style: { fontSize: 14, color: C_E.tekstMuted } }, tk.tijd + (tk.gedaan && tk.door ? ' \u2713 ' + tk.door : ''))
           )
         );
@@ -223,7 +223,7 @@ window.EenvoudigFamilie = function EenvoudigFamilie({ lid, addToast }) {
           borderLeft: dir === 'ltr' ? '4px solid ' + (isFam ? C_E.groen : C_E.oranje) : 'none',
           borderRight: dir === 'rtl' ? '4px solid ' + (isFam ? C_E.groen : C_E.oranje) : 'none',
         } },
-          React.createElement('div', { style: { fontSize: 16, fontWeight: 600, color: C_E.tekstPrimair, flex: 1 } }, s.periode),
+          React.createElement('div', { style: { fontSize: 16, fontWeight: 600, color: C_E.tekstPrimair, flex: 1 } }, vertaalPeriode(s.periode, taal)),
           React.createElement('div', { style: { fontSize: 15, color: C_E.tekstSecundair } }, s.wie)
         );
       })
