@@ -288,29 +288,25 @@ window.bewoners = [
   },
 ];
 
-// ── EPD gegevens per bewoner (via NUTS koppeling) ──
+// ── NUTS Pati\u00EBntdata per bewoner ──
 window.epdGegevens = {
   jansen: {
-    bsn: '****-****-927',
-    huisarts: 'Dr. M. van den Berg, Huisartsenpraktijk Zonnedael',
-    apotheek: 'Apotheek Zonnehof, Hoofdstraat 12',
-    medicatie: [
-      { naam: 'Metoprolol', dosering: '50mg 2x daags', indicatie: 'Hartfalen / ritmestoornis', voorschrijver: 'Cardioloog', startdatum: '2023-04-15', opmerking: 'Niet plotseling stoppen' },
-      { naam: 'Furosemide', dosering: '40mg 1x daags (ochtend)', indicatie: 'Vochtretentie bij hartfalen', voorschrijver: 'Cardioloog', startdatum: '2023-04-15', opmerking: 'Dagelijks wegen' },
-      { naam: 'Rivastigmine pleister', dosering: '9.5mg/24u', indicatie: 'Dementie (Alzheimer)', voorschrijver: 'Geriater', startdatum: '2024-09-01', opmerking: 'Wissel plekken, huid controleren' },
-      { naam: 'Paracetamol', dosering: '1000mg zo nodig, max 3x/dag', indicatie: 'Pijn', voorschrijver: 'SO Eigen', startdatum: '2025-12-10', opmerking: null },
-      { naam: 'Macrogol', dosering: '1 sachet per dag', indicatie: 'Obstipatie', voorschrijver: 'Huisarts', startdatum: '2025-06-20', opmerking: 'Ophogen bij onvoldoende effect' },
+    patient: { voornaam: 'A.', achternaam: 'Jansen', geslacht: 'Male', geboortedatum: '1941-03-14', zipcode: '9712AB', bsn: '454206927', email: null },
+    contactpersoon: { voornaam: 'M.', achternaam: 'Jansen', relatie: 'Daughter', telefoonnummer: '0612345678' },
+    zorgverlener: { naam: 'M. van den Berg', organizationName: 'Huisartsenpraktijk Zonnedael', organizationId: 'Vektis-01008035' },
+    vitaleFuncties: [
+      { datum: '2026-03-30T07:45:00', bloeddruk: '138/84', temperatuur: 37.1, hartslag: 82 },
+      { datum: '2026-03-29T20:15:00', bloeddruk: '142/88', temperatuur: 37.0, hartslag: 78 },
+      { datum: '2026-03-29T08:00:00', bloeddruk: '135/82', temperatuur: 36.9, hartslag: 76 },
+      { datum: '2026-03-28T19:30:00', bloeddruk: '148/92', temperatuur: 37.2, hartslag: 84 },
+      { datum: '2026-03-27T08:15:00', bloeddruk: '140/86', temperatuur: 36.8, hartslag: 80 },
+      { datum: '2026-03-25T14:00:00', bloeddruk: '132/78', temperatuur: 37.0, hartslag: 74 },
     ],
     allergieen: [
-      { stof: 'Penicilline', type: 'Allergie', reactie: 'Huiduitslag + angio-oedeem', ernst: 'Ernstig', gemeldOp: '2019-03-10' },
-      { stof: 'Tramadol', type: 'Intolerantie', reactie: 'Misselijkheid, verwardheid', ernst: 'Matig', gemeldOp: '2024-11-05' },
+      { stof: 'Penicilline', categorie: 'Medication', kritiekheid: 'High', aanvangsdatum: '2019-03-10', reactie: 'Huiduitslag + angio-oedeem', ernst: 'Ernstig', notitie: 'Vastgesteld na allergische reactie bij amoxicilline kuur' },
+      { stof: 'Tramadol', categorie: 'Medication', kritiekheid: 'Medium', aanvangsdatum: '2024-11-05', reactie: 'Misselijkheid, verwardheid', ernst: 'Matig', notitie: 'Intolerantie, geen echte allergie. Alternatief: paracetamol' },
     ],
-    voorgeschiedenis: [
-      { jaar: '2019', diagnose: 'Hartfalen (NYHA II)', specialist: 'Cardiologie UMCG' },
-      { jaar: '2022', diagnose: 'Dementie (Alzheimer, fase 2)', specialist: 'Geriatrie Martini Ziekenhuis' },
-      { jaar: '2023', diagnose: 'Atriumfibrilleren', specialist: 'Cardiologie UMCG' },
-      { jaar: '2024', diagnose: 'Val met ribbenfractuur', specialist: 'SEH Martini Ziekenhuis' },
-    ],
+    reanimatiebeleid: { soort: 'Niet reanimeren verklaring', datum: '2025-12-15', aandoening: 'Dementie + hartfalen', opmerking: 'Familie is op de hoogte en akkoord. Comfort en kwaliteit van leven staan voorop.', vertegenwoordiger: 'M. Jansen (dochter)', documentUrl: '', policyUrl: 'https://wetten.overheid.nl/' },
     labresultaten: [
       { datum: '22 mrt 2026', bepaling: 'Creatinine', waarde: '118', eenheid: '\u00B5mol/L', referentie: '60-110', afwijkend: true },
       { datum: '22 mrt 2026', bepaling: 'eGFR', waarde: '48', eenheid: 'mL/min', referentie: '> 60', afwijkend: true },
@@ -318,85 +314,83 @@ window.epdGegevens = {
       { datum: '22 mrt 2026', bepaling: 'Kalium', waarde: '4.8', eenheid: 'mmol/L', referentie: '3.5-5.0', afwijkend: false },
       { datum: '22 mrt 2026', bepaling: 'NT-proBNP', waarde: '1850', eenheid: 'pg/mL', referentie: '< 300', afwijkend: true },
       { datum: '22 mrt 2026', bepaling: 'Hb', waarde: '7.8', eenheid: 'mmol/L', referentie: '8.5-11.0', afwijkend: true },
-      { datum: '10 mrt 2026', bepaling: 'Glucose (nuchter)', waarde: '5.4', eenheid: 'mmol/L', referentie: '3.5-6.0', afwijkend: false },
-      { datum: '10 mrt 2026', bepaling: 'TSH', waarde: '2.1', eenheid: 'mU/L', referentie: '0.4-4.0', afwijkend: false },
     ],
-    wilsverklaring: {
-      reanimatie: 'Niet reanimeren (NR)',
-      ic: 'Geen IC-opname gewenst',
-      besprokenOp: '15 december 2025',
-      besprokenMet: 'Dochter M. Jansen + huisarts',
-      opmerking: 'Familie is op de hoogte en akkoord. Comfort en kwaliteit van leven staan voorop.',
-    },
+    medicatie: [
+      { naam: 'Metoprolol', dosering: '50mg 2x daags', indicatie: 'Hartfalen / ritmestoornis', voorschrijver: 'Cardioloog', startdatum: '2023-04-15', opmerking: 'Niet plotseling stoppen' },
+      { naam: 'Furosemide', dosering: '40mg 1x daags (ochtend)', indicatie: 'Vochtretentie bij hartfalen', voorschrijver: 'Cardioloog', startdatum: '2023-04-15', opmerking: 'Dagelijks wegen' },
+      { naam: 'Rivastigmine pleister', dosering: '9.5mg/24u', indicatie: 'Dementie (Alzheimer)', voorschrijver: 'Geriater', startdatum: '2024-09-01', opmerking: 'Wissel plekken, huid controleren' },
+      { naam: 'Paracetamol', dosering: '1000mg zo nodig, max 3x/dag', indicatie: 'Pijn', voorschrijver: 'SO Eigen', startdatum: '2025-12-10', opmerking: null },
+      { naam: 'Macrogol', dosering: '1 sachet per dag', indicatie: 'Obstipatie', voorschrijver: 'Huisarts', startdatum: '2025-06-20', opmerking: null },
+    ],
     correspondentie: [
       { datum: '18 mrt 2026', van: 'Dr. K. Smit (cardioloog, UMCG)', onderwerp: 'Controle hartfalen', samenvatting: 'NYHA II stabiel. Echo: EF 38%. Medicatie handhaven. Volgende controle over 6 maanden.' },
-      { datum: '10 feb 2026', van: 'Dr. P. Bakker (geriater)', onderwerp: 'Evaluatie dementie', samenvatting: 'MMSE 18/30 (was 20 in sept). Langzame achteruitgang. Rivastigmine continueren. Dagactiviteiten aanbevolen.' },
+      { datum: '10 feb 2026', van: 'Dr. P. Bakker (geriater)', onderwerp: 'Evaluatie dementie', samenvatting: 'MMSE 18/30 (was 20 in sept). Langzame achteruitgang. Rivastigmine continueren.' },
     ],
   },
   de_groot: {
-    bsn: '****-****-431',
-    huisarts: 'Dr. J. Hendriks, Gezondheidscentrum Noord',
-    apotheek: 'Apotheek Zonnehof, Hoofdstraat 12',
+    patient: { voornaam: 'B.', achternaam: 'de Groot', geslacht: 'Female', geboortedatum: '1938-06-22', zipcode: '9712CD', bsn: '312456431', email: null },
+    contactpersoon: { voornaam: 'J.', achternaam: 'de Groot', relatie: 'Son', telefoonnummer: '0698765432' },
+    zorgverlener: { naam: 'J. Hendriks', organizationName: 'Gezondheidscentrum Noord', organizationId: 'Vektis-01009012' },
+    vitaleFuncties: [
+      { datum: '2026-03-30T07:20:00', bloeddruk: '142/88', temperatuur: 36.8, hartslag: 74 },
+      { datum: '2026-03-29T18:30:00', bloeddruk: '138/84', temperatuur: 36.9, hartslag: 72 },
+      { datum: '2026-03-29T08:00:00', bloeddruk: '145/90', temperatuur: 37.0, hartslag: 76 },
+    ],
+    allergieen: [],
+    reanimatiebeleid: null,
+    labresultaten: [
+      { datum: '20 mrt 2026', bepaling: 'HbA1c', waarde: '58', eenheid: 'mmol/mol', referentie: '< 53', afwijkend: true },
+      { datum: '20 mrt 2026', bepaling: 'Glucose (nuchter)', waarde: '8.2', eenheid: 'mmol/L', referentie: '3.5-6.0', afwijkend: true },
+    ],
     medicatie: [
-      { naam: 'Insuline (NovoRapid)', dosering: '3x daags bij maaltijd, wisselend', indicatie: 'Diabetes type 2', voorschrijver: 'Internist', startdatum: '2020-02-10' },
+      { naam: 'Insuline (NovoRapid)', dosering: '3x daags bij maaltijd', indicatie: 'Diabetes type 2', voorschrijver: 'Internist', startdatum: '2020-02-10' },
       { naam: 'Metformine', dosering: '500mg 2x daags', indicatie: 'Diabetes type 2', voorschrijver: 'Huisarts', startdatum: '2018-06-01' },
       { naam: 'Salbutamol inhalatie', dosering: 'Zo nodig, max 4x/dag', indicatie: 'COPD', voorschrijver: 'Longarts', startdatum: '2021-01-15' },
       { naam: 'Tiotropium (Spiriva)', dosering: '1x daags', indicatie: 'COPD onderhoud', voorschrijver: 'Longarts', startdatum: '2021-01-15' },
     ],
-    allergieen: [],
-    voorgeschiedenis: [
-      { jaar: '2018', diagnose: 'Diabetes mellitus type 2', specialist: 'Huisarts' },
-      { jaar: '2021', diagnose: 'COPD Gold III', specialist: 'Longziekten MCL' },
-    ],
-    labresultaten: [
-      { datum: '20 mrt 2026', bepaling: 'HbA1c', waarde: '58', eenheid: 'mmol/mol', referentie: '< 53', afwijkend: true },
-      { datum: '20 mrt 2026', bepaling: 'Glucose (nuchter)', waarde: '8.2', eenheid: 'mmol/L', referentie: '3.5-6.0', afwijkend: true },
-      { datum: '20 mrt 2026', bepaling: 'Creatinine', waarde: '88', eenheid: '\u00B5mol/L', referentie: '60-110', afwijkend: false },
-    ],
-    wilsverklaring: null,
     correspondentie: [],
   },
   van_dam: {
-    bsn: '****-****-653',
-    huisarts: 'Dr. M. van den Berg, Huisartsenpraktijk Zonnedael',
-    apotheek: 'Apotheek Zonnehof, Hoofdstraat 12',
+    patient: { voornaam: 'C.', achternaam: 'van Dam', geslacht: 'Male', geboortedatum: '1943-11-08', zipcode: '9713EF', bsn: '289456653', email: null },
+    contactpersoon: { voornaam: 'L.', achternaam: 'van Dam', relatie: 'Wife', telefoonnummer: '0643215678' },
+    zorgverlener: { naam: 'M. van den Berg', organizationName: 'Huisartsenpraktijk Zonnedael', organizationId: 'Vektis-01008035' },
+    vitaleFuncties: [
+      { datum: '2026-03-30T08:10:00', bloeddruk: '128/76', temperatuur: 36.5, hartslag: 68 },
+      { datum: '2026-03-29T08:00:00', bloeddruk: '130/78', temperatuur: 36.6, hartslag: 70 },
+    ],
+    allergieen: [],
+    reanimatiebeleid: null,
+    labresultaten: [],
     medicatie: [
       { naam: 'Ascal (Aspirine)', dosering: '100mg 1x daags', indicatie: 'Secundaire preventie na CVA', voorschrijver: 'Neuroloog', startdatum: '2024-03-20' },
       { naam: 'Atorvastatine', dosering: '40mg 1x daags', indicatie: 'Cholesterolverlaging', voorschrijver: 'Neuroloog', startdatum: '2024-03-20' },
       { naam: 'Lisinopril', dosering: '10mg 1x daags', indicatie: 'Hypertensie', voorschrijver: 'Huisarts', startdatum: '2022-08-10' },
     ],
-    allergieen: [],
-    voorgeschiedenis: [
-      { jaar: '2024', diagnose: 'CVA (herseninfarct links)', specialist: 'Neurologie UMCG' },
-      { jaar: '2024', diagnose: 'Hemiparese links + afasie', specialist: 'Revalidatie Beatrixoord' },
-    ],
-    labresultaten: [],
-    wilsverklaring: null,
     correspondentie: [],
   },
   visser: {
-    bsn: '****-****-812',
-    huisarts: 'Dr. L. de Boer, Huisartsenpraktijk Centrum',
-    apotheek: 'Apotheek Zonnehof, Hoofdstraat 12',
+    patient: { voornaam: 'D.', achternaam: 'Visser', geslacht: 'Female', geboortedatum: '1940-01-03', zipcode: '9714GH', bsn: '198456812', email: null },
+    contactpersoon: { voornaam: 'R.', achternaam: 'Visser', relatie: 'Daughter', telefoonnummer: '0687654321' },
+    zorgverlener: { naam: 'L. de Boer', organizationName: 'Huisartsenpraktijk Centrum', organizationId: 'Vektis-01007890' },
+    vitaleFuncties: [
+      { datum: '2026-03-30T07:50:00', bloeddruk: '118/72', temperatuur: 37.4, hartslag: 88 },
+      { datum: '2026-03-29T16:00:00', bloeddruk: '122/74', temperatuur: 37.2, hartslag: 82 },
+    ],
+    allergieen: [
+      { stof: "NSAID's (Ibuprofen, Diclofenac)", categorie: 'Medication', kritiekheid: 'Medium', aanvangsdatum: '2020-09-01', reactie: 'Maagklachten', ernst: 'Matig', notitie: 'Geen NSAID voorschrijven, gebruik paracetamol' },
+    ],
+    reanimatiebeleid: null,
+    labresultaten: [],
     medicatie: [
       { naam: 'Donepezil', dosering: '10mg 1x daags', indicatie: 'Alzheimer', voorschrijver: 'Geriater', startdatum: '2023-11-01' },
       { naam: 'Calcium/Vitamine D', dosering: '1x daags', indicatie: 'Osteoporose', voorschrijver: 'Huisarts', startdatum: '2022-05-15' },
       { naam: 'Paracetamol', dosering: '1000mg 4x daags', indicatie: 'Pijn (heupfractuur)', voorschrijver: 'SO Eigen', startdatum: '2026-03-15' },
       { naam: 'Tramadol', dosering: '50mg zo nodig, max 3x/dag', indicatie: 'Doorbraakpijn', voorschrijver: 'SO Eigen', startdatum: '2026-03-15', opmerking: 'Let op: verwardheid als bijwerking' },
     ],
-    allergieen: [
-      { stof: 'NSAID\'s (Ibuprofen, Diclofenac)', type: 'Intolerantie', reactie: 'Maagklachten', ernst: 'Matig', gemeldOp: '2020-09-01' },
-    ],
-    voorgeschiedenis: [
-      { jaar: '2020', diagnose: 'Alzheimer', specialist: 'Geriatrie' },
-      { jaar: '2022', diagnose: 'Osteoporose', specialist: 'Huisarts' },
-      { jaar: '2026', diagnose: 'Heupfractuur links (val)', specialist: 'Orthopedie Martini Ziekenhuis' },
-    ],
-    labresultaten: [],
-    wilsverklaring: null,
     correspondentie: [],
   },
 };
+
 
 // Backward compat: patient = eerste bewoner
 window.patient = window.bewoners[0];
