@@ -123,6 +123,26 @@ window.FotoUpload = function FotoUpload({ label, onUpload, addToast }) {
   );
 };
 
+// ── Taal toggle NL/EN ──
+window.TaalToggle = function TaalToggle() {
+  var { useState } = React;
+  var [taal, setTaal] = useState(window.appTaal || 'nl');
+  var wissel = function() {
+    var nieuw = taal === 'nl' ? 'en' : 'nl';
+    setTaal(nieuw);
+    window.appTaal = nieuw;
+    window.huidigeTaal = nieuw;
+    // Force re-render door hash te re-setten
+    var h = window.location.hash;
+    window.location.hash = '';
+    setTimeout(function() { window.location.hash = h; }, 10);
+  };
+  return React.createElement('button', { onClick: wissel, style: {
+    background: 'none', border: '1px solid ' + C.border, borderRadius: 6,
+    padding: '2px 6px', fontSize: 11, color: C.tekstSecundair, cursor: 'pointer', fontWeight: 500,
+  } }, taal === 'nl' ? 'EN' : 'NL');
+};
+
 // ── Logo (echte GeriCall afbeelding als base64) ──
 window.GeriCallLogoImg = function GeriCallLogoImg({ size }) {
   var s = size || 32;

@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v5.3.3';
+var APP_VERSION = 'v5.4.0';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -122,9 +122,10 @@ function RolKeuze() {
   return (
     <div style={{ minHeight: '100vh', background: C.achtergrond, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ maxWidth: 420, width: '100%', padding: '32px 24px', textAlign: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}><TaalToggle /></div>
         <GeriCallLogoBig />
         <div style={{ fontSize: 15, color: C.tekstSecundair, marginBottom: 24, lineHeight: 1.5 }}>
-          Samen zorgen voor <strong style={{ color: C.tekstPrimair }}>{window.patient.naam}</strong>
+          {ui('samenZorgenVoor')} <strong style={{ color: C.tekstPrimair }}>{window.patient.naam}</strong>
         </div>
 
         <div onClick={function() { setHash('zorg'); }} style={{
@@ -134,9 +135,9 @@ function RolKeuze() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ width: 48, height: 48, borderRadius: 12, background: C.oranjeLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>&#x1F469;&#x200D;&#x2695;&#xFE0F;</div>
             <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: C.tekstPrimair }}>Ik werk in de zorg</div>
-              <div style={{ fontSize: 13, color: C.tekstSecundair }}>Doel: dagelijkse zorg uitvoeren en rapporteren</div>
-              <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 2 }}>Helpende &middot; Verzorgende &middot; Verpleegkundige</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: C.tekstPrimair }}>{ui('ikWerkInDeZorg')}</div>
+              <div style={{ fontSize: 13, color: C.tekstSecundair }}>{ui('doelZorg')}</div>
+              <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 2 }}>{ui('helpende')} &middot; {ui('verzorgende')} &middot; {ui('verpleegkundige')}</div>
             </div>
           </div>
         </div>
@@ -148,9 +149,9 @@ function RolKeuze() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ width: 48, height: 48, borderRadius: 12, background: C.groenLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>&#x1F468;&#x200D;&#x1F467;</div>
             <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: C.tekstPrimair }}>Ik ben familie / pati&euml;nt</div>
-              <div style={{ fontSize: 13, color: C.tekstSecundair }}>Doel: betrokken blijven en samenwerken</div>
-              <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 2 }}>Gezin &middot; Ondersteuner &middot; Pati&euml;nt</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: C.tekstPrimair }}>{ui('ikBenFamilie')}</div>
+              <div style={{ fontSize: 13, color: C.tekstSecundair }}>{ui('doelFamilie')}</div>
+              <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 2 }}>{ui('gezin')} &middot; {ui('ondersteuner')} &middot; {ui('patient')}</div>
             </div>
           </div>
         </div>
@@ -381,10 +382,10 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
   };
 
   var alleTabs = [
-    { id: 'taken', icon: '\u2705', label: 'Wijk', show: true },
-    { id: 'dienst', icon: '\u270D\uFE0F', label: 'Dienst', show: true },
-    { id: 'melding', icon: '\uD83D\uDD14', label: 'Melding', show: toegang.melding },
-    { id: 'leren', icon: '\uD83D\uDCDA', label: 'Leren', show: toegang.leren },
+    { id: 'taken', icon: '\u2705', label: ui('wijk'), show: true },
+    { id: 'dienst', icon: '\u270D\uFE0F', label: ui('dienst'), show: true },
+    { id: 'melding', icon: '\uD83D\uDD14', label: ui('melding'), show: toegang.melding },
+    { id: 'leren', icon: '\uD83D\uDCDA', label: ui('leren'), show: toegang.leren },
   ];
   var tabs = alleTabs.filter(function(t) { return t.show; });
   var niveauLabel = { helpende: 'Helpende', verzorgende: 'Verzorgende', verpleegkundige: 'Verpleegkundige' };
@@ -398,10 +399,11 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ fontSize: 12, color: C.tekstSecundair }}>{verzorgendeNaam}</span>
-            <button onClick={function() { setToonZoek(true); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, fontSize: 12, cursor: 'pointer', padding: '3px 8px', color: C.tekstSecundair }}>Zoek</button>
+            <TaalToggle />
+            <button onClick={function() { setToonZoek(true); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, fontSize: 12, cursor: 'pointer', padding: '3px 8px', color: C.tekstSecundair }}>{ui('zoek')}</button>
             <NotificatieBel rol="zorg" addToast={addToast} />
-            <button onClick={function() { setToonInstellingen(true); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, fontSize: 12, cursor: 'pointer', padding: '3px 8px', color: C.tekstSecundair }}>Inst.</button>
-            <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Uit</button>
+            <button onClick={function() { setToonInstellingen(true); }} style={{ background: 'none', border: '1px solid ' + C.border, borderRadius: 6, fontSize: 12, cursor: 'pointer', padding: '3px 8px', color: C.tekstSecundair }}>{ui('inst')}</button>
+            <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>{ui('uit')}</button>
           </div>
         </div>
         <div style={{ marginBottom: 12 }}><WeergaveSwitcher /></div>
@@ -506,10 +508,10 @@ function AppFamilie({ lid, initialTab }) {
   }
 
   var alleTabs = [
-    { id: 'overzicht', icon: '\u2764\uFE0F', label: isPatient ? 'Mijn dag' : window.patient.roepnaam, show: true },
-    { id: 'week', icon: '\uD83D\uDCC5', label: isPatient ? 'Wie komt?' : 'Planning', show: toegang.planning },
-    { id: 'berichten', icon: '\uD83D\uDCAC', label: isPatient ? 'Familie' : 'Familie chat', show: toegang.chat },
-    { id: 'leren', icon: '\uD83D\uDCDA', label: 'Leren', show: toegang.leren },
+    { id: 'overzicht', icon: '\u2764\uFE0F', label: isPatient ? ui('mijnDag') : window.patient.roepnaam, show: true },
+    { id: 'week', icon: '\uD83D\uDCC5', label: isPatient ? ui('wieKomt') : ui('planning'), show: toegang.planning },
+    { id: 'berichten', icon: '\uD83D\uDCAC', label: isPatient ? ui('familie') : ui('familieChat'), show: toegang.chat },
+    { id: 'leren', icon: '\uD83D\uDCDA', label: ui('leren'), show: toegang.leren },
   ];
   var tabs = alleTabs.filter(function(t) { return t.show; });
 
@@ -522,9 +524,10 @@ function AppFamilie({ lid, initialTab }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{ width: 28, height: 28, borderRadius: 14, background: lid.kleur + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: lid.kleur }}>{lid.initialen}</div>
+            <TaalToggle />
             <NotificatieBel rol="familie" addToast={addToast} />
             <ShareLink />
-            <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Wissel</button>
+            <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>{ui('wissel')}</button>
           </div>
         </div>
         <div style={{ marginBottom: 12 }}><FamWeergaveSwitcher /></div>
