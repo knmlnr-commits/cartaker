@@ -7,37 +7,33 @@ var C_V = window.COLORS;
 // WIJK OVERZICHT — alle bewoners in één oogopslag
 // ══════════════════════════════════════════
 window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner, weergave }) {
+  var { useState } = React;
   var w = weergave || 'normaal';
   var bewoners = window.bewoners;
   var totaalOpen = bewoners.reduce(function(s, b) { return s + b.takenOpen; }, 0);
   var totaal = bewoners.reduce(function(s, b) { return s + b.takenTotaal; }, 0);
   var alerts = bewoners.filter(function(b) { return b.alert; });
-
-  // Scroll naar sectie
-  var scrollNaar = function(id) {
-    var el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+  var [filter, setFilter] = useState('alle'); // alle | taken | alerts
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
-    // Wijk stats — klikbaar
+    // Wijk stats — filter knoppen
     React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 } },
-      React.createElement(Card, { style: { padding: 10, textAlign: 'center', cursor: 'pointer' }, onClick: function() { scrollNaar('wijk-bewoners'); } },
+      React.createElement(Card, { style: { padding: 10, textAlign: 'center', cursor: 'pointer', border: filter === 'alle' ? '2px solid ' + C_V.oranje : '1px solid ' + C_V.border }, onClick: function() { setFilter(filter === 'alle' ? 'alle' : 'alle'); } },
         React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: C_V.oranje } }, bewoners.length),
         React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, ui('bewoners'))
       ),
-      React.createElement(Card, { style: { padding: 10, textAlign: 'center', cursor: 'pointer' }, onClick: function() { scrollNaar('wijk-bewoners'); } },
+      React.createElement(Card, { style: { padding: 10, textAlign: 'center', cursor: 'pointer', border: filter === 'taken' ? '2px solid ' + C_V.oranje : '1px solid ' + C_V.border }, onClick: function() { setFilter(filter === 'taken' ? 'alle' : 'taken'); } },
         React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: C_V.tekstPrimair } }, totaalOpen),
         React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, ui('takenOpen'))
       ),
-      React.createElement(Card, { style: { padding: 10, textAlign: 'center', cursor: alerts.length > 0 ? 'pointer' : 'default' }, onClick: function() { if (alerts.length > 0) scrollNaar('wijk-alerts'); } },
+      React.createElement(Card, { style: { padding: 10, textAlign: 'center', cursor: alerts.length > 0 ? 'pointer' : 'default', border: filter === 'alerts' ? '2px solid ' + C_V.rood : '1px solid ' + C_V.border }, onClick: function() { if (alerts.length > 0) setFilter(filter === 'alerts' ? 'alle' : 'alerts'); } },
         React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: alerts.length > 0 ? C_V.rood : C_V.groen } }, alerts.length),
         React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, ui('alerts'))
       )
     ),
 
-    // Alerts bovenaan — klik gaat naar bewoner met consult open
-    alerts.length > 0 && React.createElement('div', { id: 'wijk-alerts' },
+    // Alerts (toon bij filter=alle of filter=alerts)
+    (filter === 'alle' || filter === 'alerts') && alerts.length > 0 && React.createElement('div', null,
       alerts.map(function(b) {
         var isU2 = b.alert === 'U2';
         return React.createElement('div', { key: b.id + '_alert', onClick: function() { onSelectBewoner(b, b.openConsulten && b.openConsulten.length > 0 ? 'taken' : 'taken'); },
@@ -58,8 +54,21 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner,
     ),
 
     // Bewoners lijst
-    React.createElement('div', { id: 'wijk-bewoners' }, React.createElement(SectionTitle, null, ui('mijnBewonersVol'))),
-    bewoners.map(function(b) {
+    // Gefilterde bewoners
+    (function() {
+      var gefilterdeB = bewoners;
+      var titelExtra = '';
+      if (filter === 'taken') {
+        gefilterdeB = bewoners.filter(function(b) { return b.takenOpen > 0; });
+        titelExtra = ' (' + gefilterdeB.length + ' ' + ui('takenOpen').toLowerCase() + ')';
+      } else if (filter === 'alerts') {
+        return null; // alerts sectie hierboven toont al de alerts
+      }
+      return React.createElement('div', null,
+        React.createElement(SectionTitle, null, ui('mijnBewonersVol') + titelExtra),
+        filter !== 'alle' && React.createElement('button', { onClick: function() { setFilter('alle'); }, style: { background: 'none', border: 'none', fontSize: 12, color: C_V.oranje, cursor: 'pointer', marginBottom: 8, padding: 0 } }, '\u2190 ' + (ui('bewoners') || 'Alle bewoners')),
+        gefilterdeB.length === 0 && React.createElement('div', { style: { fontSize: 13, color: C_V.groen, textAlign: 'center', padding: '16px 0' } }, ui('alleTakenAfgerond')),
+        gefilterdeB.map(function(b) {
       var gedaan = b.takenTotaal - b.takenOpen;
       var pct = Math.round(gedaan / b.takenTotaal * 100);
       // IoT quick glance: zoek afwijkingen
@@ -98,7 +107,8 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner,
           React.createElement('span', { style: { fontSize: 14, color: C_V.tekstMuted } }, '\u25B6')
         )
       );
-    })
+    }));
+    })()
   );
 };
 
