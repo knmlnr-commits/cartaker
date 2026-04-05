@@ -154,10 +154,10 @@ window.TaalToggle = function TaalToggle() {
     React.createElement('rect', { width: 20, height: 14, rx: 2, fill: 'none', stroke: '#E8E8E8', strokeWidth: 0.5 })
   );
 
-  // Toon de vlag van de taal waar je NAARTOE kunt wisselen
+  // Toon de vlag van de HUIDIGE taal
   return React.createElement('button', { onClick: wissel, title: taal === 'nl' ? 'Switch to English' : 'Schakel naar Nederlands', style: {
     background: 'none', border: 'none', cursor: 'pointer', padding: '2px', lineHeight: 1, display: 'flex', alignItems: 'center',
-  } }, taal === 'nl' ? enVlag : nlVlag);
+  } }, taal === 'nl' ? nlVlag : enVlag);
 };
 
 // ── Logo (echte GeriCall afbeelding als base64) ──

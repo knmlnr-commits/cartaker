@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v5.5.2';
+var APP_VERSION = 'v5.5.3';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -397,12 +397,14 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
           <div onClick={function() { handleTab('taken'); }} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
             <GeriCallLogo />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <TaalToggle />
             <button onClick={function() { setToonZoek(true); }} title={ui('zoek')} style={{ background: 'none', border: 'none', fontSize: 16, cursor: 'pointer', padding: '2px', color: C.tekstMuted }}>&#x1F50D;</button>
             <NotificatieBel rol="zorg" addToast={addToast} />
             <button onClick={function() { setToonInstellingen(true); }} title={ui('inst')} style={{ background: 'none', border: 'none', fontSize: 16, cursor: 'pointer', padding: '2px', color: C.tekstMuted }}>&#x2699;&#xFE0F;</button>
-            <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstSecundair, cursor: 'pointer' }}>{verzorgendeNaam} &#x25BE;</button>
+            <button onClick={function() { setHash(''); }} title={verzorgendeNaam} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}>
+              <div style={{ width: 28, height: 28, borderRadius: 14, background: C.achtergrond, border: '1px solid ' + C.border, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: C.tekstSecundair }}>{profiel.initialen}</div>
+            </button>
           </div>
         </div>
         <div style={{ marginBottom: 12 }}><WeergaveSwitcher /></div>
