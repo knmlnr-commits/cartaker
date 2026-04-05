@@ -123,7 +123,7 @@ window.FotoUpload = function FotoUpload({ label, onUpload, addToast }) {
   );
 };
 
-// ── Taal toggle vlaggetje NL/EN ──
+// ── Taal toggle met mini-vlaggetjes (SVG) ──
 window.TaalToggle = function TaalToggle() {
   var { useState } = React;
   var [taal, setTaal] = useState(window.appTaal || 'nl');
@@ -136,9 +136,28 @@ window.TaalToggle = function TaalToggle() {
     window.location.hash = '';
     setTimeout(function() { window.location.hash = h; }, 10);
   };
+  // NL vlag
+  var nlVlag = React.createElement('svg', { width: 20, height: 14, viewBox: '0 0 20 14', style: { display: 'block' } },
+    React.createElement('rect', { width: 20, height: 14, rx: 2, fill: '#FFFFFF' }),
+    React.createElement('rect', { y: 0, width: 20, height: 4.67, fill: '#AE1C28' }),
+    React.createElement('rect', { y: 4.67, width: 20, height: 4.67, fill: '#FFFFFF' }),
+    React.createElement('rect', { y: 9.33, width: 20, height: 4.67, fill: '#21468B' }),
+    React.createElement('rect', { width: 20, height: 14, rx: 2, fill: 'none', stroke: '#E8E8E8', strokeWidth: 0.5 })
+  );
+  // UK vlag (vereenvoudigd)
+  var enVlag = React.createElement('svg', { width: 20, height: 14, viewBox: '0 0 20 14', style: { display: 'block' } },
+    React.createElement('rect', { width: 20, height: 14, rx: 2, fill: '#012169' }),
+    React.createElement('path', { d: 'M0 0 L20 14 M20 0 L0 14', stroke: '#FFFFFF', strokeWidth: 2.5 }),
+    React.createElement('path', { d: 'M0 0 L20 14 M20 0 L0 14', stroke: '#C8102E', strokeWidth: 1 }),
+    React.createElement('path', { d: 'M10 0 V14 M0 7 H20', stroke: '#FFFFFF', strokeWidth: 4 }),
+    React.createElement('path', { d: 'M10 0 V14 M0 7 H20', stroke: '#C8102E', strokeWidth: 2 }),
+    React.createElement('rect', { width: 20, height: 14, rx: 2, fill: 'none', stroke: '#E8E8E8', strokeWidth: 0.5 })
+  );
+
+  // Toon de vlag van de taal waar je NAARTOE kunt wisselen
   return React.createElement('button', { onClick: wissel, title: taal === 'nl' ? 'Switch to English' : 'Schakel naar Nederlands', style: {
-    background: 'none', border: 'none', fontSize: 16, cursor: 'pointer', padding: '2px 4px', lineHeight: 1,
-  } }, taal === 'nl' ? '\uD83C\uDDEC\uD83C\uDDE7' : '\uD83C\uDDF3\uD83C\uDDF1');
+    background: 'none', border: 'none', cursor: 'pointer', padding: '2px', lineHeight: 1, display: 'flex', alignItems: 'center',
+  } }, taal === 'nl' ? enVlag : nlVlag);
 };
 
 // ── Logo (echte GeriCall afbeelding als base64) ──
