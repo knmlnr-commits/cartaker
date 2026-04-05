@@ -402,25 +402,8 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
 
-    // Bewoner keuze (bovenaan)
-    React.createElement('div', { style: { display: 'flex', gap: 6, marginBottom: 8, overflowX: 'auto' } },
-      bewoners.map(function(b) {
-        var sel = bewoner === b.id;
-        return React.createElement('button', { key: b.id, onClick: function() { setBewoner(b.id); setToonAlle(false); }, style: {
-          padding: '6px 12px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: sel ? 600 : 400, whiteSpace: 'nowrap',
-          background: sel ? C_V.oranje : C_V.kaartWit, color: sel ? '#FFF' : C_V.tekstSecundair,
-        } }, b.roepnaam);
-      })
-    ),
-
-    // Dienst info + EPD knop (onder bewoner selectie)
-    React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 } },
-      React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, dienstLabel + ' \u00B7 ' + verzorgendeNaam + ' \u00B7 ' + bew.roepnaam + ' (Kamer ' + bew.kamer + ')'),
-      w === 'uitgebreid' && React.createElement('button', { onClick: function() { setToonEpd(true); }, style: { background: C_V.blauwLicht, border: '1px solid ' + C_V.blauw, borderRadius: 6, padding: '4px 10px', fontSize: 11, color: C_V.blauw, cursor: 'pointer', fontWeight: 500 } }, 'EPD ' + bew.roepnaam)
-    ),
-
-    // Sectie tabs
-    React.createElement('div', { style: { display: 'flex', gap: 4, marginBottom: 12 } },
+    // Sectie tabs (altijd bovenaan)
+    React.createElement('div', { style: { display: 'flex', gap: 4, marginBottom: 10 } },
       sectieTabs.map(function(st) {
         var sel = sectie === st.id;
         return React.createElement('button', { key: st.id, onClick: function() { setSectie(st.id); }, style: {
@@ -428,6 +411,23 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
           background: sel ? C_V.oranjeLicht : C_V.kaartWit, color: sel ? C_V.oranje : C_V.tekstSecundair,
         } }, st.label);
       })
+    ),
+
+    // Bewoner keuze + EPD (alleen bij rapporteren en historie)
+    (sectie === 'rapportage' || sectie === 'historie') && React.createElement('div', null,
+      React.createElement('div', { style: { display: 'flex', gap: 6, marginBottom: 6, overflowX: 'auto' } },
+        bewoners.map(function(b) {
+          var sel = bewoner === b.id;
+          return React.createElement('button', { key: b.id, onClick: function() { setBewoner(b.id); setToonAlle(false); }, style: {
+            padding: '6px 12px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: sel ? 600 : 400, whiteSpace: 'nowrap',
+            background: sel ? C_V.oranje : C_V.kaartWit, color: sel ? '#FFF' : C_V.tekstSecundair,
+          } }, b.roepnaam);
+        })
+      ),
+      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 } },
+        React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, bew.roepnaam + ' \u00B7 Kamer ' + bew.kamer),
+        w === 'uitgebreid' && React.createElement('button', { onClick: function() { setToonEpd(true); }, style: { background: C_V.blauwLicht, border: '1px solid ' + C_V.blauw, borderRadius: 6, padding: '4px 10px', fontSize: 11, color: C_V.blauw, cursor: 'pointer', fontWeight: 500 } }, 'EPD')
+      )
     ),
 
     // ═══ RAPPORTEREN (SOEP) ═══
