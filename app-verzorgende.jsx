@@ -402,18 +402,7 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
 
-    // Dienst header
-    React.createElement(Card, { style: { background: C_V.oranjeLicht, border: 'none', padding: 12 } },
-      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
-        React.createElement('div', null,
-          React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.oranjeDonker } }, dienstLabel),
-          React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, verzorgendeNaam + ' \u00B7 ' + bewoners.length + ' bewoners')
-        ),
-        w === 'uitgebreid' && React.createElement('button', { onClick: function() { setToonEpd(true); }, style: { background: C_V.blauwLicht, border: '1px solid ' + C_V.blauw, borderRadius: 6, padding: '4px 10px', fontSize: 11, color: C_V.blauw, cursor: 'pointer', fontWeight: 500 } }, 'EPD')
-      )
-    ),
-
-    // Bewoner keuze
+    // Bewoner keuze (bovenaan)
     React.createElement('div', { style: { display: 'flex', gap: 6, marginBottom: 8, overflowX: 'auto' } },
       bewoners.map(function(b) {
         var sel = bewoner === b.id;
@@ -422,6 +411,12 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
           background: sel ? C_V.oranje : C_V.kaartWit, color: sel ? '#FFF' : C_V.tekstSecundair,
         } }, b.roepnaam);
       })
+    ),
+
+    // Dienst info + EPD knop (onder bewoner selectie)
+    React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 } },
+      React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, dienstLabel + ' \u00B7 ' + verzorgendeNaam + ' \u00B7 ' + bew.roepnaam + ' (Kamer ' + bew.kamer + ')'),
+      w === 'uitgebreid' && React.createElement('button', { onClick: function() { setToonEpd(true); }, style: { background: C_V.blauwLicht, border: '1px solid ' + C_V.blauw, borderRadius: 6, padding: '4px 10px', fontSize: 11, color: C_V.blauw, cursor: 'pointer', fontWeight: 500 } }, 'EPD ' + bew.roepnaam)
     ),
 
     // Sectie tabs
