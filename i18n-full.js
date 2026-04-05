@@ -289,6 +289,11 @@ window.uiVertalingen = {
   collega: { nl: "Collega's op dezelfde dienst", en: 'Colleagues on same shift' },
   geenCollega: { nl: 'Geen collega ingepland', en: 'No colleague scheduled' },
 
+  openDiensten: { nl: 'Beschikbare diensten', en: 'Available shifts' },
+  aanmelden: { nl: 'Aanmelden', en: 'Sign up' },
+  aangemeld: { nl: 'Aangemeld!', en: 'Signed up!' },
+  locatie: { nl: 'Locatie', en: 'Location' },
+
   // ── Algemeen ──
   ok: { nl: 'OK', en: 'OK' },
   annuleer: { nl: 'Annuleer', en: 'Cancel' },

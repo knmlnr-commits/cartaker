@@ -395,6 +395,15 @@ window.epdGegevens = {
 // Backward compat: patient = eerste bewoner
 window.patient = window.bewoners[0];
 
+// ── Open diensten (niet ingevuld, beschikbaar om te claimen) ──
+window.openDiensten = [
+  { id: 'od1', dag: 'Donderdag', datum: '3 apr', dienst: 'Avond', tijd: '15:00 - 23:00', afdeling: 'Zonnehof', locatie: 'Hoofdstraat 12, Groningen', bewoners: ['jansen', 'de_groot'], reden: 'Ziekmelding Kevin R.' },
+  { id: 'od2', dag: 'Zaterdag', datum: '5 apr', dienst: 'Middag', tijd: '11:00 - 19:00', afdeling: 'Zonnehof', locatie: 'Hoofdstraat 12, Groningen', bewoners: ['jansen', 'de_groot', 'van_dam', 'visser'], reden: 'Vacature' },
+  { id: 'od3', dag: 'Zondag', datum: '6 apr', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Zonnehof', locatie: 'Hoofdstraat 12, Groningen', bewoners: ['jansen', 'de_groot', 'van_dam', 'visser'], reden: 'Vacature' },
+  { id: 'od4', dag: 'Maandag', datum: '7 apr', dienst: 'Middag', tijd: '11:00 - 19:00', afdeling: 'De Linde', locatie: 'Parkweg 8, Haren', bewoners: [], reden: 'Extra inzet nodig' },
+  { id: 'od5', dag: 'Woensdag', datum: '9 apr', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Het Baken', locatie: 'Kerkstraat 22, Hoogezand', bewoners: [], reden: 'Ziekmelding' },
+];
+
 // ── Dienstrooster per medewerker ──
 window.dienstrooster = {
   annemiek: [

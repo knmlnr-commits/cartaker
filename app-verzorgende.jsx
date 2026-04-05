@@ -508,6 +508,40 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
             )
           );
         })
+      ),
+
+      // Open diensten
+      window.openDiensten && window.openDiensten.length > 0 && React.createElement('div', null,
+        React.createElement(SectionTitle, null, ui('openDiensten') + ' (' + window.openDiensten.length + ')'),
+        window.openDiensten.map(function(od) {
+          // Check of deze dag conflicteert met eigen rooster
+          var conflict = mijnRooster.some(function(d) { return d.datum === od.datum && d.dienst; });
+          var bewNamen = [];
+          if (od.bewoners) {
+            od.bewoners.forEach(function(bid) {
+              var b = window.bewoners.find(function(bw) { return bw.id === bid; });
+              if (b) bewNamen.push(b.roepnaam);
+            });
+          }
+          return React.createElement(Card, { key: od.id, style: { padding: 12, borderLeft: '3px solid ' + C_V.oranje } },
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' } },
+              React.createElement('div', { style: { flex: 1 } },
+                React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, od.dag + ' ' + od.datum + ' \u00B7 ' + od.dienst),
+                React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, od.tijd),
+                React.createElement('div', { style: { fontSize: 12, color: C_V.oranje, fontWeight: 500, marginTop: 2 } }, od.afdeling),
+                React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, od.locatie),
+                bewNamen.length > 0 && React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted, marginTop: 2 } }, bewNamen.join(', ')),
+                React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted, fontStyle: 'italic', marginTop: 2 } }, od.reden)
+              ),
+              !conflict
+                ? React.createElement('button', { onClick: function() { addToast(ui('aangemeld'), 'success'); }, style: {
+                    background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8,
+                    padding: '8px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
+                  } }, ui('aanmelden'))
+                : React.createElement('span', { style: { fontSize: 10, color: C_V.tekstMuted, background: C_V.achtergrond, padding: '4px 8px', borderRadius: 4 } }, 'Bezet')
+            )
+          );
+        })
       )
     ),
 
