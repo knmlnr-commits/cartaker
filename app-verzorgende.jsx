@@ -36,21 +36,23 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner,
       )
     ),
 
-    // Alerts bovenaan
+    // Alerts bovenaan — klik gaat naar bewoner met consult open
     alerts.length > 0 && React.createElement('div', { id: 'wijk-alerts' },
       alerts.map(function(b) {
         var isU2 = b.alert === 'U2';
-        return React.createElement('div', { key: b.id + '_alert', onClick: function() { onSelectBewoner(b); },
-          style: { display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', marginBottom: 6,
-            background: isU2 ? C_V.roodLicht : C_V.oranjeLicht, borderRadius: 10, cursor: 'pointer',
-            border: '1px solid ' + (isU2 ? C_V.rood : C_V.oranje) }
+        return React.createElement('div', { key: b.id + '_alert', onClick: function() { onSelectBewoner(b, b.openConsulten && b.openConsulten.length > 0 ? 'taken' : 'taken'); },
+          style: { display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', marginBottom: 6,
+            background: C_V.kaartWit, borderRadius: 12, cursor: 'pointer',
+            border: '1px solid ' + C_V.border,
+            borderLeft: '4px solid ' + (isU2 ? C_V.rood : C_V.oranje) }
         },
-          React.createElement('span', { style: { fontSize: 16 } }, '\u26A0\uFE0F'),
           React.createElement('div', { style: { flex: 1 } },
-            React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: isU2 ? C_V.rood : C_V.oranje } }, b.naam + ' \u00B7 Kamer ' + b.kamer),
-            React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, b.alertTekst)
+            React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, b.roepnaam),
+            React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, b.alertTekst),
+            React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, ui('kamer') + ' ' + b.kamer)
           ),
-          React.createElement(Badge, { label: b.alert, color: isU2 ? C_V.rood : C_V.oranje, bgColor: isU2 ? C_V.roodLicht : C_V.oranjeLicht })
+          React.createElement(Badge, { label: b.alert, color: isU2 ? C_V.rood : C_V.oranje, bgColor: isU2 ? C_V.roodLicht : C_V.oranjeLicht }),
+          React.createElement('span', { style: { fontSize: 14, color: C_V.tekstMuted } }, '\u25B6')
         );
       })
     ),
@@ -63,10 +65,10 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner,
       // IoT quick glance: zoek afwijkingen
       var iotWarnings = Object.entries(b.iot).filter(function(e) { return e[1].status === 'let_op'; });
 
-      return React.createElement(Card, { key: b.id, style: { cursor: 'pointer', padding: 12 }, onClick: function() { onSelectBewoner(b); } },
+      return React.createElement(Card, { key: b.id, style: { cursor: 'pointer', padding: '14px 12px' }, onClick: function() { onSelectBewoner(b); } },
         React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 12 } },
           React.createElement('div', { style: {
-            width: 44, height: 44, borderRadius: 22, background: C_V.achtergrond,
+            width: 44, height: 44, borderRadius: 12, background: C_V.achtergrond,
             display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700,
             color: C_V.tekstSecundair, flexShrink: 0,
             border: b.alert ? '2px solid ' + (b.alert === 'U2' ? C_V.rood : C_V.oranje) : '1px solid ' + C_V.border,
@@ -80,13 +82,13 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner,
               )
             ),
             React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair, marginBottom: 4 } }, b.diagnose.substring(0, 40) + (b.diagnose.length > 40 ? '...' : '')),
-            // Taken progress
-            React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
+            // Taken progress — klik → taken tab
+            React.createElement('div', { onClick: function(e) { e.stopPropagation(); onSelectBewoner(b, 'taken'); }, style: { display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' } },
               React.createElement('div', { style: { flex: 1 } }, React.createElement(ProgressBar, { percentage: pct, height: 4 })),
-              React.createElement('span', { style: { fontSize: 11, fontWeight: 600, color: pct === 100 ? C_V.groen : C_V.tekstMuted } }, gedaan + '/' + b.takenTotaal)
+              React.createElement('span', { style: { fontSize: 11, fontWeight: 600, color: pct === 100 ? C_V.groen : C_V.tekstMuted } }, gedaan + '/' + b.takenTotaal + ' ' + ui('taken'))
             ),
-            // IoT warnings (alleen uitgebreid)
-            w === 'uitgebreid' && iotWarnings.length > 0 && React.createElement('div', { style: { display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' } },
+            // IoT warnings — klik → vitalen tab (alleen uitgebreid)
+            w === 'uitgebreid' && iotWarnings.length > 0 && React.createElement('div', { onClick: function(e) { e.stopPropagation(); onSelectBewoner(b, 'vitalen'); }, style: { display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap', cursor: 'pointer' } },
               iotWarnings.map(function(w) {
                 return React.createElement('span', { key: w[0], style: { fontSize: 10, background: C_V.achtergrond, color: C_V.tekstSecundair, padding: '1px 6px', borderRadius: 4, fontWeight: 400 } },
                   w[0] === 'saturatie' ? 'SpO2 ' + w[1].waarde + '%' : w[0] === 'slaap' ? 'Slaap \u2193' : w[0] === 'gewicht' ? 'Gewicht \u2191' : w[0] === 'hartslag' ? 'Pols \u2191' : w[0] === 'bloeddruk' ? 'RR \u2191' : w[0]);
