@@ -279,6 +279,16 @@ window.uiVertalingen = {
   akkoord: { nl: 'Akkoord', en: 'Agree' },
   meerInfo: { nl: 'Meer info', en: 'More info' },
 
+  // ── Rooster ──
+  rooster: { nl: 'Rooster', en: 'Schedule' },
+  vandaagDienst: { nl: 'Vandaag', en: 'Today' },
+  geenDienst: { nl: 'Vrij', en: 'Off' },
+  dienstWeek: { nl: 'Deze week', en: 'This week' },
+  volgendeWeek: { nl: 'Volgende week', en: 'Next week' },
+  uurTot: { nl: 'tot', en: 'to' },
+  collega: { nl: "Collega's op dezelfde dienst", en: 'Colleagues on same shift' },
+  geenCollega: { nl: 'Geen collega ingepland', en: 'No colleague scheduled' },
+
   // ── Algemeen ──
   ok: { nl: 'OK', en: 'OK' },
   annuleer: { nl: 'Annuleer', en: 'Cancel' },

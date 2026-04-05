@@ -406,10 +406,16 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
     setSubjectief(''); setObjectief(''); setEvaluatie(''); setPlan('');
   };
 
+  // Rooster voor dit profiel
+  var profielId = null;
+  window.zorgprofielen.forEach(function(p) { if (p.naam === verzorgendeNaam) profielId = p.id; });
+  var mijnRooster = (window.dienstrooster && profielId && window.dienstrooster[profielId]) || [];
+
   var sectieTabs = [
+    { id: 'rooster', label: ui('rooster') },
     { id: 'rapportage', label: ui('rapporteren') },
     { id: 'overdracht', label: ui('overdracht') },
-    { id: 'historie', label: 'Historie (' + alleRapportages.length + ')' },
+    { id: 'historie', label: ui('historie') + ' (' + alleRapportages.length + ')' },
   ];
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
@@ -423,6 +429,86 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
           background: sel ? C_V.oranjeLicht : C_V.kaartWit, color: sel ? C_V.oranje : C_V.tekstSecundair,
         } }, st.label);
       })
+    ),
+
+    // ═══ ROOSTER ═══
+    sectie === 'rooster' && React.createElement('div', null,
+      // Vandaag highlight
+      (function() {
+        var vandaag = mijnRooster[0];
+        if (!vandaag) return React.createElement('div', { style: { fontSize: 13, color: C_V.tekstMuted, textAlign: 'center', padding: '20px 0' } }, ui('geenDienst'));
+        if (!vandaag.dienst) return React.createElement(Card, { style: { padding: 16, textAlign: 'center' } },
+          React.createElement('div', { style: { fontSize: 16, fontWeight: 700, color: C_V.groen } }, ui('vandaagDienst')),
+          React.createElement('div', { style: { fontSize: 14, color: C_V.tekstSecundair, marginTop: 4 } }, ui('geenDienst'))
+        );
+        return React.createElement(Card, { style: { padding: 16, background: C_V.oranjeLicht, border: 'none' } },
+          React.createElement('div', { style: { fontSize: 12, fontWeight: 600, color: C_V.oranjeDonker } }, ui('vandaagDienst')),
+          React.createElement('div', { style: { fontSize: 18, fontWeight: 700, color: C_V.tekstPrimair, marginTop: 2 } }, vandaag.dienst + 'dienst'),
+          React.createElement('div', { style: { fontSize: 14, color: C_V.tekstSecundair, marginTop: 2 } }, vandaag.tijd),
+          React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginTop: 2 } }, vandaag.afdeling + ' \u00B7 ' + (vandaag.bewoners ? vandaag.bewoners.length : 0) + ' ' + ui('bewoners').toLowerCase()),
+          // Collega's op dezelfde dienst
+          (function() {
+            var collega = [];
+            Object.keys(window.dienstrooster || {}).forEach(function(pid) {
+              if (pid === profielId) return;
+              var r = window.dienstrooster[pid][0];
+              if (r && r.dienst === vandaag.dienst) {
+                var p = window.zorgprofielen.find(function(z) { return z.id === pid; });
+                if (p) collega.push(p);
+              }
+            });
+            if (collega.length === 0) return null;
+            return React.createElement('div', { style: { marginTop: 8, fontSize: 12, color: C_V.tekstSecundair } },
+              ui('collega') + ': ',
+              collega.map(function(c) { return c.naam; }).join(', ')
+            );
+          })()
+        );
+      })(),
+
+      // Week overzicht
+      React.createElement(SectionTitle, null, ui('dienstWeek')),
+      mijnRooster.slice(0, 7).map(function(dag, i) {
+        var isVandaag = i === 0;
+        var heeftDienst = !!dag.dienst;
+        var bewNamen = [];
+        if (dag.bewoners) {
+          dag.bewoners.forEach(function(bid) {
+            var b = window.bewoners.find(function(bw) { return bw.id === bid; });
+            if (b) bewNamen.push(b.roepnaam);
+          });
+        }
+        return React.createElement(Card, { key: i, style: { padding: 10, opacity: heeftDienst ? 1 : 0.6, borderLeft: isVandaag ? '3px solid ' + C_V.oranje : 'none' } },
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+            React.createElement('div', null,
+              React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, dag.dag + ' ' + dag.datum),
+              heeftDienst
+                ? React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, dag.dienst + ' \u00B7 ' + dag.tijd)
+                : React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted } }, ui('geenDienst'))
+            ),
+            heeftDienst && React.createElement('div', { style: { textAlign: 'right' } },
+              React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, dag.afdeling),
+              bewNamen.length > 0 && React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, bewNamen.join(', '))
+            )
+          )
+        );
+      }),
+
+      // Volgende week
+      mijnRooster.length > 7 && React.createElement('div', null,
+        React.createElement(SectionTitle, null, ui('volgendeWeek')),
+        mijnRooster.slice(7).map(function(dag, i) {
+          var heeftDienst = !!dag.dienst;
+          return React.createElement(Card, { key: 'w2_' + i, style: { padding: 10, opacity: heeftDienst ? 1 : 0.5 } },
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+              React.createElement('span', { style: { fontSize: 13, fontWeight: 600, color: C_V.tekstPrimair } }, dag.dag + ' ' + dag.datum),
+              heeftDienst
+                ? React.createElement('span', { style: { fontSize: 12, color: C_V.tekstSecundair } }, dag.dienst + ' \u00B7 ' + dag.tijd)
+                : React.createElement('span', { style: { fontSize: 12, color: C_V.tekstMuted } }, ui('geenDienst'))
+            )
+          );
+        })
+      )
     ),
 
     // Bewoner keuze + EPD (alleen bij rapporteren en historie)

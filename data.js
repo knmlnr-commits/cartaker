@@ -395,6 +395,58 @@ window.epdGegevens = {
 // Backward compat: patient = eerste bewoner
 window.patient = window.bewoners[0];
 
+// ── Dienstrooster per medewerker ──
+window.dienstrooster = {
+  annemiek: [
+    { dag: 'Maandag', datum: '31 mrt', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot','van_dam','visser'] },
+    { dag: 'Dinsdag', datum: '1 apr', dienst: null },
+    { dag: 'Woensdag', datum: '2 apr', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot','van_dam','visser'] },
+    { dag: 'Donderdag', datum: '3 apr', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot','van_dam','visser'] },
+    { dag: 'Vrijdag', datum: '4 apr', dienst: null },
+    { dag: 'Zaterdag', datum: '5 apr', dienst: null },
+    { dag: 'Zondag', datum: '6 apr', dienst: null },
+    { dag: 'Maandag', datum: '7 apr', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot','van_dam','visser'] },
+    { dag: 'Dinsdag', datum: '8 apr', dienst: 'Middag', tijd: '15:00 - 23:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot'] },
+    { dag: 'Woensdag', datum: '9 apr', dienst: null },
+  ],
+  sandra: [
+    { dag: 'Maandag', datum: '31 mrt', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot','van_dam','visser'] },
+    { dag: 'Dinsdag', datum: '1 apr', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot','van_dam','visser'] },
+    { dag: 'Woensdag', datum: '2 apr', dienst: null },
+    { dag: 'Donderdag', datum: '3 apr', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot','van_dam','visser'] },
+    { dag: 'Vrijdag', datum: '4 apr', dienst: 'Middag', tijd: '15:00 - 23:00', afdeling: 'Zonnehof', bewoners: ['jansen','visser'] },
+    { dag: 'Zaterdag', datum: '5 apr', dienst: null },
+    { dag: 'Zondag', datum: '6 apr', dienst: null },
+    { dag: 'Maandag', datum: '7 apr', dienst: null },
+    { dag: 'Dinsdag', datum: '8 apr', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot','van_dam','visser'] },
+    { dag: 'Woensdag', datum: '9 apr', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot','van_dam','visser'] },
+  ],
+  kevin: [
+    { dag: 'Maandag', datum: '31 mrt', dienst: 'Avond', tijd: '15:00 - 23:00', afdeling: 'Zonnehof', bewoners: ['jansen','van_dam'] },
+    { dag: 'Dinsdag', datum: '1 apr', dienst: null },
+    { dag: 'Woensdag', datum: '2 apr', dienst: 'Avond', tijd: '15:00 - 23:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot'] },
+    { dag: 'Donderdag', datum: '3 apr', dienst: null },
+    { dag: 'Vrijdag', datum: '4 apr', dienst: 'Avond', tijd: '15:00 - 23:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot','van_dam','visser'] },
+    { dag: 'Zaterdag', datum: '5 apr', dienst: null },
+    { dag: 'Zondag', datum: '6 apr', dienst: null },
+    { dag: 'Maandag', datum: '7 apr', dienst: 'Avond', tijd: '15:00 - 23:00', afdeling: 'Zonnehof', bewoners: ['jansen','van_dam'] },
+    { dag: 'Dinsdag', datum: '8 apr', dienst: null },
+    { dag: 'Woensdag', datum: '9 apr', dienst: 'Avond', tijd: '15:00 - 23:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot'] },
+  ],
+  priya: [
+    { dag: 'Maandag', datum: '31 mrt', dienst: null },
+    { dag: 'Dinsdag', datum: '1 apr', dienst: 'Avond', tijd: '15:00 - 23:00', afdeling: 'Zonnehof', bewoners: ['de_groot','visser'] },
+    { dag: 'Woensdag', datum: '2 apr', dienst: null },
+    { dag: 'Donderdag', datum: '3 apr', dienst: null },
+    { dag: 'Vrijdag', datum: '4 apr', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot','van_dam','visser'] },
+    { dag: 'Zaterdag', datum: '5 apr', dienst: 'Ochtend', tijd: '07:00 - 15:00', afdeling: 'Zonnehof', bewoners: ['jansen','de_groot','van_dam','visser'] },
+    { dag: 'Zondag', datum: '6 apr', dienst: null },
+    { dag: 'Maandag', datum: '7 apr', dienst: null },
+    { dag: 'Dinsdag', datum: '8 apr', dienst: null },
+    { dag: 'Woensdag', datum: '9 apr', dienst: null },
+  ],
+};
+
 // ── Notificaties per rol ──
 window.notificaties = {
   zorg: [
