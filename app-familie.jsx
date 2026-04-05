@@ -50,13 +50,13 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, on
     !isPatient && React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 } },
       React.createElement(Card, { style: { padding: 12, textAlign: 'center', cursor: 'pointer' }, onClick: function() { if (onNavigeer) onNavigeer('week'); } },
         React.createElement('div', { style: { fontSize: 22, fontWeight: 700, color: C_F.oranje } }, openSlots),
-        React.createElement('div', { style: { fontSize: 11, color: C_F.tekstMuted } }, 'Open bezoekslots'),
-        React.createElement('div', { style: { fontSize: 10, color: C_F.tekstSecundair } }, 'deze week')
+        React.createElement('div', { style: { fontSize: 11, color: C_F.tekstMuted } }, ui('openBezoekslots')),
+        React.createElement('div', { style: { fontSize: 10, color: C_F.tekstSecundair } }, ui('dezeWeek'))
       ),
       React.createElement(Card, { style: { padding: 12, textAlign: 'center', cursor: 'pointer' }, onClick: function() { if (onNavigeer) onNavigeer('berichten'); } },
         React.createElement('div', { style: { fontSize: 22, fontWeight: 700, color: C_F.groen } }, aantalBerichten),
-        React.createElement('div', { style: { fontSize: 11, color: C_F.tekstMuted } }, 'Familieberichten'),
-        React.createElement('div', { style: { fontSize: 10, color: C_F.tekstSecundair } }, 'vandaag')
+        React.createElement('div', { style: { fontSize: 11, color: C_F.tekstMuted } }, ui('familieberichten')),
+        React.createElement('div', { style: { fontSize: 10, color: C_F.tekstSecundair } }, ui('vandaag'))
       )
     ),
 
@@ -76,8 +76,8 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, on
     ),
 
     // Rapportages (alleen lijn1 + patient)
-    t.rapportages && React.createElement(SectionTitle, null, isPatient ? 'Wat zeggen ze over mij?' : 'Hoe was het?'),
-    t.rapportages && zichtbareRapportages.length === 0 && React.createElement('div', { style: { fontSize: 13, color: C_F.tekstMuted, textAlign: 'center', padding: '16px 0' } }, 'Nog geen rapportages beschikbaar'),
+    t.rapportages && React.createElement(SectionTitle, null, isPatient ? 'Wat zeggen ze over mij?' : ui('hoeWasHet')),
+    t.rapportages && zichtbareRapportages.length === 0 && React.createElement('div', { style: { fontSize: 13, color: C_F.tekstMuted, textAlign: 'center', padding: '16px 0' } }, ui('nogGeenRapportages')),
     t.rapportages && zichtbareRapportages.map(function(r, i) {
       return React.createElement(Card, { key: i, style: { padding: 12, borderLeft: '3px solid ' + (r.isFamilie ? C_F.groen : C_F.oranje) } },
         React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 4 } },
@@ -98,12 +98,12 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, on
 
     // Re-ablement
     t.reablement && !isPatient && React.createElement('div', null,
-      React.createElement(SectionTitle, null, 'Re-ablement traject'),
+      React.createElement(SectionTitle, null, ui('reablementTraject')),
       React.createElement(Card, null,
         React.createElement('div', { style: { fontSize: 15, fontWeight: 600, color: C_F.tekstPrimair, marginBottom: 4 } }, p.reablement.fase),
         React.createElement('div', { style: { fontSize: 13, color: C_F.tekstSecundair, marginBottom: 8 } }, 'Co\u00F6rdinator: ' + p.reablement.coordinatorNaam),
         React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 4 } },
-          React.createElement('span', { style: { fontSize: 12, color: C_F.tekstMuted } }, 'Voortgang'),
+          React.createElement('span', { style: { fontSize: 12, color: C_F.tekstMuted } }, ui('voortgang')),
           React.createElement('span', { style: { fontSize: 12, fontWeight: 700, color: C_F.oranje } }, p.reablement.voortgang + '%')
         ),
         React.createElement(ProgressBar, { percentage: p.reablement.voortgang }),
@@ -114,8 +114,8 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, on
 
     // Behandelplan (alleen uitgebreid)
     w === 'uitgebreid' && t.behandelplan && !isPatient && React.createElement('div', null,
-      React.createElement(SectionTitle, null, 'Behandelplan'),
-      React.createElement('div', { style: { fontSize: 12, color: C_F.tekstMuted, marginBottom: 8 } }, 'Tik voor toelichting'),
+      React.createElement(SectionTitle, null, ui('behandelplan')),
+      React.createElement('div', { style: { fontSize: 12, color: C_F.tekstMuted, marginBottom: 8 } }, ui('tikVoorToelichting')),
       p.behandelplan.map(function(item, i) {
         var actueel = item.status === 'Actueel';
         var isOpen = toonDetails === i;
@@ -123,10 +123,10 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, on
           React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
             React.createElement('div', null,
               React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_F.tekstPrimair } }, item.onderdeel),
-              React.createElement('div', { style: { fontSize: 11, color: C_F.tekstMuted } }, 'Bijgewerkt: ' + item.bijgewerkt)
+              React.createElement('div', { style: { fontSize: 11, color: C_F.tekstMuted } }, ui('bijgewerkt') + ': ' + item.bijgewerkt)
             ),
             React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
-              React.createElement(Badge, { label: actueel ? 'Op orde' : 'Aandacht', color: actueel ? C_F.groen : C_F.oranje, bgColor: actueel ? C_F.groenLicht : C_F.oranjeLicht }),
+              React.createElement(Badge, { label: actueel ? ui('opOrde') : ui('aandacht'), color: actueel ? C_F.groen : C_F.oranje, bgColor: actueel ? C_F.groenLicht : C_F.oranjeLicht }),
               React.createElement('span', { style: { fontSize: 12, color: C_F.tekstMuted, transition: 'transform 0.2s', transform: isOpen ? 'rotate(90deg)' : 'none' } }, '\u25B6')
             )
           ),
@@ -138,14 +138,14 @@ window.FamilieOverzicht = function FamilieOverzicht({ lid, addToast, toegang, on
 
     // Open consult (alleen uitgebreid)
     w === 'uitgebreid' && t.consulten && p.openConsulten.length > 0 && React.createElement('div', null,
-      React.createElement(SectionTitle, null, isPatient ? 'Lopende melding' : 'Lopende meldingen'),
+      React.createElement(SectionTitle, null, isPatient ? 'Lopende melding' : ui('lopendeMeldingenFam')),
       p.openConsulten.map(function(c) {
         var isU2 = c.urgentie.includes('U2');
         return React.createElement(Card, { key: c.id, style: { borderLeft: '3px solid ' + (isU2 ? C_F.oranje : C_F.blauw), cursor: 'pointer' }, onClick: function() { setOpenConsult(c); } },
           React.createElement('div', { style: { fontSize: 13, color: C_F.tekstSecundair, marginBottom: 4 } },
             isPatient ? 'Er is een melding gedaan' : 'Er is een medische melding gedaan voor ' + p.roepnaam),
           React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
-            React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_F.tekstPrimair } }, 'Status: ' + c.status),
+            React.createElement('span', { style: { fontSize: 14, fontWeight: 600, color: C_F.tekstPrimair } }, ui('status') + ': ' + c.status),
             React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
               React.createElement(Badge, { label: c.urgentie, color: isU2 ? C_F.oranje : C_F.blauw, bgColor: isU2 ? C_F.oranjeLicht : C_F.blauwLicht }),
               React.createElement('span', { style: { fontSize: 12, color: C_F.tekstMuted } }, '\u25B6')
@@ -193,11 +193,11 @@ window.FamilieWeekplan = function FamilieWeekplan({ lid, addToast }) {
   });
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
-    React.createElement(SectionTitle, null, isPatient ? 'Wie komt er deze week?' : 'Weekplanning'),
+    React.createElement(SectionTitle, null, isPatient ? 'Wie komt er deze week?' : ui('weekplanning')),
 
     // Familie verdeling
     !isPatient && Object.keys(familieStats).length > 0 && React.createElement(Card, { style: { padding: 12 } },
-      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_F.tekstSecundair, marginBottom: 8 } }, 'Verdeling deze week'),
+      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_F.tekstSecundair, marginBottom: 8 } }, ui('verdelingDezeWeek')),
       Object.entries(familieStats).map(function(entry) {
         var matchLid = window.familieleden.find(function(f) { return entry[0].includes(f.roepnaam); });
         var kleur = matchLid ? matchLid.kleur : C_F.tekstMuted;
@@ -224,7 +224,7 @@ window.FamilieWeekplan = function FamilieWeekplan({ lid, addToast }) {
             React.createElement('span', { style: { fontSize: 13, color: C_F.tekstMuted, marginLeft: 8 } }, dag.datum)
           ),
           React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
-            heeftOpenSlot && React.createElement('span', { style: { fontSize: 10, background: C_F.oranjeLicht, color: C_F.oranje, padding: '2px 6px', borderRadius: 4, fontWeight: 600 } }, 'Help nodig'),
+            heeftOpenSlot && React.createElement('span', { style: { fontSize: 10, background: C_F.oranjeLicht, color: C_F.oranje, padding: '2px 6px', borderRadius: 4, fontWeight: 600 } }, ui('helpNodig')),
             React.createElement('span', { style: { fontSize: 12, color: C_F.tekstMuted, transition: 'transform 0.2s', transform: isOpen ? 'rotate(90deg)' : 'none' } }, '\u25B6')
           )
         ),
@@ -245,12 +245,12 @@ window.FamilieWeekplan = function FamilieWeekplan({ lid, addToast }) {
                 React.createElement('div', { style: { fontSize: 13, fontWeight: 500, color: C_F.tekstPrimair } },
                   s.periode + ': ' + (isOpenSlot ? 'Niemand ingepland' : s.wie) + (isMijn ? ' (jij)' : '')),
                 React.createElement('div', { style: { fontSize: 12, color: C_F.tekstMuted } }, s.taak),
-                s.status === 'onder voorbehoud' && React.createElement('span', { style: { fontSize: 10, color: C_F.oranje, fontWeight: 500 } }, 'Nog niet zeker')
+                s.status === 'onder voorbehoud' && React.createElement('span', { style: { fontSize: 10, color: C_F.oranje, fontWeight: 500 } }, ui('nogNietZeker'))
               ),
               isOpenSlot && !isPatient && React.createElement('button', {
                 onClick: function(e) { e.stopPropagation(); claimSlot(i, j); },
                 style: { background: C_F.groen, color: '#FFF', border: 'none', borderRadius: 6, padding: '6px 10px', fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }
-              }, 'Ik kom'),
+              }, ui('ikKom')),
               !isOpenSlot && isMijn && React.createElement(AgendaKnop, { titel: s.taak, datum: dag.datum, addToast: addToast })
             );
           })
@@ -313,7 +313,7 @@ window.FamilieBerichten = function FamilieBerichten({ lid, addToast }) {
 
     // Berichten
     React.createElement('div', { style: { marginBottom: 8 } },
-      berichten.length === 0 && React.createElement('div', { style: { fontSize: 14, color: C_F.tekstMuted, textAlign: 'center', padding: '32px 0' } }, 'Nog geen berichten. Stuur het eerste bericht!'),
+      berichten.length === 0 && React.createElement('div', { style: { fontSize: 14, color: C_F.tekstMuted, textAlign: 'center', padding: '32px 0' } }, ui('nogGeenBerichten')),
       berichten.map(function(b) {
         var afzender = getLid(b.van);
         var isVanMij = b.van === lid.id;
@@ -359,7 +359,7 @@ window.FamilieBerichten = function FamilieBerichten({ lid, addToast }) {
         React.createElement('input', {
           value: nieuw,
           onChange: function(e) { setNieuw(e.target.value); },
-          placeholder: isPatient ? 'Schrijf naar familie...' : 'Bericht aan familie...',
+          placeholder: isPatient ? 'Schrijf naar familie...' : ui('berichtAanFamilie'),
           onKeyDown: function(e) { if (e.key === 'Enter') verstuur(); },
           style: { flex: 1, padding: '12px 14px', borderRadius: 24, border: '1px solid ' + C_F.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", outline: 'none', color: C_F.tekstPrimair }
         }),

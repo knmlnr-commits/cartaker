@@ -24,15 +24,15 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner,
     React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 } },
       React.createElement(Card, { style: { padding: 10, textAlign: 'center', cursor: 'pointer' }, onClick: function() { scrollNaar('wijk-bewoners'); } },
         React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: C_V.oranje } }, bewoners.length),
-        React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, 'Bewoners')
+        React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, ui('bewoners'))
       ),
       React.createElement(Card, { style: { padding: 10, textAlign: 'center', cursor: 'pointer' }, onClick: function() { scrollNaar('wijk-bewoners'); } },
         React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: C_V.tekstPrimair } }, totaalOpen),
-        React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, 'Taken open')
+        React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, ui('takenOpen'))
       ),
       React.createElement(Card, { style: { padding: 10, textAlign: 'center', cursor: alerts.length > 0 ? 'pointer' : 'default' }, onClick: function() { if (alerts.length > 0) scrollNaar('wijk-alerts'); } },
         React.createElement('div', { style: { fontSize: 20, fontWeight: 700, color: alerts.length > 0 ? C_V.rood : C_V.groen } }, alerts.length),
-        React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, 'Alerts')
+        React.createElement('div', { style: { fontSize: 10, color: C_V.tekstMuted } }, ui('alerts'))
       )
     ),
 
@@ -56,7 +56,7 @@ window.VerzorgendeTaken = function VerzorgendeTaken({ addToast, onSelectBewoner,
     ),
 
     // Bewoners lijst
-    React.createElement('div', { id: 'wijk-bewoners' }, React.createElement(SectionTitle, null, 'Mijn bewoners')),
+    React.createElement('div', { id: 'wijk-bewoners' }, React.createElement(SectionTitle, null, ui('mijnBewonersVol'))),
     bewoners.map(function(b) {
       var gedaan = b.takenTotaal - b.takenOpen;
       var pct = Math.round(gedaan / b.takenTotaal * 100);
@@ -156,9 +156,9 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
 
   var detailTabs = [
     { id: 'taken', label: 'Taken (' + gedaan + '/' + taken.length + ')', show: true },
-    { id: 'vitalen', label: 'Vitalen', show: w === 'uitgebreid' && tg.iot },
-    { id: 'notities', label: 'Notities', show: true },
-    { id: 'dossier', label: 'Dossier', show: w === 'uitgebreid' && tg.dossier },
+    { id: 'vitalen', label: ui('vitalen'), show: w === 'uitgebreid' && tg.iot },
+    { id: 'notities', label: ui('notities'), show: true },
+    { id: 'dossier', label: ui('dossier'), show: w === 'uitgebreid' && tg.dossier },
   ].filter(function(dt) { return dt.show; });
 
   return React.createElement('div', { style: { animation: 'slideInRight 0.3s ease' } },
@@ -274,7 +274,7 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
         React.createElement('textarea', {
           value: nieuweNotitie,
           onChange: function(e) { setNieuweNotitie(e.target.value); },
-          placeholder: 'Snelle notitie...',
+          placeholder: ui('snelleNotitie'),
           style: { width: '100%', minHeight: 60, padding: 10, borderRadius: 8, border: '1px solid ' + C_V.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", resize: 'vertical', outline: 'none', color: C_V.tekstPrimair, marginBottom: 8 }
         }),
         React.createElement('div', { style: { display: 'flex', gap: 6, marginBottom: 6 } },
@@ -283,9 +283,9 @@ window.BewonerDetail = function BewonerDetail({ bewoner, addToast, onTerug, verz
         ),
         React.createElement('button', { onClick: voegNotitieToe, style: {
           background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 6,
-        } }, 'Notitie opslaan')
+        } }, ui('notitieOpslaan'))
       ),
-      notities.length === 0 && React.createElement('div', { style: { fontSize: 13, color: C_V.tekstMuted, textAlign: 'center', padding: '20px 0' } }, 'Nog geen notities voor deze bewoner'),
+      notities.length === 0 && React.createElement('div', { style: { fontSize: 13, color: C_V.tekstMuted, textAlign: 'center', padding: '20px 0' } }, ui('nogGeenNotities')),
       notities.map(function(n, i) {
         return React.createElement(Card, { key: i, style: { padding: 10, borderLeft: '3px solid ' + C_V.oranje } },
           React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 2 } },
@@ -360,8 +360,8 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
 
   var nu = new Date();
   var uur = nu.getHours();
-  var dienstLabel = uur < 15 ? 'Ochtenddienst' : uur < 23 ? 'Middagdienst' : 'Avonddienst';
-  var volgendeDienst = uur < 15 ? 'Middagdienst' : uur < 23 ? 'Avonddienst' : 'Nachtdienst';
+  var dienstLabel = uur < 15 ? ui('ochtenddienst') : uur < 23 ? ui('middagdienst') : ui('avonddienst');
+  var volgendeDienst = uur < 15 ? ui('middagdienst') : uur < 23 ? ui('avonddienst') : ui('nachtdienst');
   var ontvangers = window.zorgprofielen.filter(function(p) { return p.naam !== verzorgendeNaam; });
 
   var bew = bewoners.find(function(b) { return b.id === bewoner; }) || bewoners[0];
@@ -395,8 +395,8 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
   };
 
   var sectieTabs = [
-    { id: 'rapportage', label: 'Rapporteren' },
-    { id: 'overdracht', label: 'Overdracht' },
+    { id: 'rapportage', label: ui('rapporteren') },
+    { id: 'overdracht', label: ui('overdracht') },
     { id: 'historie', label: 'Historie (' + alleRapportages.length + ')' },
   ];
 
@@ -480,9 +480,9 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
       // Zichtbaarheid + opslaan
       React.createElement('label', { style: { display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, cursor: 'pointer', fontSize: 12, color: C_V.tekstSecundair } },
         React.createElement('input', { type: 'checkbox', checked: zichtbaarFamilie, onChange: function() { setZichtbaarFamilie(!zichtbaarFamilie); }, style: { accentColor: C_V.oranje, width: 16, height: 16 } }),
-        'Zichtbaar voor familie'
+        ui('zichtbaarVoorFamilie')
       ),
-      React.createElement('button', { onClick: slaSOEPop, style: { background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%' } }, 'Rapportage opslaan')
+      React.createElement('button', { onClick: slaSOEPop, style: { background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%' } }, ui('rapportageOpslaan'))
     ),
 
     // ═══ OVERDRACHT (per bewoner) ═══
@@ -492,7 +492,7 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
       React.createElement(Card, { style: { padding: 12, marginBottom: 4 } },
         React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10 } },
           React.createElement('div', { style: { flex: 1 } },
-            React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, 'Van'),
+            React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, ui('van')),
             React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, verzorgendeNaam),
             React.createElement('div', { style: { fontSize: 12, color: C_V.tekstSecundair } }, dienstLabel)
           ),
@@ -502,7 +502,7 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
             gekozenOntvanger
               ? React.createElement('div', null,
                   React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, gekozenOntvanger.naam),
-                  React.createElement('button', { onClick: function() { setGekozenOntvanger(null); }, style: { background: 'none', border: 'none', fontSize: 11, color: C_V.oranje, cursor: 'pointer', padding: 0 } }, 'Wijzig')
+                  React.createElement('button', { onClick: function() { setGekozenOntvanger(null); }, style: { background: 'none', border: 'none', fontSize: 11, color: C_V.oranje, cursor: 'pointer', padding: 0 } }, ui('wijzig'))
                 )
               : ontvangers.map(function(o) {
                   return React.createElement('button', { key: o.id, onClick: function() { setGekozenOntvanger(o); }, style: { display: 'block', width: '100%', textAlign: 'left', padding: '5px 8px', marginBottom: 2, borderRadius: 6, border: '1px solid ' + C_V.border, background: C_V.kaartWit, fontSize: 12, color: C_V.tekstPrimair, cursor: 'pointer' } }, o.naam);
@@ -513,7 +513,7 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
 
       // Voortgang indicator
       React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, marginTop: 8 } },
-        React.createElement('span', { style: { fontSize: 13, fontWeight: 600, color: C_V.tekstSecundair } }, 'Bewoners overdragen'),
+        React.createElement('span', { style: { fontSize: 13, fontWeight: 600, color: C_V.tekstSecundair } }, ui('bewonersOverdragen')),
         React.createElement('span', { style: { fontSize: 12, color: Object.keys(overdrachtPerBewoner).length === bewoners.length ? C_V.groen : C_V.tekstMuted } },
           Object.keys(overdrachtPerBewoner).length + ' / ' + bewoners.length + ' overgedragen')
       ),
@@ -550,7 +550,7 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
               } }, isOvergedragen ? '\u2713' : ''),
               React.createElement('div', { style: { flex: 1 } },
                 React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_V.tekstPrimair } }, b.roepnaam),
-                React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, 'Kamer ' + b.kamer)
+                React.createElement('div', { style: { fontSize: 11, color: C_V.tekstMuted } }, ui('kamer') + ' ' + b.kamer)
               ),
               React.createElement('div', { style: { width: 10, height: 10, borderRadius: 5, background: huidige.kleur } }),
               !isActief && React.createElement('span', { style: { fontSize: 12, color: C_V.tekstMuted } }, '\u25B6')
@@ -582,7 +582,7 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
                   setActiveBewoner(null);
                   addToast(b.roepnaam + ' overgedragen', 'success');
                 }, style: { flex: 1, background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 6, padding: '8px', fontSize: 12, fontWeight: 600, cursor: 'pointer' } }, '\u2713 Overdragen'),
-                React.createElement('button', { onClick: function(e) { e.stopPropagation(); setActiveBewoner(null); }, style: { padding: '8px 12px', borderRadius: 6, border: '1px solid ' + C_V.border, background: C_V.kaartWit, fontSize: 12, color: C_V.tekstMuted, cursor: 'pointer' } }, 'Sluiten')
+                React.createElement('button', { onClick: function(e) { e.stopPropagation(); setActiveBewoner(null); }, style: { padding: '8px 12px', borderRadius: 6, border: '1px solid ' + C_V.border, background: C_V.kaartWit, fontSize: 12, color: C_V.tekstMuted, cursor: 'pointer' } }, ui('sluiten'))
               )
             )
           );
@@ -606,7 +606,7 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
       } },
         React.createElement('div', { style: { background: C_V.kaartWit, borderRadius: 16, padding: 32, maxWidth: 340, width: '100%', textAlign: 'center', animation: 'scaleIn 0.3s ease' } },
           React.createElement('div', { style: { width: 56, height: 56, borderRadius: 28, background: C_V.groenLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 28 } }, '\u2713'),
-          React.createElement('div', { style: { fontSize: 18, fontWeight: 700, color: C_V.groen, marginBottom: 4 } }, 'Overdracht compleet'),
+          React.createElement('div', { style: { fontSize: 18, fontWeight: 700, color: C_V.groen, marginBottom: 4 } }, ui('overdrachtCompleet')),
           React.createElement('div', { style: { fontSize: 14, color: C_V.tekstSecundair } }, bewoners.length + ' bewoners overgedragen aan ' + gekozenOntvanger.naam),
           React.createElement('div', { style: { fontSize: 12, color: C_V.tekstMuted, marginTop: 4, fontStyle: 'italic' } }, gekozenOntvanger.naam + ' ontvangt een notificatie en moet accepteren'),
           React.createElement('button', { onClick: function() { setOverdrachtVerstuurd(false); setOverdrachtPerBewoner({}); setGekozenOntvanger(null); setActiveBewoner(null); }, style: { background: C_V.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 16 } }, 'OK')
@@ -622,18 +622,18 @@ window.DienstRapportage = function DienstRapportage({ verzorgendeNaam, addToast,
           React.createElement('input', { value: zoekRapportage, onChange: function(e) { setZoekRapportage(e.target.value); }, placeholder: 'Zoek...', style: { width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid ' + C_V.border, fontSize: 13, fontFamily: "'DM Sans', sans-serif", outline: 'none', color: C_V.tekstPrimair, background: C_V.kaartWit } }),
           zoekRapportage && React.createElement('button', { onClick: function() { setZoekRapportage(''); }, style: { position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', fontSize: 14, color: C_V.tekstMuted, cursor: 'pointer' } }, '\u2715')
         ),
-        React.createElement(PrintKnop, { label: 'Print' })
+        React.createElement(PrintKnop, { label: ui('print') })
       ),
 
-      zichtbaar.length === 0 && React.createElement('div', { style: { fontSize: 13, color: C_V.tekstMuted, textAlign: 'center', padding: '20px 0' } }, 'Geen rapportages gevonden'),
+      zichtbaar.length === 0 && React.createElement('div', { style: { fontSize: 13, color: C_V.tekstMuted, textAlign: 'center', padding: '20px 0' } }, ui('geenRapportages')),
       zichtbaar.map(function(r, i) {
         return React.createElement(Card, { key: i, style: { padding: 10 } },
           React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 } },
             React.createElement('span', { style: { fontSize: 12, fontWeight: 600, color: r.isFamilie ? C_V.groen : C_V.oranje } }, r.auteur),
             React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
               r.zichtbaarFamilie
-                ? React.createElement('span', { style: { fontSize: 10, color: C_V.groen, background: C_V.groenLicht, padding: '1px 5px', borderRadius: 4 } }, 'Familie')
-                : React.createElement('span', { style: { fontSize: 10, color: C_V.tekstMuted, background: C_V.achtergrond, padding: '1px 5px', borderRadius: 4 } }, 'Intern'),
+                ? React.createElement('span', { style: { fontSize: 10, color: C_V.groen, background: C_V.groenLicht, padding: '1px 5px', borderRadius: 4 } }, ui('familie'))
+                : React.createElement('span', { style: { fontSize: 10, color: C_V.tekstMuted, background: C_V.achtergrond, padding: '1px 5px', borderRadius: 4 } }, ui('intern')),
               React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted } }, r.datum)
             )
           ),
@@ -874,7 +874,7 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
       }, '\u2715')
     ),
 
-    React.createElement(SectionTitle, null, rol === 'verzorgende' ? 'Mijn modules' : 'Modules voor familie'),
+    React.createElement(SectionTitle, null, rol === 'verzorgende' ? ui('mijnModules') : ui('modulesVoorFamilie')),
 
     // Klantcertificaat (alleen verzorgende)
     !zoekterm && rol === 'verzorgende' && React.createElement(Card, { style: { background: C_V.groenLicht, border: '1px solid ' + C_V.groen, padding: 12 } },
@@ -906,7 +906,7 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
 
     // Shared module
     shared && sharedMatch && React.createElement('div', null,
-      React.createElement(SectionTitle, null, 'Kennismodule bij pati\u00EBnt'),
+      React.createElement(SectionTitle, null, ui('kennismodule')),
       React.createElement(Card, { style: { border: '2px solid ' + kleur, cursor: 'pointer' }, onClick: function() { setOpenModule(shared); } },
         shared.aanbieder && React.createElement('div', { style: { fontSize: 11, fontWeight: 600, color: kleur, marginBottom: 4 } }, shared.aanbieder),
         React.createElement('div', { style: { fontSize: 15, fontWeight: 600, color: C_V.tekstPrimair, marginBottom: 4 } }, shared.naam),
@@ -960,7 +960,7 @@ window.ModuleOverzicht = function ModuleOverzicht({ modules, shared, addToast, a
           onClick: function() { setSuggestiesOpen(!suggestiesOpen); if (suggestiesOpen) setUrgentieFilter(null); },
           style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '8px 0' }
         },
-          React.createElement(SectionTitle, null, 'Aanbevolen voor jou'),
+          React.createElement(SectionTitle, null, ui('aanbevolenVoorJou')),
           React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6 } },
             React.createElement('span', { style: { fontSize: 11, color: C_V.tekstMuted, background: C_V.achtergrond, padding: '2px 8px', borderRadius: 10, fontWeight: 600 } }, gesorteerd.length),
             React.createElement('span', { style: { fontSize: 14, color: C_V.tekstMuted, transition: 'transform 0.2s', transform: suggestiesOpen ? 'rotate(90deg)' : 'none' } }, '\u25B6')

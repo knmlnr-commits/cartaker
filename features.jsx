@@ -9,12 +9,12 @@ window.Onboarding = function Onboarding({ rol, onSluit }) {
   var [stap, setStap] = useState(0);
 
   var stappen = rol === 'zorg' ? [
-    { titel: 'Welkom bij GeriCall', tekst: 'Het CareTaker Portal helpt u bij de dagelijkse zorg. Hier vindt u taken, rapportages en meldingen voor al uw bewoners.', icoon: '\uD83D\uDC4B' },
+    { titel: ui('welkom'), tekst: 'Het CareTaker Portal helpt u bij de dagelijkse zorg. Hier vindt u taken, rapportages en meldingen voor al uw bewoners.', icoon: '\uD83D\uDC4B' },
     { titel: 'Uw wijk', tekst: 'Op het eerste scherm ziet u al uw bewoners. Het stoplicht toont wie aandacht nodig heeft. Tik op een bewoner voor details.', icoon: '\u2705' },
     { titel: 'Overdracht', tekst: 'Aan het einde van uw dienst kunt u aandachtspunten doorgeven aan de volgende collega via het overdrachtsscherm.', icoon: '\uD83D\uDD04' },
-    { titel: 'Meldingen', tekst: 'Het belletje rechtsboven toont nieuwe berichten en waarschuwingen. Een rood bolletje betekent dat er actie nodig is.', icoon: '\uD83D\uDD14' },
+    { titel: ui('meldingen'), tekst: 'Het belletje rechtsboven toont nieuwe berichten en waarschuwingen. Een rood bolletje betekent dat er actie nodig is.', icoon: '\uD83D\uDD14' },
   ] : [
-    { titel: 'Welkom bij GeriCall', tekst: 'Met het CareTaker Portal blijft u betrokken bij de zorg voor uw naaste. U kunt de voortgang volgen en samenwerken met het zorgteam.', icoon: '\uD83D\uDC4B' },
+    { titel: ui('welkom'), tekst: 'Met het CareTaker Portal blijft u betrokken bij de zorg voor uw naaste. U kunt de voortgang volgen en samenwerken met het zorgteam.', icoon: '\uD83D\uDC4B' },
     { titel: 'Stemming', tekst: 'De gekleurde bolletjes bovenaan geven aan hoe het gaat. U kunt zelf ook aangeven hoe u vindt dat het gaat.', icoon: '\u25CF' },
     { titel: 'Planning', tekst: 'Zie wie er wanneer langskomt en meld uzelf aan voor bezoek. Hoe vaker u komt, hoe beter het herstel.', icoon: '\uD83D\uDCC5' },
     { titel: 'Chat', tekst: 'Overleg met andere familieleden en het zorgteam via de chatfunctie.', icoon: '\uD83D\uDCAC' },
@@ -49,12 +49,12 @@ window.Onboarding = function Onboarding({ rol, onSluit }) {
         React.createElement('button', { onClick: function() { if (isLaatste) onSluit(); else setStap(stap + 1); }, style: {
           flex: 2, padding: '12px', borderRadius: 10, border: 'none',
           background: C_X.oranje, fontSize: 14, fontWeight: 600, color: '#FFF', cursor: 'pointer',
-        } }, isLaatste ? 'Aan de slag!' : 'Volgende')
+        } }, isLaatste ? ui('aanDeSlag') : 'Volgende')
       ),
       // Overslaan
       !isLaatste && React.createElement('button', { onClick: onSluit, style: {
         background: 'none', border: 'none', fontSize: 12, color: C_X.tekstMuted, cursor: 'pointer', marginTop: 12,
-      } }, 'Overslaan')
+      } }, ui('overslaan'))
     )
   );
 };
@@ -116,10 +116,10 @@ window.InstellingenModal = function InstellingenModal({ onSluit, addToast }) {
     document.documentElement.style.fontSize = val + '%';
   };
 
-  return React.createElement(Modal, { title: 'Instellingen', onClose: onSluit },
+  return React.createElement(Modal, { title: ui('instellingen'), onClose: onSluit },
     // Font grootte
     React.createElement('div', { style: { marginBottom: 16 } },
-      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_X.tekstSecundair, marginBottom: 6 } }, 'Tekstgrootte'),
+      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_X.tekstSecundair, marginBottom: 6 } }, ui('tekstgrootte')),
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10 } },
         React.createElement('span', { style: { fontSize: 12, color: C_X.tekstMuted } }, 'A'),
         React.createElement('input', { type: 'range', min: 80, max: 140, value: fontSize, onChange: function(e) { wijzigFontSize(parseInt(e.target.value)); }, style: { flex: 1, accentColor: C_X.oranje } }),
@@ -129,12 +129,12 @@ window.InstellingenModal = function InstellingenModal({ onSluit, addToast }) {
     ),
     // Hoog contrast
     React.createElement('label', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderTop: '1px solid ' + C_X.border, cursor: 'pointer' } },
-      React.createElement('span', { style: { fontSize: 14, color: C_X.tekstPrimair } }, 'Hoog contrast'),
+      React.createElement('span', { style: { fontSize: 14, color: C_X.tekstPrimair } }, ui('hoogContrast')),
       React.createElement('input', { type: 'checkbox', checked: hoogContrast, onChange: toggleContrast, style: { accentColor: C_X.oranje, width: 18, height: 18 } })
     ),
     // Dark mode
     React.createElement('label', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderTop: '1px solid ' + C_X.border, cursor: 'pointer' } },
-      React.createElement('span', { style: { fontSize: 14, color: C_X.tekstPrimair } }, 'Nachtmodus (dark mode)'),
+      React.createElement('span', { style: { fontSize: 14, color: C_X.tekstPrimair } }, ui('nachtmodus')),
       React.createElement('input', { type: 'checkbox', checked: darkMode, onChange: toggleDark, style: { accentColor: C_X.oranje, width: 18, height: 18 } })
     ),
     // Reset
@@ -142,11 +142,11 @@ window.InstellingenModal = function InstellingenModal({ onSluit, addToast }) {
       setFontSize(100); setHoogContrast(false); setDarkMode(false);
       document.documentElement.style.fontSize = '100%';
       document.body.classList.remove('dark-mode', 'hoog-contrast');
-      addToast('Instellingen gereset', 'success');
+      addToast(ui('herstelStandaard'), 'success');
     }, style: {
       background: 'none', border: '1px solid ' + C_X.border, borderRadius: 8, padding: '8px', fontSize: 13,
       color: C_X.tekstSecundair, cursor: 'pointer', width: '100%', marginTop: 12,
-    } }, 'Herstel standaard')
+    } }, ui('herstelStandaard'))
   );
 };
 
@@ -220,7 +220,7 @@ window.PrivacyNotice = function PrivacyNotice({ onAccepteer }) {
     padding: '14px 16px', boxShadow: '0 -4px 12px rgba(0,0,0,0.08)',
   } },
     React.createElement('div', { style: { maxWidth: 420, margin: '0 auto' } },
-      React.createElement('div', { style: { fontSize: 13, color: C_X.tekstPrimair, fontWeight: 600, marginBottom: 4 } }, 'Privacy & Medische gegevens'),
+      React.createElement('div', { style: { fontSize: 13, color: C_X.tekstPrimair, fontWeight: 600, marginBottom: 4 } }, ui('privacyTitel')),
       React.createElement('div', { style: { fontSize: 12, color: C_X.tekstSecundair, lineHeight: 1.5, marginBottom: 10 } },
         'Dit portaal verwerkt medische gegevens conform de AVG en de Wet op de geneeskundige behandelingsovereenkomst (WGBO). Uw gegevens worden versleuteld opgeslagen en zijn alleen toegankelijk voor geautoriseerde zorgverleners en gemachtigde familieleden.'
       ),
@@ -228,11 +228,11 @@ window.PrivacyNotice = function PrivacyNotice({ onAccepteer }) {
         React.createElement('button', { onClick: function() { window._privacyAccepted = true; setGetoond(false); if (onAccepteer) onAccepteer(); }, style: {
           flex: 1, padding: '10px', borderRadius: 8, border: 'none',
           background: C_X.oranje, color: '#FFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-        } }, 'Akkoord'),
+        } }, ui('akkoord')),
         React.createElement('button', { onClick: function() { setGetoond(false); }, style: {
           padding: '10px 16px', borderRadius: 8, border: '1px solid ' + C_X.border,
           background: C_X.kaartWit, color: C_X.tekstSecundair, fontSize: 13, cursor: 'pointer',
-        } }, 'Meer info')
+        } }, ui('meerInfo'))
       )
     )
   );
@@ -312,7 +312,7 @@ window.AppZoeken = function AppZoeken({ onSluit, addToast }) {
     });
   }
 
-  return React.createElement(Modal, { title: 'Zoeken', onClose: onSluit },
+  return React.createElement(Modal, { title: ui('zoeken'), onClose: onSluit },
     React.createElement('input', {
       value: query, onChange: function(e) { setQuery(e.target.value); }, autoFocus: true,
       placeholder: 'Zoek bewoner, medicatie, rapportage...',

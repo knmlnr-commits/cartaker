@@ -123,7 +123,7 @@ window.FotoUpload = function FotoUpload({ label, onUpload, addToast }) {
   );
 };
 
-// ── Taal toggle NL/EN ──
+// ── Taal toggle vlaggetje NL/EN ──
 window.TaalToggle = function TaalToggle() {
   var { useState } = React;
   var [taal, setTaal] = useState(window.appTaal || 'nl');
@@ -132,15 +132,13 @@ window.TaalToggle = function TaalToggle() {
     setTaal(nieuw);
     window.appTaal = nieuw;
     window.huidigeTaal = nieuw;
-    // Force re-render door hash te re-setten
     var h = window.location.hash;
     window.location.hash = '';
     setTimeout(function() { window.location.hash = h; }, 10);
   };
-  return React.createElement('button', { onClick: wissel, style: {
-    background: 'none', border: '1px solid ' + C.border, borderRadius: 6,
-    padding: '2px 6px', fontSize: 11, color: C.tekstSecundair, cursor: 'pointer', fontWeight: 500,
-  } }, taal === 'nl' ? 'EN' : 'NL');
+  return React.createElement('button', { onClick: wissel, title: taal === 'nl' ? 'Switch to English' : 'Schakel naar Nederlands', style: {
+    background: 'none', border: 'none', fontSize: 16, cursor: 'pointer', padding: '2px 4px', lineHeight: 1,
+  } }, taal === 'nl' ? '\uD83C\uDDEC\uD83C\uDDE7' : '\uD83C\uDDF3\uD83C\uDDF1');
 };
 
 // ── Logo (echte GeriCall afbeelding als base64) ──
@@ -366,7 +364,7 @@ window.StemmingWidget = function StemmingWidget({ bewonerId, gebruikerNaam, gebr
       React.createElement('button', {
         onClick: function() { setShowHistorie(!showHistorie); },
         style: { background: 'none', border: 'none', fontSize: 11, color: C.tekstMuted, cursor: 'pointer', marginTop: 8, padding: 0 }
-      }, showHistorie ? 'Verberg' : stemming.history.length + ' eerdere updates'),
+      }, showHistorie ? ui('verberg') : stemming.history.length + ' eerdere updates'),
 
       showHistorie && React.createElement('div', { style: { marginTop: 6 } },
         stemming.history.map(function(h, i) {
@@ -510,7 +508,7 @@ window.ConsultDetail = function ConsultDetail({ consult, onTerug, addToast, read
           React.createElement('button', {
             onClick: function() { if (nieuwBericht.trim()) { addToast('Bericht verzonden' + (deelMetFamilie ? ' (ook gedeeld met familie)' : ''), 'success'); setNieuwBericht(''); } },
             style: { background: C.oranje, color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '10px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }
-          }, 'Stuur')
+          }, ui('stuur'))
         ),
         // Deel met familie vinkje
         React.createElement('label', { style: { display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, cursor: 'pointer', fontSize: 12, color: C.tekstSecundair } },
@@ -519,7 +517,7 @@ window.ConsultDetail = function ConsultDetail({ consult, onTerug, addToast, read
             onChange: function() { setDeelMetFamilie(!deelMetFamilie); },
             style: { accentColor: C.oranje, width: 16, height: 16, cursor: 'pointer' }
           }),
-          'Deel dit bericht ook met familie'
+          ui('deelMetFamilie')
         )
       )
     ),
