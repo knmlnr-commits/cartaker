@@ -498,18 +498,43 @@ window.ConsultDetail = function ConsultDetail({ consult, onTerug, addToast, read
 
     // ═══ VIDEOCALL TAB ═══
     consultTab === 'video' && !readOnly && React.createElement('div', null,
-      // Fase 0: idle
-      videoFase === 0 && React.createElement('div', { style: { textAlign: 'center', padding: '32px 0' } },
-        React.createElement('div', { style: { fontSize: 14, color: C.tekstSecundair, marginBottom: 16 } }, 'Start een videogesprek met ' + (c.arts || c.toewijzing)),
-        c.videoCall && c.videoCall.gepland && React.createElement('div', { style: { fontSize: 12, color: C.blauw, marginBottom: 16, background: C.blauwLicht, padding: '8px 12px', borderRadius: 8, display: 'inline-block' } }, 'Gepland: ' + c.videoCall.gepland),
-        React.createElement('button', { onClick: startVideo, style: {
-          background: C.groen, color: '#FFF', border: 'none', borderRadius: 12, padding: '16px 32px', fontSize: 16, fontWeight: 600, cursor: 'pointer',
-        } }, '\uD83D\uDCF9 Videogesprek starten')
+      // Fase 0: wachtend op inkomend gesprek
+      videoFase === 0 && React.createElement('div', { style: { textAlign: 'center', padding: '24px 0' } },
+        c.videoCall && c.videoCall.gepland
+          ? React.createElement('div', null,
+              React.createElement('div', { style: { width: 56, height: 56, borderRadius: 28, background: C.blauwLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 24 } }, '\uD83D\uDCF9'),
+              React.createElement('div', { style: { fontSize: 15, fontWeight: 600, color: C.tekstPrimair } }, 'Videoconsult gepland'),
+              React.createElement('div', { style: { fontSize: 14, color: C.blauw, marginTop: 4 } }, c.videoCall.gepland),
+              React.createElement('div', { style: { fontSize: 13, color: C.tekstSecundair, marginTop: 2 } }, c.arts || c.toewijzing),
+              React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted, marginTop: 12, lineHeight: 1.5 } }, 'De arts belt u op het geplande tijdstip. Zorg dat u bij de bewoner bent en het apparaat bij de hand heeft.'),
+              React.createElement('button', { onClick: function() { setVideoFase(1); setTimeout(function() { setVideoFase(2); }, 2000); }, style: {
+                background: 'none', border: '1px solid ' + C.border, borderRadius: 8, padding: '8px 16px', fontSize: 12, color: C.tekstMuted, cursor: 'pointer', marginTop: 12,
+              } }, 'Simuleer inkomend gesprek')
+            )
+          : React.createElement('div', null,
+              React.createElement('div', { style: { fontSize: 14, color: C.tekstSecundair, marginBottom: 8 } }, 'Geen videoconsult gepland'),
+              React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted, lineHeight: 1.5 } }, 'De behandelend arts kan een videoconsult inplannen. U ontvangt een notificatie zodra er een gesprek gepland wordt.')
+            )
       ),
-      // Fase 1: connecting
-      videoFase === 1 && React.createElement('div', { style: { textAlign: 'center', padding: '40px 0' } },
-        React.createElement('div', { style: { width: 40, height: 40, borderRadius: 20, border: '3px solid ' + C.oranje, borderTopColor: 'transparent', margin: '0 auto 16px', animation: 'scaleIn 1s linear infinite' } }),
-        React.createElement('div', { style: { fontSize: 15, color: C.tekstPrimair, fontWeight: 500 } }, 'Verbinding maken met ' + (c.arts || 'arts') + '...')
+      // Fase 1: inkomend gesprek (rinkelen)
+      videoFase === 1 && React.createElement('div', { style: { textAlign: 'center', padding: '32px 0', animation: 'fadeIn 0.3s ease' } },
+        React.createElement('div', { style: { width: 72, height: 72, borderRadius: 36, background: C.groenLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 32, animation: 'scaleIn 1s ease infinite alternate' } }, '\uD83D\uDCF9'),
+        React.createElement('div', { style: { fontSize: 16, fontWeight: 600, color: C.tekstPrimair, marginBottom: 4 } }, 'Inkomend videogesprek'),
+        React.createElement('div', { style: { fontSize: 14, color: C.tekstSecundair, marginBottom: 20 } }, c.arts || 'Arts'),
+        React.createElement('div', { style: { display: 'flex', gap: 12, justifyContent: 'center' } },
+          React.createElement('button', { onClick: function() { setVideoFase(2); }, style: {
+            width: 56, height: 56, borderRadius: 28, background: C.groen, color: '#FFF', border: 'none',
+            fontSize: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          } }, '\uD83D\uDCDE'),
+          React.createElement('button', { onClick: stopVideo, style: {
+            width: 56, height: 56, borderRadius: 28, background: C.rood, color: '#FFF', border: 'none',
+            fontSize: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          } }, '\uD83D\uDCF5')
+        ),
+        React.createElement('div', { style: { display: 'flex', justifyContent: 'center', gap: 32, marginTop: 8 } },
+          React.createElement('span', { style: { fontSize: 11, color: C.groen } }, 'Accepteren'),
+          React.createElement('span', { style: { fontSize: 11, color: C.rood } }, 'Weigeren')
+        )
       ),
       // Fase 2: connected
       videoFase === 2 && React.createElement('div', null,
