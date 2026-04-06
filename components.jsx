@@ -404,12 +404,32 @@ window.ConsultDetail = function ConsultDetail({ consult, onTerug, addToast, read
   var { useState } = React;
   var [nieuwBericht, setNieuwBericht] = useState('');
   var [deelMetFamilie, setDeelMetFamilie] = useState(true);
+  var [consultTab, setConsultTab] = useState('status'); // status | navul | video
+  var [videoFase, setVideoFase] = useState(0); // 0=idle, 1=connecting, 2=connected
+  var [navulMedicatie, setNavulMedicatie] = useState('');
+  var [navulHoeveelheid, setNavulHoeveelheid] = useState('');
+  var [navulNotitie, setNavulNotitie] = useState('');
+  var [navulVerstuurd, setNavulVerstuurd] = useState(false);
   var c = consult;
   if (!c) return null;
 
   var isU1 = c.urgentie.indexOf('U1') !== -1;
   var isU2 = c.urgentie.indexOf('U2') !== -1;
   var urgKleur = isU1 ? C.rood : isU2 ? C.oranje : C.blauw;
+
+  // Video call simulatie
+  var startVideo = function() {
+    setVideoFase(1);
+    setTimeout(function() { setVideoFase(2); }, 2000);
+  };
+  var stopVideo = function() { setVideoFase(0); };
+
+  // Consult sub-tabs
+  var consultTabs = [
+    { id: 'status', label: ui('verloop') },
+    { id: 'navul', label: ui('aanvullendeInfo') },
+    { id: 'video', label: ui('videoconsult') },
+  ];
 
   var tijdlijnIcon = function(type) {
     if (type === 'melding') return { bg: C.oranjeLicht, kleur: C.oranje, letter: 'M' };
@@ -440,6 +460,74 @@ window.ConsultDetail = function ConsultDetail({ consult, onTerug, addToast, read
       React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted } }, 'Status: ' + c.status + ' \u00B7 ' + (c.arts || c.toewijzing)),
       c.klacht && React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted, marginTop: 4 } }, 'Klacht: ' + c.klacht)
     ),
+
+    // Sub-tabs
+    !readOnly && React.createElement('div', { style: { display: 'flex', gap: 4, marginBottom: 12 } },
+      consultTabs.map(function(ct) {
+        var sel = consultTab === ct.id;
+        return React.createElement('button', { key: ct.id, onClick: function() { setConsultTab(ct.id); }, style: {
+          flex: 1, padding: '8px 0', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: sel ? 600 : 400,
+          background: sel ? C.blauwLicht : C.kaartWit, color: sel ? C.blauw : C.tekstSecundair,
+        } }, ct.label);
+      })
+    ),
+
+    // ═══ NAVULFORMULIER TAB ═══
+    consultTab === 'navul' && !readOnly && React.createElement('div', null,
+      navulVerstuurd
+        ? React.createElement('div', { style: { background: C.groenLicht, borderRadius: 12, padding: 20, textAlign: 'center', marginBottom: 12 } },
+            React.createElement('div', { style: { fontSize: 16, fontWeight: 700, color: C.groen, marginBottom: 4 } }, '\u2713 Aanvraag verstuurd'),
+            React.createElement('div', { style: { fontSize: 13, color: C.tekstSecundair } }, navulMedicatie + (navulHoeveelheid ? ' (' + navulHoeveelheid + 'x)' : '')),
+            React.createElement('button', { onClick: function() { setNavulVerstuurd(false); setNavulMedicatie(''); setNavulHoeveelheid(''); setNavulNotitie(''); }, style: { background: 'none', border: 'none', fontSize: 12, color: C.groen, cursor: 'pointer', marginTop: 8 } }, 'Nieuwe aanvraag')
+          )
+        : React.createElement(Card, { style: { padding: 14 } },
+            React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C.tekstSecundair, marginBottom: 10 } }, 'Medicatie / materialen aanvragen'),
+            React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted, marginBottom: 4 } }, 'Naam medicatie of materiaal'),
+            React.createElement('input', { value: navulMedicatie, onChange: function(e) { setNavulMedicatie(e.target.value); }, placeholder: 'Bv: Paracetamol 500mg, verbandmateriaal...', style: { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid ' + C.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", outline: 'none', color: C.tekstPrimair, marginBottom: 10 } }),
+            React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted, marginBottom: 4 } }, 'Hoeveelheid'),
+            React.createElement('input', { type: 'number', value: navulHoeveelheid, onChange: function(e) { setNavulHoeveelheid(e.target.value); }, placeholder: '1', style: { width: 80, padding: '10px 12px', borderRadius: 8, border: '1px solid ' + C.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", outline: 'none', color: C.tekstPrimair, marginBottom: 10 } }),
+            React.createElement('div', { style: { fontSize: 12, color: C.tekstMuted, marginBottom: 4 } }, 'Toelichting'),
+            React.createElement('textarea', { value: navulNotitie, onChange: function(e) { setNavulNotitie(e.target.value); }, placeholder: 'Optionele toelichting...', style: { width: '100%', minHeight: 60, padding: 10, borderRadius: 8, border: '1px solid ' + C.border, fontSize: 13, fontFamily: "'DM Sans', sans-serif", resize: 'vertical', outline: 'none', color: C.tekstPrimair, marginBottom: 10 } }),
+            React.createElement('button', { onClick: function() {
+              if (!navulMedicatie.trim()) { addToast('Vul een naam in'); return; }
+              setNavulVerstuurd(true);
+              addToast('Aanvraag verstuurd', 'success');
+            }, style: { background: C.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%' } }, 'Verstuur aanvraag')
+          )
+    ),
+
+    // ═══ VIDEOCALL TAB ═══
+    consultTab === 'video' && !readOnly && React.createElement('div', null,
+      // Fase 0: idle
+      videoFase === 0 && React.createElement('div', { style: { textAlign: 'center', padding: '32px 0' } },
+        React.createElement('div', { style: { fontSize: 14, color: C.tekstSecundair, marginBottom: 16 } }, 'Start een videogesprek met ' + (c.arts || c.toewijzing)),
+        c.videoCall && c.videoCall.gepland && React.createElement('div', { style: { fontSize: 12, color: C.blauw, marginBottom: 16, background: C.blauwLicht, padding: '8px 12px', borderRadius: 8, display: 'inline-block' } }, 'Gepland: ' + c.videoCall.gepland),
+        React.createElement('button', { onClick: startVideo, style: {
+          background: C.groen, color: '#FFF', border: 'none', borderRadius: 12, padding: '16px 32px', fontSize: 16, fontWeight: 600, cursor: 'pointer',
+        } }, '\uD83D\uDCF9 Videogesprek starten')
+      ),
+      // Fase 1: connecting
+      videoFase === 1 && React.createElement('div', { style: { textAlign: 'center', padding: '40px 0' } },
+        React.createElement('div', { style: { width: 40, height: 40, borderRadius: 20, border: '3px solid ' + C.oranje, borderTopColor: 'transparent', margin: '0 auto 16px', animation: 'scaleIn 1s linear infinite' } }),
+        React.createElement('div', { style: { fontSize: 15, color: C.tekstPrimair, fontWeight: 500 } }, 'Verbinding maken met ' + (c.arts || 'arts') + '...')
+      ),
+      // Fase 2: connected
+      videoFase === 2 && React.createElement('div', null,
+        React.createElement('div', { style: { background: C.tekstPrimair, borderRadius: 12, aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12, border: '2px solid ' + C.groen, position: 'relative' } },
+          React.createElement('div', { style: { color: '#FFF', textAlign: 'center' } },
+            React.createElement('div', { style: { fontSize: 16, fontWeight: 600 } }, c.arts || 'Arts'),
+            React.createElement('div', { style: { fontSize: 12, opacity: 0.7, marginTop: 4 } }, 'In gesprek')
+          ),
+          React.createElement('div', { style: { position: 'absolute', top: 8, left: 8, width: 8, height: 8, borderRadius: 4, background: C.groen } })
+        ),
+        React.createElement('button', { onClick: stopVideo, style: {
+          background: C.rood, color: '#FFF', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%',
+        } }, '\uD83D\uDCF5 Gesprek be\u00EBindigen')
+      )
+    ),
+
+    // ═══ STATUS/VERLOOP TAB (bestaande content) ═══
+    (consultTab === 'status' || readOnly) && React.createElement('div', null,
 
     // Vitalen snapshot
     c.vitalen && React.createElement('div', { style: { background: C.kaartWit, borderRadius: 12, padding: 14, marginBottom: 12, border: '1px solid ' + C.border } },
@@ -551,6 +639,8 @@ window.ConsultDetail = function ConsultDetail({ consult, onTerug, addToast, read
         );
       })
     )
+
+    ) // sluit status tab wrapper
   );
 };
 
