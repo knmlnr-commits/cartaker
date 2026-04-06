@@ -5,9 +5,17 @@ var C_M = window.COLORS;
 
 window.SectionMelding = function SectionMelding({ addToast }) {
   const { useState } = React;
+  const [modus, setModus] = useState(null); // null=keuze, 'snel'=3-staps, 'uitgebreid'=NTS
   const [stap, setStap] = useState(1);
   const [beschrijving, setBeschrijving] = useState('');
   const [gekozenKlacht, setGekozenKlacht] = useState(null);
+
+  // Snelle flow state
+  const [snelBewoner, setSnelBewoner] = useState(null);
+  const [snelKlacht, setSnelKlacht] = useState('');
+  const [snelUrgentie, setSnelUrgentie] = useState(null);
+  const [snelStap, setSnelStap] = useState(1);
+  const [snelIngediend, setSnelIngediend] = useState(false);
   const [antwoorden, setAntwoorden] = useState({});
   const [vitalen, setVitalen] = useState({});
   const [ingediend, setIngediend] = useState(false);
@@ -201,8 +209,100 @@ window.SectionMelding = function SectionMelding({ addToast }) {
       })
     ),
 
-    // Nieuwe melding header
-    React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_M.tekstSecundair, marginBottom: 8 } }, 'Nieuwe melding'),
+    // Modus keuze: snel of uitgebreid
+    !modus && React.createElement('div', null,
+      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_M.tekstSecundair, marginBottom: 8 } }, ui('nieuweMelding')),
+      React.createElement('div', { style: { display: 'flex', gap: 8, marginBottom: 12 } },
+        React.createElement(Card, { style: { flex: 1, padding: 14, cursor: 'pointer', textAlign: 'center', border: '2px solid ' + C_M.oranje }, onClick: function() { setModus('snel'); } },
+          React.createElement('div', { style: { fontSize: 24, marginBottom: 4 } }, '\u26A1'),
+          React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_M.tekstPrimair } }, 'Snel consult'),
+          React.createElement('div', { style: { fontSize: 11, color: C_M.tekstMuted } }, '3 stappen')
+        ),
+        React.createElement(Card, { style: { flex: 1, padding: 14, cursor: 'pointer', textAlign: 'center' }, onClick: function() { setModus('uitgebreid'); } },
+          React.createElement('div', { style: { fontSize: 24, marginBottom: 4 } }, '\uD83D\uDD14'),
+          React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_M.tekstPrimair } }, 'NTS Triage'),
+          React.createElement('div', { style: { fontSize: 11, color: C_M.tekstMuted } }, '5 stappen + vitalen')
+        )
+      )
+    ),
+
+    // ═══ SNELLE FLOW (3 stappen) ═══
+    modus === 'snel' && React.createElement('div', null,
+      React.createElement('button', { onClick: function() { setModus(null); setSnelStap(1); setSnelBewoner(null); setSnelKlacht(''); setSnelUrgentie(null); setSnelIngediend(false); }, style: { background: 'none', border: 'none', fontSize: 13, color: C_M.tekstMuted, cursor: 'pointer', marginBottom: 8 } }, '\u2190 ' + ui('terug')),
+      React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_M.tekstSecundair, marginBottom: 8 } }, 'Snel consult'),
+      // Step indicator
+      React.createElement('div', { style: { display: 'flex', gap: 4, marginBottom: 12 } },
+        [1,2,3].map(function(s) { return React.createElement('div', { key: s, style: { flex: 1, height: 4, borderRadius: 2, background: s <= snelStap ? C_M.oranje : C_M.border } }); })
+      ),
+
+      snelIngediend
+        ? React.createElement('div', { style: { textAlign: 'center', padding: '32px 0', animation: 'scaleIn 0.4s ease' } },
+            React.createElement('div', { style: { width: 56, height: 56, borderRadius: 28, background: C_M.groenLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 28 } }, '\u2713'),
+            React.createElement('div', { style: { fontSize: 18, fontWeight: 700, color: C_M.groen } }, 'Consult ingediend'),
+            React.createElement('div', { style: { fontSize: 13, color: C_M.tekstSecundair, marginTop: 4 } }, '#C-2043 \u00B7 ' + snelBewoner.roepnaam + ' \u00B7 ' + snelUrgentie),
+            React.createElement('button', { onClick: function() { setModus(null); setSnelStap(1); setSnelBewoner(null); setSnelKlacht(''); setSnelUrgentie(null); setSnelIngediend(false); }, style: { background: C_M.oranje, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 16 } }, 'OK')
+          )
+        : React.createElement('div', null,
+          // Stap 1: Bewoner
+          snelStap === 1 && React.createElement('div', null,
+            React.createElement('div', { style: { fontSize: 14, fontWeight: 500, color: C_M.tekstPrimair, marginBottom: 8 } }, 'Stap 1 \u2014 Bewoner selecteren'),
+            window.bewoners.map(function(b) {
+              var sel = snelBewoner && snelBewoner.id === b.id;
+              return React.createElement(Card, { key: b.id, style: { padding: 12, cursor: 'pointer', border: sel ? '2px solid ' + C_M.oranje : '1px solid ' + C_M.border }, onClick: function() { setSnelBewoner(b); } },
+                React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10 } },
+                  React.createElement('div', { style: { width: 36, height: 36, borderRadius: 18, background: C_M.achtergrond, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: C_M.tekstSecundair } }, b.initialen),
+                  React.createElement('div', null,
+                    React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_M.tekstPrimair } }, b.roepnaam),
+                    React.createElement('div', { style: { fontSize: 12, color: C_M.tekstMuted } }, b.afdeling + ' \u00B7 ' + ui('kamer') + ' ' + b.kamer)
+                  ),
+                  sel && React.createElement('div', { style: { marginLeft: 'auto', width: 20, height: 20, borderRadius: 10, background: C_M.oranje, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 12 } }, '\u2713')
+                )
+              );
+            }),
+            React.createElement('button', { onClick: function() { if (snelBewoner) setSnelStap(2); else addToast('Selecteer een bewoner'); }, style: { background: snelBewoner ? C_M.oranje : C_M.border, color: snelBewoner ? '#FFF' : C_M.tekstMuted, border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%', marginTop: 8 } }, ui('volgende') + ' \u2192')
+          ),
+          // Stap 2: Klacht + urgentie
+          snelStap === 2 && React.createElement('div', null,
+            React.createElement('div', { style: { fontSize: 14, fontWeight: 500, color: C_M.tekstPrimair, marginBottom: 8 } }, 'Stap 2 \u2014 Klacht beschrijven'),
+            React.createElement('textarea', { value: snelKlacht, onChange: function(e) { setSnelKlacht(e.target.value); }, placeholder: 'Beschrijf kort wat er aan de hand is...', style: { width: '100%', minHeight: 80, padding: 12, borderRadius: 8, border: '1px solid ' + C_M.border, fontSize: 14, fontFamily: "'DM Sans', sans-serif", resize: 'vertical', outline: 'none', color: C_M.tekstPrimair, marginBottom: 12 } }),
+            React.createElement('div', { style: { fontSize: 13, fontWeight: 500, color: C_M.tekstSecundair, marginBottom: 6 } }, 'Urgentie'),
+            React.createElement('div', { style: { display: 'flex', gap: 8 } },
+              [{ id: 'Spoed', kleur: C_M.rood, bg: C_M.roodLicht }, { id: 'Vandaag', kleur: C_M.oranje, bg: C_M.oranjeLicht }, { id: 'Regulier', kleur: C_M.tekstMuted, bg: C_M.achtergrond }].map(function(u) {
+                var sel = snelUrgentie === u.id;
+                return React.createElement('button', { key: u.id, onClick: function() { setSnelUrgentie(u.id); }, style: {
+                  flex: 1, padding: '10px', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, textAlign: 'center',
+                  background: sel ? u.kleur : u.bg, color: sel ? '#FFF' : u.kleur, border: sel ? 'none' : '1px solid ' + C_M.border,
+                } }, u.id);
+              })
+            ),
+            React.createElement('div', { style: { display: 'flex', gap: 8, marginTop: 12 } },
+              React.createElement('button', { onClick: function() { setSnelStap(1); }, style: { flex: 1, background: C_M.kaartWit, color: C_M.tekstSecundair, border: '1px solid ' + C_M.border, borderRadius: 8, padding: '12px', fontSize: 14, cursor: 'pointer' } }, '\u2190 ' + ui('vorige')),
+              React.createElement('button', { onClick: function() { if (snelKlacht.trim() && snelUrgentie) setSnelStap(3); else addToast('Vul klacht en urgentie in'); }, style: { flex: 2, background: snelKlacht.trim() && snelUrgentie ? C_M.oranje : C_M.border, color: snelKlacht.trim() && snelUrgentie ? '#FFF' : C_M.tekstMuted, border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 600, cursor: 'pointer' } }, ui('volgende') + ' \u2192')
+            )
+          ),
+          // Stap 3: Bevestiging
+          snelStap === 3 && React.createElement('div', null,
+            React.createElement('div', { style: { fontSize: 14, fontWeight: 500, color: C_M.tekstPrimair, marginBottom: 8 } }, 'Stap 3 \u2014 Bevestiging'),
+            React.createElement(Card, { style: { padding: 14 } },
+              React.createElement('div', { style: { fontSize: 12, color: C_M.tekstMuted, marginBottom: 2 } }, 'Bewoner'),
+              React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_M.tekstPrimair, marginBottom: 8 } }, snelBewoner.roepnaam + ' \u00B7 ' + ui('kamer') + ' ' + snelBewoner.kamer),
+              React.createElement('div', { style: { fontSize: 12, color: C_M.tekstMuted, marginBottom: 2 } }, 'Klacht'),
+              React.createElement('div', { style: { fontSize: 14, color: C_M.tekstPrimair, marginBottom: 8 } }, snelKlacht),
+              React.createElement('div', { style: { fontSize: 12, color: C_M.tekstMuted, marginBottom: 4 } }, 'Urgentie'),
+              React.createElement(Badge, { label: snelUrgentie, color: snelUrgentie === 'Spoed' ? C_M.rood : snelUrgentie === 'Vandaag' ? C_M.oranje : C_M.tekstMuted, bgColor: snelUrgentie === 'Spoed' ? C_M.roodLicht : snelUrgentie === 'Vandaag' ? C_M.oranjeLicht : C_M.achtergrond })
+            ),
+            React.createElement('div', { style: { display: 'flex', gap: 8, marginTop: 8 } },
+              React.createElement('button', { onClick: function() { setSnelStap(2); }, style: { flex: 1, background: C_M.kaartWit, color: C_M.tekstSecundair, border: '1px solid ' + C_M.border, borderRadius: 8, padding: '12px', fontSize: 14, cursor: 'pointer' } }, '\u2190 ' + ui('vorige')),
+              React.createElement('button', { onClick: function() { setSnelIngediend(true); addToast('Consult ingediend', 'success'); }, style: { flex: 2, background: C_M.groen, color: '#FFF', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 700, cursor: 'pointer' } }, '\u2713 ' + ui('dienIn'))
+            )
+          )
+        )
+    ),
+
+    // ═══ NTS TRIAGE (bestaand, alleen bij modus=uitgebreid) ═══
+    modus === 'uitgebreid' && React.createElement('div', null,
+    React.createElement('button', { onClick: function() { setModus(null); setStap(1); }, style: { background: 'none', border: 'none', fontSize: 13, color: C_M.tekstMuted, cursor: 'pointer', marginBottom: 8 } }, '\u2190 ' + ui('terug')),
+    React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_M.tekstSecundair, marginBottom: 8 } }, 'NTS Triage'),
 
     // Step indicator
     React.createElement('div', { style: { display: 'flex', gap: 4, marginBottom: 8 } },
@@ -422,5 +522,6 @@ window.SectionMelding = function SectionMelding({ addToast }) {
         )
       );
     })()
+    ) // sluit NTS wrapper
   );
 };

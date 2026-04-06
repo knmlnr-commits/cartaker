@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v5.7.0';
+var APP_VERSION = 'v5.8.0';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
