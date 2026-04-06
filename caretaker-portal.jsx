@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v5.8.0';
+var APP_VERSION = 'v5.9.0';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -33,6 +33,7 @@ function parseHash() {
   if (!h) return { scherm: 'rolkeuze' };
   var parts = h.split('/');
 
+  if (parts[0] === 'caretaker') return { scherm: 'caretaker' };
   if (parts[0] === 'zorg') {
     if (!parts[1]) return { scherm: 'zorg_keuze' };
     var profiel = window.zorgprofielen.find(function(p) { return p.id === parts[1]; });
@@ -156,7 +157,17 @@ function RolKeuze() {
           </div>
         </div>
 
-        <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+        <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid ' + C.border }}>
+          <div onClick={function() { setHash('caretaker'); }} style={{
+            background: C.kaartWit, border: '1px dashed ' + C.oranje, borderRadius: 12, padding: 14,
+            cursor: 'pointer', textAlign: 'center',
+          }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: C.oranje }}>CareTaker Portal Light</div>
+            <div style={{ fontSize: 12, color: C.tekstSecundair }}>Snel consult inschieten</div>
+          </div>
+        </div>
+
+        <div style={{ fontSize: 11, color: C.tekstMuted, marginTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
           <GeriCallLogoImg size={14} />
           <span>GeriCall CareTaker Portal {APP_VERSION}</span>
         </div>
@@ -586,6 +597,9 @@ function App() {
     }
   }, [route.scherm, route.profielId, route.lidId]);
 
+  if (route.scherm === 'caretaker') {
+    return React.createElement(CareTakerPortal, { onTerug: function() { setHash(''); } });
+  }
   if (route.scherm === 'rolkeuze') {
     return React.createElement('div', null,
       React.createElement(RolKeuze),
