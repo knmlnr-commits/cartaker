@@ -33,6 +33,7 @@ window.CareTakerPortal = function CareTakerPortal({ onTerug }) {
 
   // Video state
   var [videoFase, setVideoFase] = useState(0);
+  var [detailTab, setDetailTab] = useState('status');
 
   var bewoners = [
     { naam: 'Ans', afdeling: 'Afdeling B' },
@@ -184,7 +185,6 @@ window.CareTakerPortal = function CareTakerPortal({ onTerug }) {
     var c = selectedConsult;
     var uk = urgentieKleur(c.urgentie);
     var sk = statusKleur(c.status);
-    var [detailTab, setDetailTab] = useState('status');
 
     return React.createElement('div', { style: { minHeight: '100vh', background: C_CT.achtergrond } },
       React.createElement('div', { style: { maxWidth: 420, margin: '0 auto', padding: '16px' } },
