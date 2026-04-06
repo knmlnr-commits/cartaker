@@ -557,7 +557,7 @@ window.ConsultDetail = function ConsultDetail({ consult, onTerug, addToast, read
 // ── EPD Viewer (via NUTS koppeling) ──
 window.EpdViewer = function EpdViewer({ bewonerId, onSluit }) {
   var { useState } = React;
-  var [tab, setTab] = useState('patient');
+  var [tab, setTab] = useState('patient'); // null = alles dicht, of id = die sectie open
   var [toonMeerVitalen, setToonMeerVitalen] = useState(false);
   var epd = window.epdGegevens && window.epdGegevens[bewonerId];
   var bew = window.bewoners.find(function(b) { return b.id === bewonerId; });
@@ -578,13 +578,30 @@ window.EpdViewer = function EpdViewer({ bewonerId, onSluit }) {
   var flagHartslag = function(h) { return h && (h < 50 || h > 100); };
 
   var tabs = [
-    { id: 'patient', label: 'Pati\u00EBnt' },
-    { id: 'vitalen', label: 'Vitalen (' + (epd.vitaleFuncties || []).length + ')' },
-    { id: 'allergieen', label: 'Allergie\u00EBn (' + (epd.allergieen || []).length + ')' },
-    { id: 'reanimatie', label: 'Reanimatie' },
-    { id: 'lab', label: 'Lab (' + (epd.labresultaten || []).length + ')' },
-    { id: 'medicatie', label: 'Medicatie (' + (epd.medicatie || []).length + ')' },
+    { id: 'patient', label: 'Pati\u00EBntkenmerken', count: null },
+    { id: 'vitalen', label: 'Vitale functies', count: (epd.vitaleFuncties || []).length },
+    { id: 'allergieen', label: 'Allergie\u00EBn', count: (epd.allergieen || []).length },
+    { id: 'reanimatie', label: 'Reanimatiebeleid', count: null },
+    { id: 'lab', label: 'Labresultaten', count: (epd.labresultaten || []).length },
+    { id: 'medicatie', label: 'Medicatie', count: (epd.medicatie || []).length },
   ];
+
+  // Accordion header helper
+  var AccHeader = function(tabId, label, count, waarschuwing) {
+    var isOpen = tab === tabId;
+    return React.createElement('div', { onClick: function() { setTab(isOpen ? null : tabId); }, style: {
+      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      padding: '12px 14px', cursor: 'pointer', background: C.kaartWit, borderRadius: isOpen ? '12px 12px 0 0' : 12,
+      border: '1px solid ' + C.border, marginBottom: isOpen ? 0 : 6,
+    } },
+      React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
+        React.createElement('span', { style: { fontSize: 13, fontWeight: 600, color: C.tekstPrimair } }, label),
+        count !== null && count !== undefined && React.createElement('span', { style: { fontSize: 11, color: C.tekstMuted, background: C.achtergrond, padding: '1px 6px', borderRadius: 8 } }, count),
+        waarschuwing && React.createElement('div', { style: { width: 8, height: 8, borderRadius: 4, background: C.oranje } })
+      ),
+      React.createElement('span', { style: { fontSize: 12, color: C.tekstMuted, transition: 'transform 0.2s', transform: isOpen ? 'rotate(90deg)' : 'none' } }, '\u25B6')
+    );
+  };
 
   var Rij = function(label, waarde, extra) {
     return React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid ' + C.border } },
@@ -609,19 +626,9 @@ window.EpdViewer = function EpdViewer({ bewonerId, onSluit }) {
         )
       )
     ),
-    // Tabs
-    React.createElement('div', { style: { display: 'flex', gap: 4, marginBottom: 12, overflowX: 'auto', paddingBottom: 2 } },
-      tabs.map(function(t) {
-        var sel = tab === t.id;
-        return React.createElement('button', { key: t.id, onClick: function() { setTab(t.id); }, style: {
-          padding: '6px 10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: sel ? 600 : 400, whiteSpace: 'nowrap',
-          background: sel ? C.blauw : C.kaartWit, color: sel ? '#FFF' : C.tekstSecundair,
-        } }, t.label);
-      })
-    ),
-
-    // TAB: Pati\u00EBntkenmerken
-    tab === 'patient' && React.createElement(Card, { style: { padding: 14 } },
+    // Accordion: Pati\u00EBntkenmerken
+    AccHeader('patient', 'Pati\u00EBntkenmerken', null, false),
+    tab === 'patient' && React.createElement('div', { style: { background: C.kaartWit, padding: 14, borderRadius: '0 0 12px 12px', border: '1px solid ' + C.border, borderTop: 'none', marginBottom: 6 } },
       React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C.tekstSecundair, marginBottom: 8 } }, 'Pati\u00EBntkenmerken'),
       Rij('Voornaam', p.voornaam),
       Rij('Achternaam', p.achternaam),
@@ -643,7 +650,9 @@ window.EpdViewer = function EpdViewer({ bewonerId, onSluit }) {
     ),
 
     // TAB: Vitale functies
-    tab === 'vitalen' && React.createElement('div', null,
+    // Accordion: Vitale functies
+    AccHeader('vitalen', 'Vitale functies', (epd.vitaleFuncties || []).length, false),
+    tab === 'vitalen' && React.createElement('div', { style: { background: C.kaartWit, padding: 12, borderRadius: '0 0 12px 12px', border: '1px solid ' + C.border, borderTop: 'none', marginBottom: 6 } },
       (!epd.vitaleFuncties || epd.vitaleFuncties.length === 0)
         ? React.createElement('div', { style: { fontSize: 13, color: C.tekstMuted, textAlign: 'center', padding: '20px 0' } }, 'Geen vitale functies beschikbaar')
         : (toonMeerVitalen ? epd.vitaleFuncties : epd.vitaleFuncties.slice(0, 5)).map(function(v, i) {
@@ -675,7 +684,9 @@ window.EpdViewer = function EpdViewer({ bewonerId, onSluit }) {
     ),
 
     // TAB: Allergie\u00EBn
-    tab === 'allergieen' && React.createElement('div', null,
+    // Accordion: Allergie\u00EBn
+    AccHeader('allergieen', 'Allergie\u00EBn', (epd.allergieen || []).length, epd.allergieen && epd.allergieen.some(function(a) { return a.kritiekheid === 'High'; })),
+    tab === 'allergieen' && React.createElement('div', { style: { background: C.kaartWit, padding: 12, borderRadius: '0 0 12px 12px', border: '1px solid ' + C.border, borderTop: 'none', marginBottom: 6 } },
       epd.allergieen && epd.allergieen.some(function(a) { return a.kritiekheid === 'High'; }) && React.createElement('div', { style: { background: C.oranjeLicht, border: '1px solid ' + C.oranje, borderRadius: 8, padding: '8px 12px', marginBottom: 10, fontSize: 12, color: C.oranje, fontWeight: 600 } }, '\u26A0 Pati\u00EBnt heeft een allergie met hoge kritiekheid'),
       (!epd.allergieen || epd.allergieen.length === 0)
         ? React.createElement('div', { style: { fontSize: 13, color: C.groen, textAlign: 'center', padding: '20px 0' } }, 'Geen bekende allergie\u00EBn')
@@ -697,7 +708,9 @@ window.EpdViewer = function EpdViewer({ bewonerId, onSluit }) {
     ),
 
     // TAB: Reanimatiebeleid
-    tab === 'reanimatie' && React.createElement('div', null,
+    // Accordion: Reanimatiebeleid
+    AccHeader('reanimatie', 'Reanimatiebeleid', null, epd.reanimatiebeleid && epd.reanimatiebeleid.soort && epd.reanimatiebeleid.soort.toLowerCase().indexOf('niet reanimeren') !== -1),
+    tab === 'reanimatie' && React.createElement('div', { style: { background: C.kaartWit, padding: 12, borderRadius: '0 0 12px 12px', border: '1px solid ' + C.border, borderTop: 'none', marginBottom: 6 } },
       !epd.reanimatiebeleid
         ? React.createElement('div', { style: { fontSize: 13, color: C.tekstMuted, textAlign: 'center', padding: '20px 0' } }, 'Geen reanimatiebeleid geregistreerd')
         : React.createElement('div', null,
@@ -714,11 +727,12 @@ window.EpdViewer = function EpdViewer({ bewonerId, onSluit }) {
     ),
 
     // TAB: Lab
-    tab === 'lab' && React.createElement('div', null,
+    // Accordion: Lab
+    AccHeader('lab', 'Labresultaten', (epd.labresultaten || []).length, epd.labresultaten && epd.labresultaten.some(function(l) { return l.afwijkend; })),
+    tab === 'lab' && React.createElement('div', { style: { background: C.kaartWit, padding: 0, borderRadius: '0 0 12px 12px', border: '1px solid ' + C.border, borderTop: 'none', marginBottom: 6, overflow: 'hidden' } },
       (!epd.labresultaten || epd.labresultaten.length === 0)
         ? React.createElement('div', { style: { fontSize: 13, color: C.tekstMuted, textAlign: 'center', padding: '20px 0' } }, 'Geen recente labresultaten')
-        : React.createElement(Card, { style: { padding: 0, overflow: 'hidden' } },
-          epd.labresultaten.map(function(l, i) {
+        : epd.labresultaten.map(function(l, i) {
             return React.createElement('div', { key: i, style: { display: 'flex', alignItems: 'center', padding: '8px 12px', borderBottom: i < epd.labresultaten.length - 1 ? '1px solid ' + C.border : 'none', background: l.afwijkend ? C.roodLicht : 'transparent' } },
               React.createElement('div', { style: { flex: 1 } },
                 React.createElement('div', { style: { fontSize: 13, fontWeight: l.afwijkend ? 600 : 400, color: l.afwijkend ? C.rood : C.tekstPrimair } }, l.bepaling),
@@ -730,11 +744,12 @@ window.EpdViewer = function EpdViewer({ bewonerId, onSluit }) {
               )
             );
           })
-        )
     ),
 
     // TAB: Medicatie
-    tab === 'medicatie' && React.createElement('div', null,
+    // Accordion: Medicatie
+    AccHeader('medicatie', 'Medicatie', (epd.medicatie || []).length, false),
+    tab === 'medicatie' && React.createElement('div', { style: { background: C.kaartWit, padding: 12, borderRadius: '0 0 12px 12px', border: '1px solid ' + C.border, borderTop: 'none', marginBottom: 6 } },
       epd.medicatie.map(function(m, i) {
         return React.createElement(Card, { key: i, style: { padding: 12 } },
           React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C.tekstPrimair } }, m.naam),
