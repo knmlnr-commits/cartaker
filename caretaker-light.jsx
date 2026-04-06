@@ -17,7 +17,7 @@ window.CareTakerPortal = function CareTakerPortal({ onTerug }) {
   var { useState } = React;
   var [scherm, setScherm] = useState('home');
   var [consulten, setConsulten] = useState([
-    { id: 'C-3001', bewoner: 'Ans', afdeling: 'Afdeling B', klacht: 'Gevallen, pijn rechterheup', urgentie: 'Spoed', status: 'Arts onderweg', tijdstip: '14:32', type: 'spoed' },
+    { id: 'C-3001', bewoner: 'Ans', afdeling: 'Afdeling B', klacht: 'Gevallen, pijn rechterheup', urgentie: 'Spoed', status: 'Arts onderweg', tijdstip: '14:32', type: 'spoed', videoGepland: '15:00' },
     { id: 'C-3002', bewoner: 'Henk', afdeling: 'Afdeling A', klacht: 'Kortademig bij bewegen', urgentie: 'Vandaag', status: 'In behandeling', tijdstip: '13:05', type: 'spoed' },
     { id: 'C-3003', bewoner: 'Riet', afdeling: 'Afdeling C', klacht: 'Koorts, 38.8\u00B0C', urgentie: 'Regulier', status: 'Wachtend', tijdstip: '11:50', type: 'niet-spoed' },
     { id: 'C-3004', bewoner: 'Willem', afdeling: 'Afdeling B', klacht: 'Medicatievraag achterwacht', urgentie: 'Regulier', status: 'Afgerond', tijdstip: '09:15', type: 'niet-spoed' },
@@ -299,7 +299,8 @@ window.CareTakerPortal = function CareTakerPortal({ onTerug }) {
           videoFase === 0 && React.createElement('div', { style: { padding: '24px 0' } },
             React.createElement('div', { style: { width: 56, height: 56, borderRadius: 28, background: C_CT.blauwLicht, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 24 } }, '\uD83D\uDCF9'),
             React.createElement('div', { style: { fontSize: 15, fontWeight: 600, color: C_CT.tekstPrimair } }, ui('wachtenOpVideo')),
-            React.createElement('div', { style: { fontSize: 13, color: C_CT.tekstSecundair, marginTop: 4 } }, ui('artsBeltU')),
+            c.videoGepland && React.createElement('div', { style: { fontSize: 14, color: C_CT.blauw, marginTop: 6, background: C_CT.blauwLicht, padding: '6px 12px', borderRadius: 8, display: 'inline-block' } }, 'Gepland: ' + c.videoGepland),
+            React.createElement('div', { style: { fontSize: 13, color: C_CT.tekstSecundair, marginTop: 6 } }, ui('artsBeltU')),
             React.createElement('button', { onClick: function() { setVideoFase(1); }, style: { background: 'none', border: '1px solid ' + C_CT.border, borderRadius: 8, padding: '8px 16px', fontSize: 12, color: C_CT.tekstMuted, cursor: 'pointer', marginTop: 12 } }, ui('simuleerGesprek'))
           ),
           videoFase === 1 && React.createElement('div', { style: { padding: '32px 0', animation: 'fadeIn 0.3s ease' } },
