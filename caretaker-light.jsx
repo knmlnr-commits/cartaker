@@ -29,8 +29,8 @@ window.CareTakerPortal = function CareTakerPortal({ onTerug }) {
   // Aanmaak state
   var [aanmaakStap, setAanmaakStap] = useState(0); // 0=type keuze, 1=bewoner, 2=klacht, 3=bevestig
   var [meldingType, setMeldingType] = useState(null); // niet-spoed | spoed
-  var [zoekDatum, setZoekDatum] = useState('');
-  var [gevondenBewoner, setGevondenBewoner] = useState(null);
+  var [zoekDatum, setZoekDatum] = useState('1938-05-12');
+  var [gevondenBewoner, setGevondenBewoner] = useState(lightBewoners[0]);
   var [nieuwKlacht, setNieuwKlacht] = useState('');
   var [nieuwUrgentie, setNieuwUrgentie] = useState(null);
   var [nieuwCategorie, setNieuwCategorie] = useState(null);
