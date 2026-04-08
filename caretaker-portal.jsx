@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v6.0.2';
+var APP_VERSION = 'v6.0.3';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -595,6 +595,14 @@ function AppFamilie({ lid, initialTab }) {
 function App() {
   var route = useHashRouter();
   var [toonOnboarding, setToonOnboarding] = useState(function() { return !window._onboardingGezien; });
+  var [, forceRender] = useState(0);
+
+  // Luister naar taalwijzigingen
+  React.useEffect(function() {
+    var listener = function() { forceRender(function(n) { return n + 1; }); };
+    window._taalListeners.push(listener);
+    return function() { window._taalListeners = window._taalListeners.filter(function(fn) { return fn !== listener; }); };
+  }, []);
 
   // Audit log bij navigatie
   React.useEffect(function() {

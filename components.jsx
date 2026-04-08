@@ -124,6 +124,8 @@ window.FotoUpload = function FotoUpload({ label, onUpload, addToast }) {
 };
 
 // ── Taal toggle met mini-vlaggetjes (SVG) ──
+// Gebruikt window._taalListeners om alle componenten te re-renderen
+window._taalListeners = [];
 window.TaalToggle = function TaalToggle() {
   var { useState } = React;
   var [taal, setTaal] = useState(window.appTaal || 'nl');
@@ -132,9 +134,8 @@ window.TaalToggle = function TaalToggle() {
     setTaal(nieuw);
     window.appTaal = nieuw;
     window.huidigeTaal = nieuw;
-    var h = window.location.hash;
-    window.location.hash = '';
-    setTimeout(function() { window.location.hash = h; }, 10);
+    // Notify all listeners
+    window._taalListeners.forEach(function(fn) { fn(nieuw); });
   };
   // NL vlag
   var nlVlag = React.createElement('svg', { width: 20, height: 14, viewBox: '0 0 20 14', style: { display: 'block' } },
