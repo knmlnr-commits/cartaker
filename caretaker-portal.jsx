@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v6.0.0';
+var APP_VERSION = 'v6.0.2';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -162,8 +162,8 @@ function RolKeuze() {
             background: C.kaartWit, border: '1px dashed ' + C.oranje, borderRadius: 12, padding: 14,
             cursor: 'pointer', textAlign: 'center',
           }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: C.oranje }}>CareTaker Portal Light</div>
-            <div style={{ fontSize: 12, color: C.tekstSecundair }}>Snel consult inschieten</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: C.oranje }}>{ui('caretakerPortal')} Light</div>
+            <div style={{ fontSize: 12, color: C.tekstSecundair }}>{ui('snelConsultInschieten')}</div>
           </div>
         </div>
 
@@ -172,7 +172,7 @@ function RolKeuze() {
           <span>GeriCall CareTaker Portal {APP_VERSION}</span>
         </div>
         <div style={{ fontSize: 10, color: C.tekstMuted, marginTop: 6, fontStyle: 'italic' }}>
-          Prototype &mdash; authenticatie via DigiD/UZI-pas wordt bij implementatie toegevoegd
+          {ui('prototype')} &mdash; {ui('authDisclaimer')}
         </div>
       </div>
     </div>
@@ -185,18 +185,21 @@ function RolKeuze() {
 function FamilieKeuze() {
   var leden = window.familieleden;
   var lijnInfo = {
-    lijn1: { label: 'Gezin', doel: 'Actief meezorgen en beslissingen nemen', rechten: ['Rapportages en behandelplan', 'Weekplanning en bezoeken', 'Consulten volgen', 'Familie chat en e-learning'], kleur: C.groen },
-    lijn2: { label: 'Ondersteuner', doel: 'Betrokken blijven en praktisch helpen', rechten: ['Stemming en planning', 'Familie chat', 'Bezoeken inplannen'], kleur: C.blauw },
-    patient: { label: 'Pati\u00EBnt', doel: 'Inzicht in eigen dag en contact met familie', rechten: ['Dagoverzicht en stemming', 'Wie komt er vandaag', 'Chat met familie'], kleur: C.oranje },
+    lijn1: { label: ui('gezin'), doel: ui('doelGezin'), rechten: [ui('behandelplan'), ui('weekplanning'), ui('lopendeConsults'), ui('familieChat'), ui('leren')], kleur: C.groen },
+    lijn2: { label: ui('ondersteuner'), doel: ui('doelOndersteuner'), rechten: [ui('stemmingBijwerken'), ui('familieChat'), ui('ikKom')], kleur: C.blauw },
+    patient: { label: ui('patient'), doel: ui('doelPatient'), rechten: [ui('stemmingBijwerken'), ui('wieKomt'), ui('familieChat')], kleur: C.oranje },
   };
   return (
     <div style={{ minHeight: '100vh', background: C.achtergrond, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ maxWidth: 420, width: '100%', padding: '32px 24px' }}>
-        <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 14, color: C.tekstMuted, cursor: 'pointer', marginBottom: 16 }}>&larr; Terug</button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 14, color: C.tekstMuted, cursor: 'pointer' }}>&larr; {ui('terug')}</button>
+          <TaalToggle />
+        </div>
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div style={{ display: 'inline-block', marginBottom: 8 }}><GeriCallLogoImg size={40} /></div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: C.tekstPrimair }}>Wie ben je?</div>
-          <div style={{ fontSize: 12, color: C.tekstMuted, marginTop: 4 }}>Selecteer je naam &mdash; wat je ziet is afgestemd op je rol</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: C.tekstPrimair }}>{ui('wieBenJe')}</div>
+          <div style={{ fontSize: 12, color: C.tekstMuted, marginTop: 4 }}>{ui('selecteerNaam')} &mdash; {ui('watJeZiet')}</div>
         </div>
 
         {leden.map(function(lid) {
@@ -228,7 +231,7 @@ function FamilieKeuze() {
         })}
 
         <div style={{ fontSize: 10, color: C.tekstMuted, marginTop: 16, fontStyle: 'italic', textAlign: 'center' }}>
-          Prototype &mdash; authenticatie via DigiD wordt bij implementatie toegevoegd
+          {ui('prototype')} &mdash; {ui('authDigiD')}
         </div>
       </div>
     </div>
@@ -242,29 +245,32 @@ function ZorgKeuze() {
   var profielen = window.zorgprofielen;
   var rolInfo = {
     verpleegkundige: {
-      label: 'Verpleegkundige', doel: 'Regie over zorgproces en klinische besluitvorming',
-      rechten: ['Volledig dossier en EPD', 'Consulten beheren en escaleren', 'NTS-triage en meldingen', 'IoT vitalen en lab-aanvragen', 'Taken, rapportage en e-learning'],
+      label: ui('verpleegkundige'), doel: ui('doelVerpleegkundige'),
+      rechten: [ui('volledigDossier'), ui('consultenBeheren'), ui('ntsTriage'), ui('iotVitalen'), ui('takenRapportage')],
       kleur: C.groen
     },
     verzorgende: {
-      label: 'Verzorgende IG', doel: 'Dagelijkse zorg uitvoeren en signaleren',
-      rechten: ['Taken afvinken en rapporteren', 'IoT vitalen monitoren', 'NTS-triage en meldingen', 'Behandelplan raadplegen', 'E-learning en certificaten'],
+      label: ui('verzorgende'), doel: ui('doelVerzorgende'),
+      rechten: [ui('takenAfvinken'), ui('iotMonitoren'), ui('ntsTriage'), ui('behandelplanRaadplegen'), ui('eLearningCert')],
       kleur: C.oranje
     },
     helpende: {
-      label: 'Helpende', doel: 'Basiszorg en ondersteuning bieden',
-      rechten: ['Taken afvinken', 'Rapportage schrijven en lezen', 'Stemming bijwerken', 'E-learning volgen'],
+      label: ui('helpende'), doel: ui('doelHelpende'),
+      rechten: [ui('takenAfvinkenKort'), ui('rapportageSchrijven'), ui('stemmingBijwerken'), ui('eLearningVolgen')],
       kleur: C.tekstMuted
     },
   };
   return (
     <div style={{ minHeight: '100vh', background: C.achtergrond, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ maxWidth: 420, width: '100%', padding: '32px 24px' }}>
-        <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 14, color: C.tekstMuted, cursor: 'pointer', marginBottom: 16 }}>&larr; Terug</button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 14, color: C.tekstMuted, cursor: 'pointer' }}>&larr; {ui('terug')}</button>
+          <TaalToggle />
+        </div>
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div style={{ display: 'inline-block', marginBottom: 8 }}><GeriCallLogoImg size={40} /></div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: C.tekstPrimair }}>Inloggen als zorgmedewerker</div>
-          <div style={{ fontSize: 12, color: C.tekstMuted, marginTop: 4 }}>Selecteer uw profiel &mdash; rechten zijn gekoppeld aan uw rol</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: C.tekstPrimair }}>{ui('inloggenAlsZorg')}</div>
+          <div style={{ fontSize: 12, color: C.tekstMuted, marginTop: 4 }}>{ui('selecteerProfiel')} &mdash; {ui('rechtenGekoppeld')}</div>
         </div>
 
         {profielen.map(function(p) {
@@ -296,7 +302,7 @@ function ZorgKeuze() {
         })}
 
         <div style={{ fontSize: 10, color: C.tekstMuted, marginTop: 16, fontStyle: 'italic', textAlign: 'center' }}>
-          Prototype &mdash; authenticatie via UZI-pas wordt bij implementatie toegevoegd
+          {ui('prototype')} &mdash; {ui('authUZI')}
         </div>
       </div>
     </div>
@@ -334,9 +340,9 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
   // Weergave switcher component
   var WeergaveSwitcher = function() {
     var opties = [
-      { id: 'eenvoudig', label: 'Eenvoudig' },
-      { id: 'normaal', label: 'Normaal' },
-      { id: 'uitgebreid', label: 'Uitgebreid' },
+      { id: 'eenvoudig', label: ui('eenvoudig') },
+      { id: 'normaal', label: ui('normaal') },
+      { id: 'uitgebreid', label: ui('uitgebreid') },
     ];
     return React.createElement('div', { style: { display: 'flex', background: C.border, borderRadius: 8, padding: 2 } },
       opties.map(function(o) {
@@ -361,7 +367,7 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
             <GeriCallLogo />
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ fontSize: 13, color: C.tekstSecundair }}>{profiel.naam}</span>
-              <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Uit</button>
+              <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>{ui('uit')}</button>
             </div>
           </div>
           <div style={{ marginBottom: 12 }}><WeergaveSwitcher /></div>
@@ -422,7 +428,7 @@ function AppVerzorgende({ initialTab, initialBewonerId, initialBewonerTab, zorgP
 
         {tab === 'taken' && !selectedBewoner && (
           <Card style={{ background: C.oranjeLicht, border: 'none', padding: 12 }}>
-            <div style={{ fontSize: 13, fontWeight: 500, color: C.oranjeDonker }}>Dienst vandaag &middot; Afdeling Zonnehof</div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: C.oranjeDonker }}>{ui('dienstVandaag')} &middot; {ui('afdelingZonnehof')}</div>
             <div style={{ fontSize: 15, fontWeight: 700, color: C.tekstPrimair }}>{window.bewoners.length} bewoners in uw wijk</div>
             <div style={{ fontSize: 12, color: C.tekstSecundair }}>{formatDatum()}</div>
           </Card>
@@ -480,9 +486,9 @@ function AppFamilie({ lid, initialTab }) {
 
   var FamWeergaveSwitcher = function() {
     var opties = [
-      { id: 'eenvoudig', label: 'Eenvoudig' },
-      { id: 'normaal', label: 'Normaal' },
-      { id: 'uitgebreid', label: 'Uitgebreid' },
+      { id: 'eenvoudig', label: ui('eenvoudig') },
+      { id: 'normaal', label: ui('normaal') },
+      { id: 'uitgebreid', label: ui('uitgebreid') },
     ];
     return React.createElement('div', { style: { display: 'flex', background: C.border, borderRadius: 8, padding: 2 } },
       opties.map(function(o) {
@@ -507,7 +513,7 @@ function AppFamilie({ lid, initialTab }) {
             <GeriCallLogo />
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ fontSize: 13, color: C.tekstSecundair }}>{lid.roepnaam}</span>
-              <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>Wissel</button>
+              <button onClick={function() { setHash(''); }} style={{ background: 'none', border: 'none', fontSize: 12, color: C.tekstMuted, cursor: 'pointer' }}>{ui('wissel')}</button>
             </div>
           </div>
           <div style={{ marginBottom: 12 }}><FamWeergaveSwitcher /></div>
@@ -550,7 +556,7 @@ function AppFamilie({ lid, initialTab }) {
             <div>
               <div style={{ fontSize: 13, color: isPatient ? C.oranje : C.groen, fontWeight: 500 }}>{begroeting()} {lid.roepnaam}</div>
               <div style={{ fontSize: 18, fontWeight: 700, color: C.tekstPrimair, marginTop: 2 }}>
-                {isPatient ? 'Hoe gaat het vandaag?' : 'Hoe gaat het met ' + window.patient.roepnaam + '?'}
+                {isPatient ? ui('hoeGaatHetVandaag') : ui('hoeGaatHetMet') + ' ' + window.patient.roepnaam + '?'}
               </div>
               <div style={{ fontSize: 12, color: C.tekstSecundair, marginTop: 4 }}>{formatDatum()}</div>
             </div>
