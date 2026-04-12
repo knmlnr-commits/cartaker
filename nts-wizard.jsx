@@ -17,6 +17,13 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona }) {
   var [toonOverride, setToonOverride] = useState(false);
   var [notitie, setNotitie] = useState('');
   var [opgeslagen, setOpgeslagen] = useState(false);
+  var [controles, setControles] = useState(
+    prefillPersona && window.ntsPersonaControles && window.ntsPersonaControles[prefillPersona.naam]
+      ? Object.assign({}, window.ntsPersonaControles[prefillPersona.naam])
+      : {}
+  );
+  var [controleOpmerking, setControleOpmerking] = useState('');
+  var [skipWaarschuwing, setSkipWaarschuwing] = useState(false);
 
   var klachten = window.ntsKlachtenLijst || [];
   var abcdLabels = [
@@ -44,7 +51,7 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona }) {
   // Progress bar
   var ProgressStappen = function() {
     return React.createElement('div', { style: { display: 'flex', gap: 4, marginBottom: 12 } },
-      [1,2,3,4,5].map(function(s) {
+      [1,2,3,4,5,6].map(function(s) {
         return React.createElement('div', { key: s, style: { flex: 1, height: 4, borderRadius: 2, background: s <= stap ? C_N.oranje : s === 3 && abcdInstabiel ? '#DDDDDD' : '#DDDDDD', opacity: s === 3 && abcdInstabiel ? 0.3 : 1 } });
       })
     );
@@ -66,7 +73,7 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona }) {
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
     React.createElement('button', { onClick: stap === 1 ? onSluit : function() { setStap(stap - 1); }, style: { background: 'none', border: 'none', fontSize: 14, color: C_N.tekstMuted, cursor: 'pointer', marginBottom: 8 } }, '\u2190 ' + (stap === 1 ? (isEN ? 'Cancel' : 'Annuleren') : (isEN ? 'Previous' : 'Vorige'))),
     React.createElement(ProgressStappen),
-    React.createElement('div', { style: { fontSize: 12, color: C_N.tekstMuted, textAlign: 'center', marginBottom: 12 } }, (isEN ? 'Step' : 'Stap') + ' ' + stap + ' / 5'),
+    React.createElement('div', { style: { fontSize: 12, color: C_N.tekstMuted, textAlign: 'center', marginBottom: 12 } }, (isEN ? 'Step' : 'Stap') + ' ' + stap + ' / 6'),
 
     // ═══ STAP 1: INGANGSKLACHT ═══
     stap === 1 && React.createElement('div', null,
@@ -161,13 +168,69 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona }) {
         ),
         React.createElement('button', { onClick: function() {
           if (toonOverride && override && override !== urgentie && !overrideMotivatie.trim()) { addToast(isEN ? 'Provide motivation for adjustment' : 'Vul motivatie in'); return; }
-          setStap(5);
+          var defUrg = override || urgentie;
+          setStap(defUrg === 'U0' ? 6 : 5);
         }, style: { background: '#E8732A', color: '#FFF', border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, fontWeight: 700, cursor: 'pointer', width: '100%', marginTop: 4 } }, (isEN ? 'Next' : 'Volgende') + ' \u2192')
       );
     })(),
 
-    // ═══ STAP 5: VERVOLGACTIE ═══
-    stap === 5 && (function() {
+    // ═══ STAP 5: CONTROLES (VVT) ═══
+    stap === 5 && urgentie !== 'U0' && React.createElement('div', null,
+      React.createElement('div', { style: { fontSize: 16, fontWeight: 700, color: C_N.tekstPrimair, marginBottom: 4 } }, isEN ? 'Controls (VVT)' : 'Controles (VVT)'),
+      React.createElement('div', { style: { fontSize: 12, color: C_N.tekstMuted, marginBottom: 10 } }, isEN ? 'Add vital signs for the doctor' : 'Voeg meetwaarden toe voor de arts'),
+      // U1 banner
+      urgentie === 'U1' && React.createElement('div', { style: { background: '#FCEAEA', border: '1px solid #D94F4F', borderRadius: 10, padding: '8px 12px', marginBottom: 10, fontSize: 12, color: '#D94F4F', fontWeight: 600 } }, isEN ? 'U1 detected \u2014 act first; controls are optional.' : 'U1 gedetecteerd \u2014 handel eerst; controles zijn optioneel.'),
+      // Signalen
+      (function() {
+        var signalen = window.checkControleSignalen(controles);
+        if (signalen.length === 0) return null;
+        return React.createElement('div', { style: { marginBottom: 10 } },
+          signalen.map(function(s, i) {
+            return React.createElement('div', { key: i, style: { background: s.ernst === 'danger' ? '#FCEAEA' : '#FFF3EB', border: '1px solid ' + (s.ernst === 'danger' ? '#D94F4F' : '#E8732A'), borderRadius: 8, padding: '8px 10px', marginBottom: 4, fontSize: 12, color: s.ernst === 'danger' ? '#D94F4F' : '#E8732A', fontWeight: 500 } },
+              '\u26A0 ' + (isEN ? s.tekstEN : s.tekst)
+            );
+          })
+        );
+      })(),
+      // Velden
+      (window.controleVelden || []).map(function(veld) {
+        var val = controles[veld.id] || '';
+        var status = window.getControleStatus(veld, val);
+        var borderKleur = status === 'danger' ? '#D94F4F' : status === 'warning' ? '#E8732A' : status === 'normal' ? '#2D9D78' : '#EEEEEE';
+        var bgKleur = status === 'danger' ? '#FCEAEA' : 'transparent';
+        var statusTekst = status === 'danger' ? (isEN ? 'Critical' : 'Kritisch') : status === 'warning' ? (isEN ? 'Abnormal' : 'Afwijkend') : status === 'normal' ? (isEN ? 'Normal' : 'Normaal') : '';
+        return React.createElement('div', { key: veld.id, style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, padding: '8px 10px', borderRadius: 8, border: '1px solid ' + borderKleur, background: bgKleur } },
+          React.createElement('div', { style: { flex: 1 } },
+            React.createElement('div', { style: { fontSize: 13, fontWeight: 500, color: C_N.tekstPrimair } }, isEN ? veld.labelEN : veld.label),
+            React.createElement('div', { style: { fontSize: 10, color: C_N.tekstMuted } }, veld.normaal + ' ' + veld.eenheid)
+          ),
+          React.createElement('input', { type: 'number', step: veld.type === 'decimal' ? '0.1' : '1', value: val, onChange: function(e) { var n = Object.assign({}, controles); n[veld.id] = e.target.value; setControles(n); }, style: { width: 70, padding: '6px 8px', borderRadius: 6, border: '1px solid ' + borderKleur, fontSize: 14, textAlign: 'right', outline: 'none', fontFamily: "'DM Sans', sans-serif", color: C_N.tekstPrimair } }),
+          React.createElement('span', { style: { fontSize: 11, color: C_N.tekstMuted, minWidth: 35 } }, veld.eenheid),
+          status !== 'empty' && React.createElement('div', { style: { width: 16, height: 16, borderRadius: 8, background: borderKleur, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 9 } }, status === 'normal' ? '\u2713' : '!')
+        );
+      }),
+      // Opmerking
+      React.createElement('textarea', { value: controleOpmerking, onChange: function(e) { setControleOpmerking(e.target.value); }, placeholder: isEN ? 'Notes for doctor (optional)...' : 'Opmerking voor arts (optioneel)...', style: { width: '100%', minHeight: 40, padding: 8, borderRadius: 8, border: '1px solid #EEEEEE', fontSize: 13, fontFamily: "'DM Sans', sans-serif", outline: 'none', color: C_N.tekstPrimair, marginTop: 6, marginBottom: 6 } }),
+      // Zachte waarschuwing bij 0 velden op U2/U3
+      (function() {
+        var ingevuld = Object.values(controles).filter(function(v) { return v && v.toString().trim(); }).length;
+        if (ingevuld === 0 && (urgentie === 'U2' || urgentie === 'U3') && !skipWaarschuwing) {
+          return React.createElement('div', { style: { background: '#FFF9E6', border: '1px solid #D4A017', borderRadius: 8, padding: '10px', marginBottom: 8, fontSize: 12, color: '#D4A017' } },
+            isEN ? 'The doctor needs vitals for a proper assessment. Sure to skip?' : 'De arts heeft controles nodig voor een goede beoordeling. Zeker overslaan?',
+            React.createElement('button', { onClick: function() { setSkipWaarschuwing(true); }, style: { display: 'block', background: 'none', border: 'none', fontSize: 11, color: '#D4A017', cursor: 'pointer', marginTop: 4, fontWeight: 600 } }, isEN ? 'Yes, skip' : 'Ja, overslaan')
+          );
+        }
+        return null;
+      })(),
+      // Knoppen
+      React.createElement('div', { style: { display: 'flex', gap: 8 } },
+        React.createElement('button', { onClick: function() { setStap(6); }, style: { flex: 1, background: '#EEEEEE', color: C_N.tekstSecundair, border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, cursor: 'pointer' } }, isEN ? 'Skip' : 'Overslaan'),
+        React.createElement('button', { onClick: function() { setStap(6); }, style: { flex: 2, background: '#E8732A', color: '#FFF', border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, fontWeight: 700, cursor: 'pointer' } }, (isEN ? 'Save & next' : 'Opslaan & verder') + ' \u2192')
+      )
+    ),
+
+    // ═══ STAP 6: VERVOLGACTIE ═══
+    stap === 6 && (function() {
       var defUrg = override || urgentie;
       var info = window.urgentieInfo[defUrg];
       var selKlacht = klachten.find(function(k) { return k.id === klacht; });

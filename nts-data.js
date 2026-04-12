@@ -115,3 +115,42 @@ window.ntsPersonas = [
   { naam: 'Dhr. Jansen', geboortedatum: '1949-07-22', klacht: 'bewustzijn', observatie: 'Meneer reageert nauwelijks op aanspreken; is slap en heeft een asgrauw gezicht.', observatieEN: 'Patient barely responds to speech; is limp and has an ashen face.' },
   { naam: 'Mevr. De Vries', geboortedatum: '1935-11-28', klacht: 'val', observatie: 'Mevrouw is uit bed gevallen. Kan zelf weer opstaan. Lichte schaafwond op knie. Geen pijn hoofd.', observatieEN: 'Patient fell out of bed. Can stand up by herself. Minor scrape on knee. No head pain.' },
 ];
+
+// ── VVT Controles: veldspecificaties ──
+window.controleVelden = [
+  { id: 'hartslag', label: 'Hartslag', labelEN: 'Heart rate', eenheid: '/min', type: 'int', normaal: '60-100', warn: [40, 140], danger: [20, 180] },
+  { id: 'bloeddruk_sys', label: 'Bloeddruk systolisch', labelEN: 'BP systolic', eenheid: 'mmHg', type: 'int', normaal: '100-140', warn: [90, 160], danger: [70, 200] },
+  { id: 'bloeddruk_dia', label: 'Bloeddruk diastolisch', labelEN: 'BP diastolic', eenheid: 'mmHg', type: 'int', normaal: '60-90', warn: [50, 100], danger: [30, 150] },
+  { id: 'saturatie', label: 'Saturatie (SpO\u2082)', labelEN: 'Saturation (SpO\u2082)', eenheid: '%', type: 'int', normaal: '\u2265 95', warn: [90, 100], danger: [85, 100] },
+  { id: 'temperatuur', label: 'Temperatuur', labelEN: 'Temperature', eenheid: '\u00B0C', type: 'decimal', normaal: '36.5-37.5', warn: [37.5, 39.0], danger: [38.5, 42.0] },
+  { id: 'ademfrequentie', label: 'Ademhalingsfreq.', labelEN: 'Respiratory rate', eenheid: '/min', type: 'int', normaal: '12-20', warn: [10, 30], danger: [5, 40] },
+  { id: 'glucose', label: 'Glucosewaarde', labelEN: 'Glucose', eenheid: 'mmol/L', type: 'decimal', normaal: '4.0-8.0', warn: [3.5, 15.0], danger: [2.0, 25.0] },
+];
+
+window.getControleStatus = function(veld, waarde) {
+  if (!waarde && waarde !== 0) return 'empty';
+  var v = parseFloat(waarde);
+  if (isNaN(v)) return 'empty';
+  if (v < veld.danger[0] || v > veld.danger[1]) return 'danger';
+  if (v < veld.warn[0] || v > veld.warn[1]) return 'warning';
+  return 'normal';
+};
+
+window.checkControleSignalen = function(controles) {
+  var signalen = [];
+  if (controles.saturatie && parseFloat(controles.saturatie) < 90)
+    signalen.push({ tekst: 'Saturatie < 90%', tekstEN: 'Saturation < 90%', ernst: 'danger' });
+  if (controles.bloeddruk_sys && parseFloat(controles.bloeddruk_sys) < 90)
+    signalen.push({ tekst: 'Bloeddruk < 90 systolisch', tekstEN: 'BP < 90 systolic \u2014 possible shock', ernst: 'danger' });
+  if (controles.hartslag && (parseFloat(controles.hartslag) > 130 || parseFloat(controles.hartslag) < 40))
+    signalen.push({ tekst: 'Hartslag sterk afwijkend', tekstEN: 'Heart rate abnormal', ernst: 'warning' });
+  if (controles.temperatuur && parseFloat(controles.temperatuur) > 39.5)
+    signalen.push({ tekst: 'Koorts > 39.5\u00B0C', tekstEN: 'Fever > 39.5\u00B0C', ernst: 'warning' });
+  return signalen;
+};
+
+window.ntsPersonaControles = {
+  'Mevr. Bakker': { hartslag: '98', bloeddruk_sys: '118', bloeddruk_dia: '74', saturatie: '96', temperatuur: '39.2' },
+  'Dhr. Jansen': { hartslag: '132', bloeddruk_sys: '78', bloeddruk_dia: '42', saturatie: '84', temperatuur: '37.1' },
+  'Mevr. De Vries': { hartslag: '76', bloeddruk_sys: '128', bloeddruk_dia: '80', saturatie: '97', temperatuur: '36.8' },
+};
