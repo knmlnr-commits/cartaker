@@ -86,7 +86,18 @@ window.CareTakerPortal = function CareTakerPortal({ onTerug }) {
         React.createElement('div', { style: { fontSize: 13, color: C_CT.tekstSecundair, marginBottom: 24 } }, ui('snelConsultInschieten')),
         React.createElement(BelKnop),
         React.createElement('button', { onClick: function() { setScherm('aanmaken'); resetAanmaak(); }, style: { display: 'block', width: '100%', padding: '14px', borderRadius: 10, border: 'none', background: C_CT.oranje, color: '#FFF', fontSize: 15, fontWeight: 600, cursor: 'pointer', marginBottom: 10 } }, '\u2795 ' + ui('nieuwConsult')),
-        React.createElement('button', { onClick: function() { setScherm('overzicht'); }, style: { display: 'block', width: '100%', padding: '14px', borderRadius: 10, background: 'transparent', border: '1px solid ' + C_CT.oranje, color: C_CT.oranje, fontSize: 15, fontWeight: 600, cursor: 'pointer', marginBottom: 24 } }, '\uD83D\uDCCB ' + ui('lopendeConsults') + ' (' + consulten.filter(function(c) { return c.status !== 'Afgerond'; }).length + ')'),
+        React.createElement('button', { onClick: function() { setScherm('overzicht'); }, style: { display: 'block', width: '100%', padding: '14px', borderRadius: 10, background: 'transparent', border: '1px solid ' + C_CT.oranje, color: C_CT.oranje, fontSize: 15, fontWeight: 600, cursor: 'pointer', marginBottom: 10 } }, '\uD83D\uDCCB ' + ui('lopendeConsults') + ' (' + consulten.filter(function(c) { return c.status !== 'Afgerond'; }).length + ')'),
+        // Compact urgentie preview
+        consulten.filter(function(c) { return c.status !== 'Afgerond'; }).length > 0 && React.createElement('div', { style: { marginBottom: 20 } },
+          consulten.filter(function(c) { return c.status !== 'Afgerond'; }).slice(0, 3).map(function(c) {
+            var uk2 = urgKleur(c.urgentie);
+            return React.createElement('div', { key: c.id, onClick: function() { setSelectedConsult(c); setScherm('detail'); }, style: { display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', marginBottom: 3, borderRadius: 8, background: '#FFF', border: '1px solid #EEE', cursor: 'pointer', borderLeft: '3px solid ' + uk2.k } },
+              React.createElement('span', { style: { fontSize: 12, fontWeight: 600, color: '#2D2D2D', flex: 1 } }, c.bewoner),
+              React.createElement(Badge, { label: c.urgentie, color: uk2.k, bgColor: uk2.bg }),
+              React.createElement(Badge, { label: c.status, color: statusKleur(c.status), bgColor: statusKleur(c.status) + '18' })
+            );
+          })
+        ),
         onTerug && React.createElement('button', { onClick: onTerug, style: { background: 'none', border: 'none', fontSize: 13, color: C_CT.tekstMuted, cursor: 'pointer' } }, '\u2190 ' + ui('hoofdapp')),
         React.createElement('div', { style: { fontSize: 10, color: C_CT.tekstMuted, marginTop: 16 } }, 'CareTaker Portal v0.2')
       ),

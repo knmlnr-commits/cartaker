@@ -150,6 +150,23 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona, hashP
           React.createElement('div',{style:{fontSize:18,fontWeight:700,color:info.kleur,marginTop:4}},info.label),
           React.createElement('div',{style:{fontSize:12,color:'#666',marginTop:4}},isEN?info.actieEN:info.actie)
         ),
+        // Behandelbeperking banner
+        prefillPersona&&prefillPersona.behandelbeperking&&React.createElement('div',{style:{background:'#FCEAEA',border:'1px solid #D94F4F',borderRadius:10,padding:12,marginBottom:12}},
+          React.createElement('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:6}},
+            React.createElement('div',{style:{fontSize:18}},'\u26D4'),
+            React.createElement('div',{style:{fontSize:14,fontWeight:700,color:'#D94F4F'}},isEN?'Treatment limitations registered':'Behandelbeperking geregistreerd')
+          ),
+          prefillPersona.behandelbeperking.nietReanimeren&&React.createElement('div',{style:{display:'flex',alignItems:'center',gap:6,marginBottom:3}},
+            React.createElement('div',{style:{width:14,height:14,borderRadius:7,background:'#D94F4F',display:'flex',alignItems:'center',justifyContent:'center',color:'#FFF',fontSize:8,fontWeight:700}},'NR'),
+            React.createElement('span',{style:{fontSize:13,fontWeight:600,color:'#D94F4F'}},isEN?'Do Not Resuscitate (DNR)':'Niet reanimeren (NR-verklaring)'),
+            prefillPersona.behandelbeperking.nrPenning&&React.createElement('span',{style:{fontSize:10,color:'#D94F4F',background:'#FCEAEA',border:'1px solid #D94F4F',padding:'1px 6px',borderRadius:4}},isEN?'NR badge':'NR-penning')
+          ),
+          prefillPersona.behandelbeperking.geenIC&&React.createElement('div',{style:{fontSize:12,color:'#7A1F1F',marginBottom:2}},'\u2022 '+(isEN?'No ICU admission':'Geen IC-opname')),
+          prefillPersona.behandelbeperking.geenBeademing&&React.createElement('div',{style:{fontSize:12,color:'#7A1F1F',marginBottom:2}},'\u2022 '+(isEN?'No mechanical ventilation':'Geen beademing')),
+          React.createElement('div',{style:{fontSize:11,color:'#AAA',marginTop:4}},
+            (isEN?'Representative: ':'Vertegenwoordiger: ')+(prefillPersona.behandelbeperking.vertegenwoordiger||'-')+' \u00B7 '+(prefillPersona.behandelbeperking.vastgesteldOp||'')
+          )
+        ),
         // Signalen
         signalen.length>0&&React.createElement('div',{style:{marginBottom:8}},signalen.map(function(s,i){
           return React.createElement('div',{key:i,style:{background:s.ernst==='danger'?'#FCEAEA':'#FFF3EB',border:'1px solid '+(s.ernst==='danger'?'#D94F4F':'#E8732A'),borderRadius:8,padding:'6px 10px',marginBottom:4,fontSize:12,color:s.ernst==='danger'?'#D94F4F':'#E8732A',fontWeight:500}},'\u26A0 '+(isEN?s.tekstEN:s.tekst));})),

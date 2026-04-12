@@ -111,9 +111,9 @@ window.urgentieInfo = {
 
 // Demo persona's met prefilled geboortedatum
 window.ntsPersonas = [
-  { naam: 'Mevr. Bakker', geboortedatum: '1942-03-15', klacht: 'koorts', observatie: 'Pati\u00EBnte klaagt over rillingen en voelt erg warm aan. Thermometer 39,2\u00B0C. Al 2 dagen niet gegeten.', observatieEN: 'Patient complains of chills and feels very warm. Thermometer 39.2\u00B0C. Has not eaten for 2 days.' },
-  { naam: 'Dhr. Jansen', geboortedatum: '1949-07-22', klacht: 'bewustzijn', observatie: 'Meneer reageert nauwelijks op aanspreken; is slap en heeft een asgrauw gezicht.', observatieEN: 'Patient barely responds to speech; is limp and has an ashen face.' },
-  { naam: 'Mevr. De Vries', geboortedatum: '1935-11-28', klacht: 'val', observatie: 'Mevrouw is uit bed gevallen. Kan zelf weer opstaan. Lichte schaafwond op knie. Geen pijn hoofd.', observatieEN: 'Patient fell out of bed. Can stand up by herself. Minor scrape on knee. No head pain.' },
+  { naam: 'Mevr. Bakker', geboortedatum: '1942-03-15', klacht: 'koorts', observatie: 'Pati\u00EBnte klaagt over rillingen en voelt erg warm aan. Thermometer 39,2\u00B0C. Al 2 dagen niet gegeten.', observatieEN: 'Patient complains of chills and feels very warm. Thermometer 39.2\u00B0C. Has not eaten for 2 days.', behandelbeperking: null },
+  { naam: 'Dhr. Jansen', geboortedatum: '1949-07-22', klacht: 'bewustzijn', observatie: 'Meneer reageert nauwelijks op aanspreken; is slap en heeft een asgrauw gezicht.', observatieEN: 'Patient barely responds to speech; is limp and has an ashen face.', behandelbeperking: { nietReanimeren: true, geenIC: true, geenBeademing: false, vertegenwoordiger: 'Echtgenote A. Jansen', vastgesteldOp: '2025-06-10', nrPenning: true } },
+  { naam: 'Mevr. De Vries', geboortedatum: '1935-11-28', klacht: 'val', observatie: 'Mevrouw is uit bed gevallen. Kan zelf weer opstaan. Lichte schaafwond op knie. Geen pijn hoofd.', observatieEN: 'Patient fell out of bed. Can stand up by herself. Minor scrape on knee. No head pain.', behandelbeperking: { nietReanimeren: true, geenIC: true, geenBeademing: true, vertegenwoordiger: 'Dochter R. de Vries', vastgesteldOp: '2024-11-20', nrPenning: false } },
 ];
 
 // ── VVT Controles: veldspecificaties ──
