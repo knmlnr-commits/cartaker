@@ -88,7 +88,40 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona, hashP
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
     React.createElement('button', { onClick: stap === 1 ? onSluit : function() { setStapEnHash(stap - 1); }, style: { background: 'none', border: 'none', fontSize: 14, color: C_N.tekstMuted, cursor: 'pointer', marginBottom: 8 } }, '\u2190 ' + (stap === 1 ? (isEN ? 'Cancel' : 'Annuleren') : (isEN ? 'Previous' : 'Vorige'))),
     React.createElement(ProgressStappen),
-    React.createElement('div', { style: { fontSize: 12, color: C_N.tekstMuted, textAlign: 'center', marginBottom: 12 } }, (isEN ? 'Step' : 'Stap') + ' ' + stap + ' / 6'),
+    React.createElement('div', { style: { fontSize: 12, color: C_N.tekstMuted, textAlign: 'center', marginBottom: 8 } }, (isEN ? 'Step' : 'Stap') + ' ' + stap + ' / 6'),
+
+    // Context strip (vanaf stap 2)
+    stap >= 2 && React.createElement('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12, padding: '8px 10px', background: '#F7F7F7', borderRadius: 8 } },
+      // Klacht
+      klacht && (function() {
+        var sel = klachten.find(function(k) { return k.id === klacht; });
+        return sel && React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 4 } },
+          React.createElement('span', { style: { fontSize: 14 } }, sel.icon),
+          React.createElement('span', { style: { fontSize: 12, fontWeight: 600, color: C_N.tekstPrimair } }, isEN ? sel.labelEN : sel.label)
+        );
+      })(),
+      // ABCD status (vanaf stap 3)
+      stap >= 3 && React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 3 } },
+        React.createElement('span', { style: { fontSize: 11, color: C_N.tekstMuted } }, 'ABCD:'),
+        ['A','B','C','D'].map(function(letter) {
+          var val = abcd[letter];
+          var klr = val === 'ja' ? '#2D9D78' : val === 'nee' ? '#D94F4F' : val === 'onbekend' ? '#4A7FB5' : '#DDDDDD';
+          return React.createElement('div', { key: letter, style: { width: 16, height: 16, borderRadius: 3, background: klr, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 8, fontWeight: 700 } }, letter);
+        })
+      ),
+      // Urgentie (vanaf stap 4)
+      stap >= 4 && urgentie && (function() {
+        var defUrg = override || urgentie;
+        var info = window.urgentieInfo[defUrg];
+        return React.createElement('span', { style: { fontSize: 11, fontWeight: 700, color: info.kleur, background: info.bg, padding: '2px 8px', borderRadius: 6 } }, defUrg);
+      })(),
+      // Signalen (vanaf stap 5)
+      stap >= 5 && (function() {
+        var signalen = window.checkControleSignalen(controles);
+        if (signalen.length === 0) return null;
+        return React.createElement('span', { style: { fontSize: 10, color: '#D94F4F', fontWeight: 600 } }, signalen.length + ' ' + (isEN ? 'signal(s)' : 'signaal/signalen'));
+      })()
+    ),
 
     // ═══ STAP 1: INGANGSKLACHT ═══
     stap === 1 && React.createElement('div', null,
