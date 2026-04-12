@@ -144,7 +144,10 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona, hashP
 
     // ═══ STAP 2: ABCD-CHECK ═══
     stap === 2 && React.createElement('div', null,
-      React.createElement('div', { style: { fontSize: 16, fontWeight: 700, color: C_N.tekstPrimair, marginBottom: 8 } }, 'ABCD-check'),
+      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 } },
+        React.createElement('div', { style: { fontSize: 16, fontWeight: 700, color: C_N.tekstPrimair } }, 'ABCD-check'),
+        React.createElement('button', { onClick: function() { setAbcd({ A: 'ja', B: 'ja', C: 'ja', D: 'ja' }); }, style: { background: '#E8F5F0', border: '1px solid #2D9D78', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, color: '#2D9D78', cursor: 'pointer' } }, isEN ? 'All stable' : 'Alle stabiel')
+      ),
       abcdInstabiel && React.createElement('div', { style: { background: '#FCEAEA', border: '1px solid #D94F4F', borderRadius: 10, padding: '10px 12px', marginBottom: 10, fontSize: 13, color: '#D94F4F', fontWeight: 600 } }, isEN ? 'ABCD instability detected \u2014 immediate escalation required.' : 'ABCD-instabiliteit gedetecteerd \u2014 directe escalatie vereist.'),
       abcdLabels.map(function(item) {
         var val = abcd[item.key];
