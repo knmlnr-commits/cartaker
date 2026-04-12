@@ -28,9 +28,10 @@ window.CareTakerPortal = function CareTakerPortal({ onTerug }) {
 
   // Aanmaak state
   var [aanmaakStap, setAanmaakStap] = useState(0); // 0=type keuze, 1=bewoner, 2=klacht, 3=bevestig
-  var [meldingType, setMeldingType] = useState(null); // niet-spoed | spoed
-  var [zoekDatum, setZoekDatum] = useState('1938-05-12');
-  var [gevondenBewoner, setGevondenBewoner] = useState(lightBewoners[0]);
+  var [meldingType, setMeldingType] = useState(null); // niet-spoed | spoed | nts
+  var [ntsPersona, setNtsPersona] = useState(null);
+  var [zoekDatum, setZoekDatum] = useState('1935-11-28');
+  var [gevondenBewoner, setGevondenBewoner] = useState(lightBewoners[2]); // Riet = Mevr. De Vries persona
   var [nieuwKlacht, setNieuwKlacht] = useState('');
   var [nieuwUrgentie, setNieuwUrgentie] = useState(null);
   var [nieuwCategorie, setNieuwCategorie] = useState(null);
@@ -133,8 +134,19 @@ window.CareTakerPortal = function CareTakerPortal({ onTerug }) {
       { id: 'gedrag', label: ui('gedragOnrust') },
       { id: 'overig', label: ui('overigNietSpoed') },
     ];
-    var totalSteps = meldingType === 'spoed' ? 4 : 3; // spoed heeft extra triage stap
+    var totalSteps = meldingType === 'spoed' ? 4 : 3;
     var currentStep = aanmaakStap;
+
+    // NTS Wizard modus
+    if (meldingType === 'nts') {
+      return React.createElement('div', { style: { minHeight: '100vh', background: C_CT.achtergrond } },
+        React.createElement('div', { style: { maxWidth: 420, margin: '0 auto', padding: '16px' } },
+          React.createElement(BelKnop),
+          React.createElement(NTSWizard, { onSluit: function() { resetAanmaak(); setScherm('overzicht'); }, addToast: addToast, prefillPersona: ntsPersona })
+        ),
+        React.createElement(ToastContainer, { toasts: toasts })
+      );
+    }
 
     return React.createElement('div', { style: { minHeight: '100vh', background: C_CT.achtergrond } },
       React.createElement('div', { style: { maxWidth: 420, margin: '0 auto', padding: '16px' } },
@@ -154,7 +166,7 @@ window.CareTakerPortal = function CareTakerPortal({ onTerug }) {
               React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_CT.tekstPrimair } }, ui('nietSpoed')),
               React.createElement('div', { style: { fontSize: 11, color: C_CT.tekstMuted, marginTop: 4 } }, ui('nietSpoedUitleg'))
             ),
-            React.createElement(Card, { style: { flex: 1, padding: 16, cursor: 'pointer', textAlign: 'center', border: meldingType === 'spoed' ? '2px solid ' + C_CT.rood : '1px solid ' + C_CT.border }, onClick: function() { setMeldingType('spoed'); setAanmaakStap(1); } },
+            React.createElement(Card, { style: { flex: 1, padding: 16, cursor: 'pointer', textAlign: 'center', border: meldingType === 'spoed' ? '2px solid ' + C_CT.rood : '1px solid ' + C_CT.border }, onClick: function() { setMeldingType('nts'); setNtsPersona(window.ntsPersonas[0]); } },
               React.createElement('div', { style: { fontSize: 22, marginBottom: 4 } }, '\u26A0\uFE0F'),
               React.createElement('div', { style: { fontSize: 14, fontWeight: 600, color: C_CT.tekstPrimair } }, ui('mogelijkeSpoed')),
               React.createElement('div', { style: { fontSize: 11, color: C_CT.tekstMuted, marginTop: 4 } }, ui('mogelijkeSpoedUitleg'))
