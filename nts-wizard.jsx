@@ -3,9 +3,24 @@
 
 var C_N = window.COLORS;
 
-window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona }) {
-  var { useState } = React;
-  var [stap, setStap] = useState(1);
+window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona, hashPrefix }) {
+  var { useState, useEffect } = React;
+  var prefix = hashPrefix || 'triage';
+
+  // Sync stap naar URL hash
+  var updateHash = function(s) {
+    var personaKey = prefillPersona ? prefillPersona.naam.toLowerCase().replace(/[^a-z]/g, '') : 'new';
+    window.location.hash = prefix + '/' + personaKey + '/' + s;
+  };
+  var setStapEnHash = function(s) { setStap(s); updateHash(s); };
+
+  var [stap, setStap] = useState(function() {
+    // Parse initiële stap uit hash
+    var h = window.location.hash.replace('#', '');
+    var parts = h.split('/');
+    var lastPart = parseInt(parts[parts.length - 1]);
+    return (lastPart >= 1 && lastPart <= 6) ? lastPart : 1;
+  });
   var [observatie, setObservatie] = useState(prefillPersona ? (window.appTaal === 'en' ? prefillPersona.observatieEN : prefillPersona.observatie) : '');
   var [klacht, setKlacht] = useState(prefillPersona ? prefillPersona.klacht : null);
   var [zoekKlacht, setZoekKlacht] = useState('');
@@ -40,11 +55,11 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona }) {
     if (abcdInstabiel) {
       var u = window.bepaalNTSUrgentie(abcd, [], klacht);
       setUrgentie(u);
-      setStap(4);
+      setStapEnHash(4);
     } else {
       var crit = (window.ntsCriteria[klacht] || []);
       setCriteriaAnt(crit.map(function() { return null; }));
-      setStap(3);
+      setStapEnHash(3);
     }
   };
 
@@ -71,7 +86,7 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona }) {
   }
 
   return React.createElement('div', { style: { animation: 'fadeIn 0.3s ease' } },
-    React.createElement('button', { onClick: stap === 1 ? onSluit : function() { setStap(stap - 1); }, style: { background: 'none', border: 'none', fontSize: 14, color: C_N.tekstMuted, cursor: 'pointer', marginBottom: 8 } }, '\u2190 ' + (stap === 1 ? (isEN ? 'Cancel' : 'Annuleren') : (isEN ? 'Previous' : 'Vorige'))),
+    React.createElement('button', { onClick: stap === 1 ? onSluit : function() { setStapEnHash(stap - 1); }, style: { background: 'none', border: 'none', fontSize: 14, color: C_N.tekstMuted, cursor: 'pointer', marginBottom: 8 } }, '\u2190 ' + (stap === 1 ? (isEN ? 'Cancel' : 'Annuleren') : (isEN ? 'Previous' : 'Vorige'))),
     React.createElement(ProgressStappen),
     React.createElement('div', { style: { fontSize: 12, color: C_N.tekstMuted, textAlign: 'center', marginBottom: 12 } }, (isEN ? 'Step' : 'Stap') + ' ' + stap + ' / 6'),
 
@@ -91,7 +106,7 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona }) {
           sel && React.createElement('div', { style: { width: 18, height: 18, borderRadius: 9, background: '#E8732A', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 11 } }, '\u2713')
         );
       }),
-      React.createElement('button', { onClick: function() { if (observatie.trim().length >= 3 && klacht) setStap(2); }, style: { background: observatie.trim().length >= 3 && klacht ? '#E8732A' : '#EEEEEE', color: observatie.trim().length >= 3 && klacht ? '#FFF' : '#AAAAAA', border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, fontWeight: 700, cursor: observatie.trim().length >= 3 && klacht ? 'pointer' : 'not-allowed', width: '100%', marginTop: 8 } }, (isEN ? 'Next' : 'Volgende') + ' \u2192')
+      React.createElement('button', { onClick: function() { if (observatie.trim().length >= 3 && klacht) setStapEnHash(2); }, style: { background: observatie.trim().length >= 3 && klacht ? '#E8732A' : '#EEEEEE', color: observatie.trim().length >= 3 && klacht ? '#FFF' : '#AAAAAA', border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, fontWeight: 700, cursor: observatie.trim().length >= 3 && klacht ? 'pointer' : 'not-allowed', width: '100%', marginTop: 8 } }, (isEN ? 'Next' : 'Volgende') + ' \u2192')
     ),
 
     // ═══ STAP 2: ABCD-CHECK ═══
@@ -142,7 +157,7 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona }) {
         if (criteriaAnt.every(function(a) { return a !== null; })) {
           var u = window.bepaalNTSUrgentie(abcd, criteriaAnt, klacht);
           setUrgentie(u);
-          setStap(4);
+          setStapEnHash(4);
         }
       }, style: { background: criteriaAnt.every(function(a) { return a !== null; }) ? '#E8732A' : '#EEEEEE', color: criteriaAnt.every(function(a) { return a !== null; }) ? '#FFF' : '#AAAAAA', border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, fontWeight: 700, cursor: criteriaAnt.every(function(a) { return a !== null; }) ? 'pointer' : 'not-allowed', width: '100%', marginTop: 8 } }, (isEN ? 'Next' : 'Volgende') + ' \u2192')
     ),
@@ -169,7 +184,7 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona }) {
         React.createElement('button', { onClick: function() {
           if (toonOverride && override && override !== urgentie && !overrideMotivatie.trim()) { addToast(isEN ? 'Provide motivation for adjustment' : 'Vul motivatie in'); return; }
           var defUrg = override || urgentie;
-          setStap(defUrg === 'U0' ? 6 : 5);
+          setStapEnHash(defUrg === 'U0' ? 6 : 5);
         }, style: { background: '#E8732A', color: '#FFF', border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, fontWeight: 700, cursor: 'pointer', width: '100%', marginTop: 4 } }, (isEN ? 'Next' : 'Volgende') + ' \u2192')
       );
     })(),
@@ -224,8 +239,8 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona }) {
       })(),
       // Knoppen
       React.createElement('div', { style: { display: 'flex', gap: 8 } },
-        React.createElement('button', { onClick: function() { setStap(6); }, style: { flex: 1, background: '#EEEEEE', color: C_N.tekstSecundair, border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, cursor: 'pointer' } }, isEN ? 'Skip' : 'Overslaan'),
-        React.createElement('button', { onClick: function() { setStap(6); }, style: { flex: 2, background: '#E8732A', color: '#FFF', border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, fontWeight: 700, cursor: 'pointer' } }, (isEN ? 'Save & next' : 'Opslaan & verder') + ' \u2192')
+        React.createElement('button', { onClick: function() { setStapEnHash(6); }, style: { flex: 1, background: '#EEEEEE', color: C_N.tekstSecundair, border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, cursor: 'pointer' } }, isEN ? 'Skip' : 'Overslaan'),
+        React.createElement('button', { onClick: function() { setStapEnHash(6); }, style: { flex: 2, background: '#E8732A', color: '#FFF', border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, fontWeight: 700, cursor: 'pointer' } }, (isEN ? 'Save & next' : 'Opslaan & verder') + ' \u2192')
       )
     ),
 

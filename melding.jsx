@@ -303,7 +303,8 @@ window.SectionMelding = function SectionMelding({ addToast }) {
     modus === 'uitgebreid' && React.createElement(NTSWizard, {
       onSluit: function() { setModus(null); },
       addToast: addToast,
-      prefillPersona: window.ntsPersonas[0]
+      prefillPersona: window.ntsPersonas[0],
+      hashPrefix: 'zorg/triage'
     })
   );
 };

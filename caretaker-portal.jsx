@@ -1,7 +1,7 @@
 // GeriCall CareTaker Portal — Main App
 // Drie omgevingen: Verzorgende, Familie (per lid), Patiënt
 // Hash-based routing voor deeplinks
-var APP_VERSION = 'v6.3.0';
+var APP_VERSION = 'v6.3.1';
 
 var { useState, useEffect, useCallback } = React;
 var C = window.COLORS;
@@ -33,7 +33,10 @@ function parseHash() {
   if (!h) return { scherm: 'rolkeuze' };
   var parts = h.split('/');
 
-  if (parts[0] === 'caretaker') return { scherm: 'caretaker' };
+  if (parts[0] === 'caretaker') {
+    if (parts[1] === 'triage') return { scherm: 'caretaker', triage: true, triagePersona: parts[2], triageStap: parts[3] };
+    return { scherm: 'caretaker' };
+  }
   if (parts[0] === 'zorg') {
     if (!parts[1]) return { scherm: 'zorg_keuze' };
     var profiel = window.zorgprofielen.find(function(p) { return p.id === parts[1]; });

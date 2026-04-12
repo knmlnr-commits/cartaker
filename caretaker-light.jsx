@@ -142,7 +142,7 @@ window.CareTakerPortal = function CareTakerPortal({ onTerug }) {
       return React.createElement('div', { style: { minHeight: '100vh', background: C_CT.achtergrond } },
         React.createElement('div', { style: { maxWidth: 420, margin: '0 auto', padding: '16px' } },
           React.createElement(BelKnop),
-          React.createElement(NTSWizard, { onSluit: function() { resetAanmaak(); setScherm('overzicht'); }, addToast: addToast, prefillPersona: ntsPersona })
+          React.createElement(NTSWizard, { onSluit: function() { resetAanmaak(); setScherm('overzicht'); }, addToast: addToast, prefillPersona: ntsPersona, hashPrefix: 'caretaker/triage' })
         ),
         React.createElement(ToastContainer, { toasts: toasts })
       );
