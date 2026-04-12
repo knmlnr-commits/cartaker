@@ -155,35 +155,39 @@ window.ntsPersonaControles = {
   'Mevr. De Vries': { hartslag: '76', bloeddruk_sys: '128', bloeddruk_dia: '80', saturatie: '97', temperatuur: '36.8' },
 };
 
-// Eerste handelingsadviezen per urgentie (direct uitvoerbaar door melder)
+// Handelingsadviezen met media links
 window.handelingsAdviezen = {
   U0: [
-    { tekst: 'Start reanimatie (BLS/ALS protocol)', tekstEN: 'Start resuscitation (BLS/ALS protocol)', prioriteit: 'direct' },
+    { tekst: 'Start reanimatie (BLS/ALS protocol)', tekstEN: 'Start resuscitation (BLS/ALS protocol)', prioriteit: 'direct', media: { type: 'video', url: 'https://www.youtube.com/results?search_query=BLS+reanimatie+ouderen', label: 'Reanimatie instructievideo' } },
     { tekst: 'Bel 112', tekstEN: 'Call 112', prioriteit: 'direct' },
-    { tekst: 'Haal AED indien beschikbaar', tekstEN: 'Get AED if available', prioriteit: 'direct' },
+    { tekst: 'Haal AED indien beschikbaar', tekstEN: 'Get AED if available', prioriteit: 'direct', media: { type: 'afbeelding', url: 'https://www.hartstichting.nl/aed', label: 'AED handleiding' } },
   ],
   U1: [
     { tekst: 'Pati\u00EBnt niet alleen laten', tekstEN: 'Do not leave patient alone', prioriteit: 'direct' },
-    { tekst: 'Vrije ademweg waarborgen (stabiele zijligging bij bewusteloosheid)', tekstEN: 'Ensure clear airway (recovery position if unconscious)', prioriteit: 'direct' },
+    { tekst: 'Vrije ademweg waarborgen (stabiele zijligging)', tekstEN: 'Ensure clear airway (recovery position)', prioriteit: 'direct', media: { type: 'afbeelding', url: 'https://www.rodekruis.nl/ehbo/stabiele-zijligging/', label: 'Stabiele zijligging' } },
     { tekst: 'Zuurstof toedienen indien beschikbaar', tekstEN: 'Administer oxygen if available', prioriteit: 'direct' },
     { tekst: 'Bel CT-arts GeriCall', tekstEN: 'Call CT doctor GeriCall', prioriteit: 'direct' },
+    { tekst: 'Vitalen monitoren (continu)', tekstEN: 'Monitor vitals (continuous)', prioriteit: 'direct' },
   ],
   U2: [
     { tekst: 'Pati\u00EBnt comfortabel en veilig positioneren', tekstEN: 'Position patient comfortably and safely', prioriteit: 'direct' },
     { tekst: 'Vitalen monitoren (elke 15 minuten)', tekstEN: 'Monitor vitals (every 15 minutes)', prioriteit: 'direct' },
     { tekst: 'Niets eten of drinken geven tot arts contact', tekstEN: 'Nothing to eat or drink until doctor contact', prioriteit: 'afwachten' },
     { tekst: 'Relevante medicatie klaarzetten', tekstEN: 'Prepare relevant medication', prioriteit: 'afwachten' },
+    { tekst: 'Pijnstilling overwegen (paracetamol)', tekstEN: 'Consider pain relief (paracetamol)', prioriteit: 'afwachten', media: { type: 'info', url: 'https://www.thuisarts.nl/pijnstillers', label: 'Pijnstilling richtlijn' } },
   ],
   U3: [
     { tekst: 'Vitalen vastleggen (zie controles)', tekstEN: 'Record vitals (see controls)', prioriteit: 'direct' },
-    { tekst: 'Pati\u00EBnt observeren op verslechtering', tekstEN: 'Observe patient for deterioration', prioriteit: 'direct' },
+    { tekst: 'Pati\u00EBnt observeren op verslechtering', tekstEN: 'Observe patient for deterioration', prioriteit: 'direct', media: { type: 'info', url: 'https://www.vilans.nl/kennis/signaleren-in-de-ouderenzorg', label: 'Signaleren verslechtering' } },
     { tekst: 'Zorg voor comfort (pijnstilling, warmte)', tekstEN: 'Ensure comfort (pain relief, warmth)', prioriteit: 'direct' },
     { tekst: 'Informeer collega op de afdeling', tekstEN: 'Inform colleague on the ward', prioriteit: 'afwachten' },
+    { tekst: 'Vochtinname bevorderen indien geen slikproblemen', tekstEN: 'Encourage fluid intake if no swallowing issues', prioriteit: 'afwachten' },
   ],
   U4: [
-    { tekst: 'Wond/letsel verzorgen indien van toepassing', tekstEN: 'Treat wound/injury if applicable', prioriteit: 'direct' },
+    { tekst: 'Wond/letsel verzorgen indien van toepassing', tekstEN: 'Treat wound/injury if applicable', prioriteit: 'direct', media: { type: 'video', url: 'https://www.youtube.com/results?search_query=wondzorg+ouderen+verpleeghuis', label: 'Wondzorg instructie' } },
     { tekst: 'Situatie rapporteren in het dossier', tekstEN: 'Report situation in records', prioriteit: 'direct' },
     { tekst: 'Pati\u00EBnt geruststellen', tekstEN: 'Reassure patient', prioriteit: 'direct' },
+    { tekst: 'Valpreventie maatregelen controleren', tekstEN: 'Check fall prevention measures', prioriteit: 'afwachten', media: { type: 'info', url: 'https://www.veiligheid.nl/valpreventie/interventies/in-het-verpleeghuis', label: 'Valpreventie checklist' } },
   ],
   U5: [
     { tekst: 'Zelfzorgadvies geven aan pati\u00EBnt/bewoner', tekstEN: 'Give self-care advice to patient/resident', prioriteit: 'direct' },
