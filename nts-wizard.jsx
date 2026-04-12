@@ -237,6 +237,26 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona, hashP
         }
         return null;
       })(),
+      // Urgentie aanpassen na controles
+      (function() {
+        var signalen = window.checkControleSignalen(controles);
+        if (signalen.length === 0) return null;
+        return React.createElement('div', { style: { background: '#FFF', borderRadius: 10, border: '0.5px solid #EEEEEE', padding: 12, marginBottom: 8 } },
+          React.createElement('div', { style: { fontSize: 13, fontWeight: 600, color: C_N.tekstSecundair, marginBottom: 6 } }, isEN ? 'Adjust urgency based on controls?' : 'Urgentie aanpassen op basis van controles?'),
+          React.createElement('div', { style: { fontSize: 12, color: C_N.tekstMuted, marginBottom: 8 } }, isEN ? 'Current: ' + (override || urgentie) : 'Huidig: ' + (override || urgentie)),
+          React.createElement('div', { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
+            ['U1','U2','U3','U4'].map(function(u) {
+              var cur = override || urgentie;
+              var sel = cur === u;
+              var info = window.urgentieInfo[u];
+              return React.createElement('button', { key: u, onClick: function() {
+                if (u !== urgentie) { setOverride(u); setOverrideMotivatie((isEN ? 'Based on control values' : 'Op basis van controlewaarden')); }
+                else { setOverride(null); setOverrideMotivatie(''); }
+              }, style: { padding: '6px 10px', borderRadius: 8, fontSize: 12, fontWeight: sel ? 700 : 400, background: sel ? info.kleur : '#FFF', color: sel ? '#FFF' : info.kleur, border: '1px solid ' + info.kleur, cursor: 'pointer' } }, u);
+            })
+          )
+        );
+      })(),
       // Knoppen
       React.createElement('div', { style: { display: 'flex', gap: 8 } },
         React.createElement('button', { onClick: function() { setStapEnHash(6); }, style: { flex: 1, background: '#EEEEEE', color: C_N.tekstSecundair, border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, cursor: 'pointer' } }, isEN ? 'Skip' : 'Overslaan'),
@@ -259,6 +279,20 @@ window.NTSWizard = function NTSWizard({ onSluit, addToast, prefillPersona, hashP
           React.createElement('div', { style: { fontSize: 13, color: C_N.tekstSecundair, lineHeight: 1.5 } }, isEN ? info.actieEN : info.actie),
           override && override !== urgentie && React.createElement('div', { style: { fontSize: 11, color: C_N.tekstMuted, marginTop: 6, padding: '6px 8px', background: '#F7F7F7', borderRadius: 6 } }, (isEN ? 'Adjusted from ' : 'Aangepast van ') + urgentie + ': ' + overrideMotivatie)
         ),
+        // Eerste handelingsadviezen
+        (function() {
+          var adviezen = window.handelingsAdviezen && window.handelingsAdviezen[defUrg];
+          if (!adviezen || adviezen.length === 0) return null;
+          return React.createElement('div', { style: { background: defUrg === 'U0' || defUrg === 'U1' ? '#FCEAEA' : '#FFF3EB', borderRadius: 10, border: '1px solid ' + (defUrg === 'U0' || defUrg === 'U1' ? '#D94F4F' : '#E8732A'), padding: 14, marginBottom: 10 } },
+            React.createElement('div', { style: { fontSize: 13, fontWeight: 700, color: defUrg === 'U0' || defUrg === 'U1' ? '#D94F4F' : '#E8732A', marginBottom: 8 } }, isEN ? 'Immediate actions' : 'Directe handelingen'),
+            adviezen.map(function(a, i) {
+              return React.createElement('div', { key: i, style: { display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 4 } },
+                React.createElement('div', { style: { width: 18, height: 18, borderRadius: 9, background: a.prioriteit === 'direct' ? (defUrg === 'U0' || defUrg === 'U1' ? '#D94F4F' : '#E8732A') : '#AAAAAA', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 10, fontWeight: 700, flexShrink: 0, marginTop: 1 } }, i + 1),
+                React.createElement('div', { style: { fontSize: 13, color: '#4A4A4A', lineHeight: 1.4 } }, isEN ? a.tekstEN : a.tekst)
+              );
+            })
+          );
+        })(),
         React.createElement('div', { style: { background: '#FFF', borderRadius: 10, border: '0.5px solid #EEEEEE', padding: 14, marginBottom: 10 } },
           React.createElement('div', { style: { fontSize: 12, color: C_N.tekstMuted, marginBottom: 2 } }, isEN ? 'Complaint' : 'Klacht'),
           React.createElement('div', { style: { fontSize: 14, color: C_N.tekstPrimair, marginBottom: 8 } }, selKlacht ? (isEN ? selKlacht.labelEN : selKlacht.label) : klacht),

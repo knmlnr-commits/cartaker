@@ -154,3 +154,39 @@ window.ntsPersonaControles = {
   'Dhr. Jansen': { hartslag: '132', bloeddruk_sys: '78', bloeddruk_dia: '42', saturatie: '84', temperatuur: '37.1' },
   'Mevr. De Vries': { hartslag: '76', bloeddruk_sys: '128', bloeddruk_dia: '80', saturatie: '97', temperatuur: '36.8' },
 };
+
+// Eerste handelingsadviezen per urgentie (direct uitvoerbaar door melder)
+window.handelingsAdviezen = {
+  U0: [
+    { tekst: 'Start reanimatie (BLS/ALS protocol)', tekstEN: 'Start resuscitation (BLS/ALS protocol)', prioriteit: 'direct' },
+    { tekst: 'Bel 112', tekstEN: 'Call 112', prioriteit: 'direct' },
+    { tekst: 'Haal AED indien beschikbaar', tekstEN: 'Get AED if available', prioriteit: 'direct' },
+  ],
+  U1: [
+    { tekst: 'Pati\u00EBnt niet alleen laten', tekstEN: 'Do not leave patient alone', prioriteit: 'direct' },
+    { tekst: 'Vrije ademweg waarborgen (stabiele zijligging bij bewusteloosheid)', tekstEN: 'Ensure clear airway (recovery position if unconscious)', prioriteit: 'direct' },
+    { tekst: 'Zuurstof toedienen indien beschikbaar', tekstEN: 'Administer oxygen if available', prioriteit: 'direct' },
+    { tekst: 'Bel CT-arts GeriCall', tekstEN: 'Call CT doctor GeriCall', prioriteit: 'direct' },
+  ],
+  U2: [
+    { tekst: 'Pati\u00EBnt comfortabel en veilig positioneren', tekstEN: 'Position patient comfortably and safely', prioriteit: 'direct' },
+    { tekst: 'Vitalen monitoren (elke 15 minuten)', tekstEN: 'Monitor vitals (every 15 minutes)', prioriteit: 'direct' },
+    { tekst: 'Niets eten of drinken geven tot arts contact', tekstEN: 'Nothing to eat or drink until doctor contact', prioriteit: 'afwachten' },
+    { tekst: 'Relevante medicatie klaarzetten', tekstEN: 'Prepare relevant medication', prioriteit: 'afwachten' },
+  ],
+  U3: [
+    { tekst: 'Vitalen vastleggen (zie controles)', tekstEN: 'Record vitals (see controls)', prioriteit: 'direct' },
+    { tekst: 'Pati\u00EBnt observeren op verslechtering', tekstEN: 'Observe patient for deterioration', prioriteit: 'direct' },
+    { tekst: 'Zorg voor comfort (pijnstilling, warmte)', tekstEN: 'Ensure comfort (pain relief, warmth)', prioriteit: 'direct' },
+    { tekst: 'Informeer collega op de afdeling', tekstEN: 'Inform colleague on the ward', prioriteit: 'afwachten' },
+  ],
+  U4: [
+    { tekst: 'Wond/letsel verzorgen indien van toepassing', tekstEN: 'Treat wound/injury if applicable', prioriteit: 'direct' },
+    { tekst: 'Situatie rapporteren in het dossier', tekstEN: 'Report situation in records', prioriteit: 'direct' },
+    { tekst: 'Pati\u00EBnt geruststellen', tekstEN: 'Reassure patient', prioriteit: 'direct' },
+  ],
+  U5: [
+    { tekst: 'Zelfzorgadvies geven aan pati\u00EBnt/bewoner', tekstEN: 'Give self-care advice to patient/resident', prioriteit: 'direct' },
+    { tekst: 'Vastleggen in rapportage', tekstEN: 'Document in report', prioriteit: 'direct' },
+  ],
+};
